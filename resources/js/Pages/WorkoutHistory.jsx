@@ -30,21 +30,35 @@ const WorkoutHistory = () => {
 
     const handleSave = (workoutId) => {
         setSaving(true);
-        axios.post("/api/workouts/complete", { 
-            workout_id: workoutId, 
-            score: scores[workoutId] || null, 
-            notes: notes[workoutId] || null 
+        axios.post("/api/workouts/complete", {
+            workout_id: workoutId,
+            score: scores[workoutId] || null,
+            notes: notes[workoutId] || null
         }, { withCredentials: true })
-        .then(response => {
-            console.log("✅ Guardado:", response.data);
-            setSaving(false);
-            window.location.reload(); // Recargar la página para ver los cambios
-        })
-        .catch(error => {
-            console.error("❌ Error al guardar:", error);
-            setSaving(false);
-        });
+            .then(response => {
+                console.log("✅ Guardado:", response.data);
+                setSaving(false);
+                window.location.reload(); // Recargar la página para ver los cambios
+            })
+            .catch(error => {
+                console.error("❌ Error al guardar:", error);
+                setSaving(false);
+            });
     };
+
+    const handleDelete = (id) => {
+        if (!window.confirm("¿Estás seguro de que quieres eliminar este WOD?")) return;
+
+        axios.delete(`/api/workouts/completed/${id}`, { withCredentials: true })
+            .then(response => {
+                console.log("✅ Eliminado:", response.data);
+                setHistory(history.filter(log => log.id !== id)); // Actualizar la lista sin recargar la página
+            })
+            .catch(error => {
+                console.error("❌ Error al eliminar el WOD:", error);
+            });
+    };
+
 
     return (
         <Container className="history-container text-center">
@@ -92,14 +106,14 @@ const WorkoutHistory = () => {
                                         <Form className="mt-3">
                                             <Form.Group className="mb-2">
                                                 <Form.Label>📝 Añadir Nota</Form.Label>
-                                                <Form.Control 
-                                                    type="text" 
-                                                    placeholder="Escribe una nota sobre tu entrenamiento" 
-                                                    value={notes[log.workout.id] || ""} 
+                                                <Form.Control
+                                                    type="text"
+                                                    placeholder="Escribe una nota sobre tu entrenamiento"
+                                                    value={notes[log.workout.id] || ""}
                                                     onChange={(e) => setNotes({ ...notes, [log.workout.id]: e.target.value })}
                                                 />
                                             </Form.Group>
-                                            
+
                                             <Form.Group className="mb-2">
                                                 <Form.Label>⭐ Puntuación</Form.Label>
                                                 <Form.Select value={scores[log.workout.id] || ""} onChange={(e) => setScores({ ...scores, [log.workout.id]: e.target.value })}>
@@ -110,13 +124,18 @@ const WorkoutHistory = () => {
                                                 </Form.Select>
                                             </Form.Group>
 
-                                            <Button 
-                                                variant="success" 
-                                                onClick={() => handleSave(log.workout.id)} 
+                                            <Button
+                                                variant="success"
+                                                onClick={() => handleSave(log.workout.id)}
                                                 disabled={saving}
                                             >
                                                 {saving ? "Guardando..." : "Guardar Nota y Puntuación"}
                                             </Button>
+
+                                            <Button variant="danger" className="mt-2" onClick={() => handleDelete(log.id)}>
+                                                🗑️ Eliminar el wod
+                                            </Button>
+
                                         </Form>
                                     </Card.Body>
                                 </Card>
@@ -125,8 +144,11 @@ const WorkoutHistory = () => {
                     })}
                 </Row>
             )}
+            {/* 🔹 Botón para volver al Dashboard al final */}
+            <Button variant="secondary" className="mt-4" onClick={() => window.location.href = "/dashboard"}>
+                ⬅️ Volver al Dashboard
+            </Button>
         </Container>
     );
 };
-
 export default WorkoutHistory;

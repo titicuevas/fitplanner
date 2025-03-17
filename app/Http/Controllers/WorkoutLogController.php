@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\WorkoutLog;
-use App\Models\Workout;
 use Illuminate\Support\Facades\Auth;
 
 class WorkoutLogController extends Controller
 {
+    // 📌 Registrar o actualizar un WOD completado sin duplicados
     public function store(Request $request)
     {
         $request->validate([
@@ -17,6 +17,7 @@ class WorkoutLogController extends Controller
             'notes' => 'nullable|string',
         ]);
 
+        // Usamos updateOrCreate para evitar duplicados
         $log = WorkoutLog::updateOrCreate(
             [
                 'user_id' => Auth::id(),
@@ -28,32 +29,34 @@ class WorkoutLogController extends Controller
             ]
         );
 
-        // Guardar el nuevo WOD completado
-        $log = WorkoutLog::create([
-            'user_id' => Auth::id(),
-            'workout_id' => $request->workout_id,
-            'score' => $request->score,
-            'notes' => $request->notes,
-        ]);
-
         return response()->json([
             'message' => 'WOD registrado con éxito',
             'data' => $log
         ], 201);
     }
 
-    // 🔹 API para obtener todos los WODs completados por el usuario
+    // 📌 Obtener todos los WODs completados por el usuario
     public function completedWorkouts()
     {
         $completed = WorkoutLog::where('user_id', Auth::id())
-            ->with('workout.category') // 👈 Asegurarnos de cargar la categoría correctamente
+            ->with('workout.category') // Cargar la categoría correctamente
             ->orderBy('created_at', 'desc')
             ->get();
 
-        if ($completed->isEmpty()) {
-            return response()->json(['message' => 'No se encontraron WODs completados'], 200);
+        return response()->json($completed);
+    }
+
+    // 📌 Eliminar un WOD completado del historial
+    public function destroy($id)
+    {
+        $log = WorkoutLog::where('id', $id)->where('user_id', Auth::id())->first();
+
+        if (!$log) {
+            return response()->json(['message' => 'No tienes permiso para eliminar este WOD o no existe'], 403);
         }
 
-        return response()->json($completed);
+        $log->delete();
+
+        return response()->json(['message' => 'WOD eliminado con éxito']);
     }
 }
