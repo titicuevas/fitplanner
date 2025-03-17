@@ -7,17 +7,21 @@ const WeeklyPlan = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        // Obtener el plan semanal del usuario
         axios.get("/api/weekly-plan", { withCredentials: true })
             .then((response) => {
-                console.log("✅ Datos del plan recibido:", response.data);  // Verifica los datos recibidos
-                setPlan(response.data);
+                console.log(response.data); // Verifica si los datos se están recibiendo correctamente
+                setPlan(response.data); // Establecer los datos del plan en el estado
                 setLoading(false);
             })
             .catch(error => {
-                console.error("❌ Error al obtener el plan semanal:", error); // Verifica si ocurre algún error
+                console.error("Error al obtener el plan semanal:", error);
                 setLoading(false);
             });
     }, []);
+
+    // Días de la semana que se asignarán a cada día del plan
+    const daysOfWeek = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
 
     return (
         <Container className="text-center">
@@ -29,25 +33,37 @@ const WeeklyPlan = () => {
                     <p>Cargando plan semanal...</p>
                 </div>
             ) : plan.length === 0 ? (
-                <p>No hay plan disponible para esta semana.</p> // Comentario corregido
+                <p>No hay plan disponible para esta semana.</p>
             ) : (
+                // Mostrar los WODs divididos por días de la semana
                 <Row className="justify-content-center gy-4">
-                    {plan.map((item, index) => (
-                        <Col key={index} xs={12} sm={10} md={6} lg={4}>
-                            <Card className="shadow-lg">
-                                <Card.Body>
-                                    <Card.Title>{item.assigned_day}</Card.Title>
-                                    <Card.Subtitle>{item.workout?.title}</Card.Subtitle>
-                                    <Card.Text>{item.workout?.wod}</Card.Text>
-                                    <Button variant="outline-success">Ver más</Button>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                    ))}
+                    {daysOfWeek.map((day, index) => {
+                        // Buscar el WOD asignado a este día
+                        const dailyPlan = plan.filter(item => item.assigned_day === day);
+
+                        return (
+                            <Col key={index} xs={12} sm={10} md={6} lg={4}>
+                                <Card className="shadow-lg">
+                                    <Card.Body>
+                                        <Card.Title className="fw-bold fs-4">{day}</Card.Title>
+                                        {dailyPlan.length > 0 ? (
+                                            <>
+                                                <Card.Subtitle className="mb-2">{dailyPlan[0].workout.title}</Card.Subtitle>
+                                                <Card.Text>{dailyPlan[0].workout.wod}</Card.Text>
+                                                <Button variant="outline-success">Ver más</Button>
+                                            </>
+                                        ) : (
+                                            <p>No hay WOD asignado para este día.</p>
+                                        )}
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                        );
+                    })}
                 </Row>
             )}
 
-            {/* 🔹 Botón para volver al Dashboard al final */}
+            {/* Botón para volver al Dashboard al final */}
             <Button variant="secondary" className="mt-4" onClick={() => window.location.href = "/dashboard"}>
                 ⬅️ Volver al Dashboard
             </Button>

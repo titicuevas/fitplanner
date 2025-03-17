@@ -29,4 +29,9 @@ class Workout extends Model
     {
         return $this->hasMany(Comment::class);
     }
+
+    public function weeklyPlans()
+{
+    return $this->hasMany(WeeklyPlan::class);
+}
 }

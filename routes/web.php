@@ -4,10 +4,10 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-//Controladores de la App
+// Controladores de la App
 use App\Http\Controllers\WorkoutController;
 use App\Http\Controllers\WorkoutLogController;
-
+use App\Http\Controllers\WeeklyPlanController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -22,19 +22,19 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-//Historial
+// Rutas para el historial de workouts
 Route::get('/workout-history', function () {
     return Inertia::render('WorkoutHistory');
 })->name('workout.history');
 
-// Rutas para API
+// Rutas para la API
 Route::prefix('api')->group(function () {
-    // Rutas para los WODs completados
+    // Ruta para los WODs completados
     Route::get('/workouts/completed', [WorkoutLogController::class, 'completedWorkouts'])
         ->name('api.workout.completed');
 });
 
-
+// Rutas protegidas por autenticación
 Route::middleware('auth')->group(function () {
     // Rutas para el perfil del usuario
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -65,6 +65,16 @@ Route::middleware('auth:sanctum')->prefix('api')->group(function () {
 Route::middleware(['auth', 'verified'])->get('/weekly-plan', function () {
     return Inertia::render('WeeklyPlan');
 })->name('weekly.plan');
+
+// Rutas de la API para la planificación semanal
+Route::middleware(['auth', 'verified'])->get('/weekly-plan', function () {
+    return Inertia::render('WeeklyPlan');
+})->name('weekly.plan');
+
+Route::middleware(['auth', 'verified'])->prefix('api')->group(function () {
+    Route::get('/weekly-plan', [WeeklyPlanController::class, 'getWeeklyPlan']);
+    Route::post('/weekly-plan/generate', [WeeklyPlanController::class, 'generateWeeklyPlan']);
+});
 
 
 require __DIR__.'/auth.php';

@@ -26,4 +26,5 @@ class WeeklyPlan extends Model
     {
         return $this->belongsTo(Workout::class);
     }
+    
 }
