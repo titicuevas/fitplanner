@@ -35,15 +35,14 @@ class WorkoutLogController extends Controller
     public function completedWorkouts()
     {
         $completed = WorkoutLog::where('user_id', Auth::id())
-            ->with('workout') // Cargamos la información del workout
+            ->with('workout.category') // 👈 Asegurarnos de cargar la categoría correctamente
             ->orderBy('created_at', 'desc')
             ->get();
-    
+
         if ($completed->isEmpty()) {
             return response()->json(['message' => 'No se encontraron WODs completados'], 200);
         }
-    
+
         return response()->json($completed);
     }
-    
 }

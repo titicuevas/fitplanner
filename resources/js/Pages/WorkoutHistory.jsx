@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Container, Row, Col, Card, Spinner } from "react-bootstrap";
+import { Container, Row, Col, Card, Spinner, Badge } from "react-bootstrap";
+
+const categoryColors = {
+    "Escalado": "primary", // Azul
+    "RX": "success", // Verde
+    "Élite": "danger", // Rojo
+};
 
 const WorkoutHistory = () => {
     const [history, setHistory] = useState([]);
@@ -9,12 +15,12 @@ const WorkoutHistory = () => {
     useEffect(() => {
         axios.get("/api/workouts/completed", { withCredentials: true })
             .then((response) => {
-                console.log("Respuesta API:", response.data); // 👀 VERIFICAR RESPUESTA API
+                console.log("📌 Respuesta API:", response.data); // 👀 Verificar qué devuelve la API
                 setHistory(response.data);
                 setLoading(false);
             })
             .catch(error => {
-                console.error("Error al obtener el historial:", error);
+                console.error("❌ Error al obtener el historial:", error);
                 setLoading(false);
             });
     }, []);
@@ -32,23 +38,31 @@ const WorkoutHistory = () => {
                 <p>No has completado ningún WOD todavía. ¡Empieza a entrenar! 🏋️‍♂️</p>
             ) : (
                 <Row className="justify-content-center gy-4">
-                    {history.map((log) => (
-                        <Col xs={12} sm={10} md={6} lg={4} key={log.id} className="d-flex justify-content-center">
-                            <Card className="shadow-lg workout-card border-0">
-                                <Card.Body className="p-4">
-                                    <Card.Title className="fw-bold fs-4">{log.workout?.title || "Sin título"}</Card.Title>
-                                    <Card.Text className="text-muted">
-                                        Completado el: {log.created_at ? new Date(log.created_at).toLocaleDateString() : "Fecha no disponible"}
-                                    </Card.Text>
-                                    <Card.Text className="text-start">
-                                        <strong>🔥 Calentamiento:</strong> {log.workout?.warmup || "N/A"}<br />
-                                        <strong>💪 Movimientos:</strong> {log.workout?.movements || "N/A"}<br />
-                                        <strong>🏋️ WOD:</strong> {log.workout?.wod || "N/A"}
-                                    </Card.Text>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                    ))}
+                    {history.map((log) => {
+                        const category = log.workout?.category?.name || "Sin categoría";
+                        const categoryColor = categoryColors[category] || "secondary";
+
+                        return (
+                            <Col xs={12} sm={10} md={6} lg={4} key={log.id} className="d-flex justify-content-center">
+                                <Card className="shadow-lg workout-card border-0">
+                                    <Card.Body className="p-4">
+                                        <Badge bg={categoryColor} className="mb-2">
+                                            {category}
+                                        </Badge>
+                                        <Card.Title className="fw-bold fs-4">{log.workout?.title || "Sin título"}</Card.Title>
+                                        <Card.Text className="text-muted">
+                                            📅 Completado el: {log.created_at ? new Date(log.created_at).toLocaleDateString() : "Fecha no disponible"}
+                                        </Card.Text>
+                                        <Card.Text className="text-start">
+                                            <strong>🔥 Calentamiento:</strong> {log.workout?.warmup || "N/A"}<br />
+                                            <strong>💪 Movimientos:</strong> {log.workout?.movements || "N/A"}<br />
+                                            <strong>🏋️ WOD:</strong> {log.workout?.wod || "N/A"}
+                                        </Card.Text>
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                        );
+                    })}
                 </Row>
             )}
         </Container>
