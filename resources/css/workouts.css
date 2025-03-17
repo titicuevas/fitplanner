@@ -1,0 +1,19 @@
+.workout-container {
+    max-width: 1200px;
+    margin: auto;
+}
+
+.workout-card {
+    width: 100%;
+    max-width: 400px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.workout-card:hover {
+    transform: scale(1.05);
+}
+
+.btn-lg {
+    font-size: 1.2rem;
+    font-weight: bold;
+}

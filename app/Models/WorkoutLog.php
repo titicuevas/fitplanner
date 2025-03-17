@@ -10,8 +10,7 @@ class WorkoutLog extends Model
     use HasFactory;
     
     protected $fillable = [
-        'user_id', 'workout_id', 'score', 'notes'
-    ];
+        'user_id', 'workout_id', 'score', 'notes'];
     
     // Relación: cada registro pertenece a un usuario y a un workout.
     public function user()
