@@ -8,7 +8,9 @@ export default function Dashboard() {
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
                     Dashboard
+                    
                 </h2>
+                
             }
         >
             <Head title="Dashboard" />
