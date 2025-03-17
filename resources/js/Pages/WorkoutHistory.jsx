@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Container, Row, Col, Card, Spinner, Badge } from "react-bootstrap";
+import { Container, Row, Col, Card, Spinner, Badge, Form, Button } from "react-bootstrap";
 
 const categoryColors = {
     "Escalado": "primary", // Azul
@@ -11,6 +11,9 @@ const categoryColors = {
 const WorkoutHistory = () => {
     const [history, setHistory] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [notes, setNotes] = useState({});
+    const [scores, setScores] = useState({});
 
     useEffect(() => {
         axios.get("/api/workouts/completed", { withCredentials: true })
@@ -24,6 +27,24 @@ const WorkoutHistory = () => {
                 setLoading(false);
             });
     }, []);
+
+    const handleSave = (workoutId) => {
+        setSaving(true);
+        axios.post("/api/workouts/complete", { 
+            workout_id: workoutId, 
+            score: scores[workoutId] || null, 
+            notes: notes[workoutId] || null 
+        }, { withCredentials: true })
+        .then(response => {
+            console.log("✅ Guardado:", response.data);
+            setSaving(false);
+            window.location.reload(); // Recargar la página para ver los cambios
+        })
+        .catch(error => {
+            console.error("❌ Error al guardar:", error);
+            setSaving(false);
+        });
+    };
 
     return (
         <Container className="history-container text-center">
@@ -58,6 +79,45 @@ const WorkoutHistory = () => {
                                             <strong>💪 Movimientos:</strong> {log.workout?.movements || "N/A"}<br />
                                             <strong>🏋️ WOD:</strong> {log.workout?.wod || "N/A"}
                                         </Card.Text>
+
+                                        {/* Notas y Puntuación guardadas */}
+                                        {log.score && (
+                                            <p className="mt-2"><strong>⭐ Puntuación:</strong> {log.score}/10</p>
+                                        )}
+                                        {log.notes && (
+                                            <p className="mt-2"><strong>📝 Nota:</strong> {log.notes}</p>
+                                        )}
+
+                                        {/* Formulario para agregar Notas y Puntuaciones */}
+                                        <Form className="mt-3">
+                                            <Form.Group className="mb-2">
+                                                <Form.Label>📝 Añadir Nota</Form.Label>
+                                                <Form.Control 
+                                                    type="text" 
+                                                    placeholder="Escribe una nota sobre tu entrenamiento" 
+                                                    value={notes[log.workout.id] || ""} 
+                                                    onChange={(e) => setNotes({ ...notes, [log.workout.id]: e.target.value })}
+                                                />
+                                            </Form.Group>
+                                            
+                                            <Form.Group className="mb-2">
+                                                <Form.Label>⭐ Puntuación</Form.Label>
+                                                <Form.Select value={scores[log.workout.id] || ""} onChange={(e) => setScores({ ...scores, [log.workout.id]: e.target.value })}>
+                                                    <option value="">Selecciona una puntuación</option>
+                                                    {[...Array(10)].map((_, i) => (
+                                                        <option key={i + 1} value={i + 1}>{i + 1}</option>
+                                                    ))}
+                                                </Form.Select>
+                                            </Form.Group>
+
+                                            <Button 
+                                                variant="success" 
+                                                onClick={() => handleSave(log.workout.id)} 
+                                                disabled={saving}
+                                            >
+                                                {saving ? "Guardando..." : "Guardar Nota y Puntuación"}
+                                            </Button>
+                                        </Form>
                                     </Card.Body>
                                 </Card>
                             </Col>

@@ -17,6 +17,17 @@ class WorkoutLogController extends Controller
             'notes' => 'nullable|string',
         ]);
 
+        $log = WorkoutLog::updateOrCreate(
+            [
+                'user_id' => Auth::id(),
+                'workout_id' => $request->workout_id,
+            ],
+            [
+                'score' => $request->score,
+                'notes' => $request->notes,
+            ]
+        );
+
         // Guardar el nuevo WOD completado
         $log = WorkoutLog::create([
             'user_id' => Auth::id(),
