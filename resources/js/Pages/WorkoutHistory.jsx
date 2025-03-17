@@ -144,10 +144,7 @@ const WorkoutHistory = () => {
                     })}
                 </Row>
             )}
-            {/* 🔹 Botón para volver al Dashboard al final */}
-            <Button variant="secondary" className="mt-4" onClick={() => window.location.href = "/dashboard"}>
-                ⬅️ Volver al Dashboard
-            </Button>
+            
         </Container>
     );
 };

@@ -27,14 +27,21 @@ export default function AuthenticatedLayout({ header, children }) {
                                 <NavLink
                                     href={route('dashboard')}
                                     active={route().current('dashboard')}
-                                
+
                                 >
                                     Dashboard
-                                
+
                                 </NavLink>
 
                                 <NavLink href={route('workout.history')} active={route().current('workout.history')}>
                                     📜 Historial de Workouts
+                                </NavLink>
+
+                                <NavLink
+                                    href={route('weekly.plan')}
+                                    active={route().current('weekly.plan')}
+                                >
+                                    📅 Planificación Semanal
                                 </NavLink>
                             </div>
                         </div>

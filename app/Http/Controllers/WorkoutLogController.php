@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\WorkoutLog;
 use Illuminate\Support\Facades\Auth;
+use App\Models\WeeklyPlan;
 
 class WorkoutLogController extends Controller
 {
@@ -59,4 +60,13 @@ class WorkoutLogController extends Controller
 
         return response()->json(['message' => 'WOD eliminado con éxito']);
     }
+
+    public function getWeeklyPlan()
+    {
+        $user_id = Auth::id();
+        $weeklyPlan = WeeklyPlan::where('user_id', $user_id)->get();
+    
+        return response()->json($weeklyPlan);
+    }
+    
 }
