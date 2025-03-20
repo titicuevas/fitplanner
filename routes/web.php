@@ -61,20 +61,19 @@ Route::middleware('auth:sanctum')->prefix('api')->group(function () {
         ->name('api.workouts.completed.destroy');
 });
 
-// Rutas para la planificación semanal, solo accesibles para usuarios autenticados
-Route::middleware(['auth', 'verified'])->get('/weekly-plan', function () {
-    return Inertia::render('WeeklyPlan');
-})->name('weekly.plan');
-
 // Rutas de la API para la planificación semanal
-Route::middleware(['auth', 'verified'])->get('/weekly-plan', function () {
-    return Inertia::render('WeeklyPlan');
-})->name('weekly.plan');
-
 Route::middleware(['auth', 'verified'])->prefix('api')->group(function () {
+    // Ruta para obtener el plan semanal del usuario
     Route::get('/weekly-plan', [WeeklyPlanController::class, 'getWeeklyPlan']);
+    
+    // Ruta para generar la planificación semanal para todos los usuarios
     Route::post('/weekly-plan/generate', [WeeklyPlanController::class, 'generateWeeklyPlan']);
 });
+
+// Rutas para la planificación semanal
+Route::middleware(['auth', 'verified'])->get('/weekly-plan', function () {
+    return Inertia::render('WeeklyPlan');
+})->name('weekly.plan');
 
 
 require __DIR__.'/auth.php';

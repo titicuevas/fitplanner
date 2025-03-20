@@ -10,7 +10,6 @@ const WeeklyPlan = () => {
         // Obtener el plan semanal del usuario
         axios.get("/api/weekly-plan", { withCredentials: true })
             .then((response) => {
-                console.log(response.data); // Verifica si los datos se están recibiendo correctamente
                 setPlan(response.data); // Establecer los datos del plan en el estado
                 setLoading(false);
             })
