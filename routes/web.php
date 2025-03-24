@@ -90,6 +90,6 @@ Route::middleware(['auth', 'verified'])->prefix('api')->group(function () {
 
 // Rutas de la API para obtener los WODs realizados por mes
 Route::middleware(['auth', 'verified'])->prefix('api')->group(function () {
-    Route::get('/workouts-by-month', [WeeklyPlanController::class, 'getWorkoutsByMonth']);
+    Route::get('/workouts-by-month', [WorkoutLogController::class, 'completedWorkoutsByMonth']);
 });
 require __DIR__.'/auth.php';

@@ -80,4 +80,26 @@ class WorkoutLogController extends Controller
     
         return response()->json($weeklyPlan);
     }
+
+    public function completedWorkoutsByMonth(Request $request)
+{
+    // Obtener el usuario autenticado
+    $user = Auth::user();
+
+    // Validar que el mes y el año sean proporcionados
+    $request->validate([
+        'month' => 'required|numeric|between:1,12',
+        'year' => 'required|numeric|min:2020', // Asegúrate de que el año sea válido
+    ]);
+
+    // Filtrar los WODs completados por el mes y año especificados
+    $workouts = WorkoutLog::where('user_id', $user->id)
+        ->whereMonth('created_at', $request->month)
+        ->whereYear('created_at', $request->year)
+        ->with('workout.category') // Cargar la relación 'category' con 'workout'
+        ->get();
+
+    return response()->json($workouts);
 }
+}
+

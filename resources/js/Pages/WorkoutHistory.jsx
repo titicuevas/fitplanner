@@ -14,31 +14,27 @@ const WorkoutHistory = () => {
     const [saving, setSaving] = useState(false);
     const [notes, setNotes] = useState({});
     const [scores, setScores] = useState({});
-    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Mes actual por defecto
-    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Año actual por defecto
+    const [selectedMonth, setSelectedMonth] = useState("03"); // Mes por defecto (Marzo)
+    const [selectedYear, setSelectedYear] = useState("2025"); // Año por defecto
 
     useEffect(() => {
-        fetchWorkouts();
-    }, [selectedMonth, selectedYear]);
-
-    const fetchWorkouts = () => {
-        setLoading(true);
-        axios.get(`/api/workouts/completed`, {
+        // Obtener los WODs completados por el mes y año seleccionado
+        axios.get(`/api/workouts-by-month`, {
             params: {
                 month: selectedMonth,
                 year: selectedYear
             },
             withCredentials: true
         })
-            .then((response) => {
-                setHistory(response.data);
-                setLoading(false);
-            })
-            .catch((error) => {
-                console.error("❌ Error al obtener el historial:", error);
-                setLoading(false);
-            });
-    };
+        .then((response) => {
+            setHistory(response.data);
+            setLoading(false);
+        })
+        .catch((error) => {
+            console.error("❌ Error al obtener el historial:", error);
+            setLoading(false);
+        });
+    }, [selectedMonth, selectedYear]);
 
     const handleSave = (workoutId) => {
         setSaving(true);
@@ -50,7 +46,14 @@ const WorkoutHistory = () => {
             .then(response => {
                 console.log("✅ Guardado:", response.data);
                 setSaving(false);
-                fetchWorkouts(); // Recargar el historial
+                // Aquí necesitas asegurar que se recarga el historial
+                axios.get(`/api/workouts-by-month?month=${selectedMonth}&year=${selectedYear}`, { withCredentials: true })
+                    .then((response) => {
+                        setHistory(response.data);
+                    })
+                    .catch((error) => {
+                        console.error("❌ Error al obtener el historial después de guardar:", error);
+                    });
             })
             .catch(error => {
                 console.error("❌ Error al guardar:", error);
@@ -75,28 +78,38 @@ const WorkoutHistory = () => {
         <Container className="history-container text-center">
             <h2 className="my-4 fw-bold text-uppercase">📜 Historial de Workouts</h2>
 
-            <Row className="mb-4">
-                <Col>
-                    <Form.Select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)}>
-                        <option value="1">Enero</option>
-                        <option value="2">Febrero</option>
-                        <option value="3">Marzo</option>
-                        <option value="4">Abril</option>
-                        <option value="5">Mayo</option>
-                        <option value="6">Junio</option>
-                        <option value="7">Julio</option>
-                        <option value="8">Agosto</option>
-                        <option value="9">Septiembre</option>
+            {/* Selector de mes */}
+            <Row className="justify-content-center mb-4">
+                <Col xs={12} sm={10} md={6} lg={4}>
+                    <Form.Select
+                        value={selectedMonth}
+                        onChange={(e) => setSelectedMonth(e.target.value)}
+                    >
+                        <option value="01">Enero</option>
+                        <option value="02">Febrero</option>
+                        <option value="03">Marzo</option>
+                        <option value="04">Abril</option>
+                        <option value="05">Mayo</option>
+                        <option value="06">Junio</option>
+                        <option value="07">Julio</option>
+                        <option value="08">Agosto</option>
+                        <option value="09">Septiembre</option>
                         <option value="10">Octubre</option>
                         <option value="11">Noviembre</option>
                         <option value="12">Diciembre</option>
                     </Form.Select>
                 </Col>
-                <Col>
-                    <Form.Select value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)}>
+            </Row>
+
+            {/* Selector de año */}
+            <Row className="justify-content-center mb-4">
+                <Col xs={12} sm={10} md={6} lg={4}>
+                    <Form.Select
+                        value={selectedYear}
+                        onChange={(e) => setSelectedYear(e.target.value)}
+                    >
                         <option value="2025">2025</option>
                         <option value="2024">2024</option>
-                        <option value="2023">2023</option>
                     </Form.Select>
                 </Col>
             </Row>

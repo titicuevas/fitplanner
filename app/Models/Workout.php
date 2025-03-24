@@ -21,7 +21,7 @@ class Workout extends Model
     // Relación: cada workout pertenece a una categoría.
     public function category()
     {
-        return $this->belongsTo(Category::class, 'category_id');
+        return $this->belongsTo(Category::class);
     }
 
     // Relación: un workout tiene muchos logs y comentarios.
