@@ -30,6 +30,7 @@ class WeeklyPlanSeeder extends Seeder
                     'user_id' => $user->id,
                     'workout_id' => $workout->id,
                     'assigned_day' => $day,
+                    'month' => now()->month,  // Asignar el mes actual
                 ]);
             }
         }

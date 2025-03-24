@@ -10,9 +10,11 @@ class CreateWeeklyPlansTable extends Migration
     {
         Schema::create('weekly_plans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained(); // Relación con usuarios
-            $table->foreignId('workout_id')->constrained('workouts'); // Relación con WODs
-            $table->string('assigned_day'); // Día de la semana asignado (lunes, martes, etc.)
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('workout_id')->constrained()->onDelete('cascade');
+            $table->string('assigned_day');
+            $table->string('month');  // Añadir columna para el mes
+            $table->boolean('completed')->default(false); // Añadir columna para completado
             $table->timestamps();
         });
     }

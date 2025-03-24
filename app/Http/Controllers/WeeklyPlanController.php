@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\WeeklyPlan;
@@ -29,25 +30,30 @@ class WeeklyPlanController extends Controller
     // Método para generar la planificación semanal para un usuario específico
     public function generateWeeklyPlanForUser($user)
     {
-        $workouts = Workout::all(); // Obtener todos los WODs disponibles
+        // Verificar si el usuario tiene algún plan ya asignado
+        $existingPlans = WeeklyPlan::where('user_id', $user->id)->exists();
+        if ($existingPlans) {
+            return; // Si ya tiene planes, no asignar nuevos
+        }
+
+        $workouts = Workout::all();
         $daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+        $currentMonth = now()->month; // Obtener el mes actual
         $weeklyPlan = [];
 
-        // Asignar un WOD aleatorio a cada día para el usuario
         foreach ($daysOfWeek as $day) {
             $workout = $workouts->random(); // Selecciona un WOD aleatorio
 
-            // Crear la entrada para el plan semanal del usuario
             $weeklyPlan[] = [
                 'user_id' => $user->id,
                 'workout_id' => $workout->id,
                 'assigned_day' => $day,
+                'month' => $currentMonth, // Asignar el mes actual
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
         }
 
-        // Guarda la planificación semanal en la base de datos para el usuario actual
         WeeklyPlan::insert($weeklyPlan);
     }
 
@@ -58,7 +64,50 @@ class WeeklyPlanController extends Controller
         $weeklyPlan = WeeklyPlan::where('user_id', $user->id)
             ->with('workout') // Cargar los detalles del workout
             ->get();
-
+    
         return response()->json($weeklyPlan); // Devuelve los datos en formato JSON
+    }
+
+    public function getMonthlyPlan(Request $request)
+    {
+        $user = Auth::user(); // Obtén al usuario autenticado
+        $month = $request->input('month'); // Mes solicitado
+
+        // Obtener los WODs del mes solicitado
+        $monthlyPlan = WeeklyPlan::where('user_id', $user->id)
+            ->where('month', $month) // Filtrar por mes
+            ->with('workout') // Cargar los detalles del workout
+            ->get();
+
+        return response()->json($monthlyPlan); // Devuelve los datos en formato JSON
+    }
+
+    public function countWorkoutsByMonth(Request $request)
+    {
+        $user = Auth::user(); // Obtén al usuario autenticado
+        $month = $request->input('month'); // Mes solicitado
+
+        // Contar los WODs realizados en el mes
+        $workoutCount = WeeklyPlan::where('user_id', $user->id)
+            ->where('month', $month)
+            ->count();
+
+        return response()->json(['count' => $workoutCount]); // Devuelve el conteo de WODs
+    }
+
+    public function getWorkoutsByMonth(Request $request)
+    {
+        $user = Auth::user();
+        $month = $request->input('month');  // Recibe el mes desde la solicitud
+        $year = $request->input('year');    // Recibe el año (si es necesario)
+
+        // Filtrar los WODs por el mes y año
+        $workouts = WeeklyPlan::where('user_id', $user->id)
+            ->whereMonth('created_at', '=', $month)
+            ->whereYear('created_at', '=', $year)
+            ->with('workout') // Cargar los detalles del workout
+            ->get();
+
+        return response()->json($workouts); // Devuelve los WODs en formato JSON
     }
 }

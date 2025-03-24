@@ -30,6 +30,18 @@ class WorkoutLogController extends Controller
             ]
         );
 
+        // Marcar el WOD como completado en la tabla weekly_plans
+        $weeklyPlan = WeeklyPlan::where('user_id', Auth::id())
+            ->where('workout_id', $request->workout_id)
+            ->first();
+
+        if ($weeklyPlan) {
+            $weeklyPlan->completed = true;
+            $weeklyPlan->score = $request->score;
+            $weeklyPlan->notes = $request->notes;
+            $weeklyPlan->save();
+        }
+
         return response()->json([
             'message' => 'WOD registrado con éxito',
             'data' => $log
@@ -37,9 +49,15 @@ class WorkoutLogController extends Controller
     }
 
     // 📌 Obtener todos los WODs completados por el usuario
-    public function completedWorkouts()
+    public function completedWorkouts(Request $request)
     {
-        $completed = WorkoutLog::where('user_id', Auth::id())
+        $user = Auth::user();
+        $month = $request->query('month');
+        $year = $request->query('year');
+
+        $completed = WorkoutLog::where('user_id', $user->id)
+            ->whereMonth('created_at', '=', $month)
+            ->whereYear('created_at', '=', $year)
             ->with('workout.category') // Cargar la categoría correctamente
             ->orderBy('created_at', 'desc')
             ->get();
@@ -68,5 +86,4 @@ class WorkoutLogController extends Controller
     
         return response()->json($weeklyPlan);
     }
-    
 }

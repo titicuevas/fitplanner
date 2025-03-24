@@ -13,6 +13,10 @@ class WeeklyPlan extends Model
         'user_id',
         'workout_id',
         'assigned_day',
+        'month',
+        'completed',
+        'score',
+        'notes',
     ];
 
     // Relación con el modelo User

@@ -14,19 +14,31 @@ const WorkoutHistory = () => {
     const [saving, setSaving] = useState(false);
     const [notes, setNotes] = useState({});
     const [scores, setScores] = useState({});
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Mes actual por defecto
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Año actual por defecto
 
     useEffect(() => {
-        axios.get("/api/workouts/completed", { withCredentials: true })
+        fetchWorkouts();
+    }, [selectedMonth, selectedYear]);
+
+    const fetchWorkouts = () => {
+        setLoading(true);
+        axios.get(`/api/workouts/completed`, {
+            params: {
+                month: selectedMonth,
+                year: selectedYear
+            },
+            withCredentials: true
+        })
             .then((response) => {
-                console.log("📌 Respuesta API:", response.data); // 👀 Verificar qué devuelve la API
                 setHistory(response.data);
                 setLoading(false);
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error("❌ Error al obtener el historial:", error);
                 setLoading(false);
             });
-    }, []);
+    };
 
     const handleSave = (workoutId) => {
         setSaving(true);
@@ -38,7 +50,7 @@ const WorkoutHistory = () => {
             .then(response => {
                 console.log("✅ Guardado:", response.data);
                 setSaving(false);
-                window.location.reload(); // Recargar la página para ver los cambios
+                fetchWorkouts(); // Recargar el historial
             })
             .catch(error => {
                 console.error("❌ Error al guardar:", error);
@@ -52,17 +64,42 @@ const WorkoutHistory = () => {
         axios.delete(`/api/workouts/completed/${id}`, { withCredentials: true })
             .then(response => {
                 console.log("✅ Eliminado:", response.data);
-                setHistory(history.filter(log => log.id !== id)); // Actualizar la lista sin recargar la página
+                setHistory(history.filter(log => log.id !== id));
             })
             .catch(error => {
                 console.error("❌ Error al eliminar el WOD:", error);
             });
     };
 
-
     return (
         <Container className="history-container text-center">
             <h2 className="my-4 fw-bold text-uppercase">📜 Historial de Workouts</h2>
+
+            <Row className="mb-4">
+                <Col>
+                    <Form.Select value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)}>
+                        <option value="1">Enero</option>
+                        <option value="2">Febrero</option>
+                        <option value="3">Marzo</option>
+                        <option value="4">Abril</option>
+                        <option value="5">Mayo</option>
+                        <option value="6">Junio</option>
+                        <option value="7">Julio</option>
+                        <option value="8">Agosto</option>
+                        <option value="9">Septiembre</option>
+                        <option value="10">Octubre</option>
+                        <option value="11">Noviembre</option>
+                        <option value="12">Diciembre</option>
+                    </Form.Select>
+                </Col>
+                <Col>
+                    <Form.Select value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)}>
+                        <option value="2025">2025</option>
+                        <option value="2024">2024</option>
+                        <option value="2023">2023</option>
+                    </Form.Select>
+                </Col>
+            </Row>
 
             {loading ? (
                 <div className="text-center">
@@ -70,7 +107,7 @@ const WorkoutHistory = () => {
                     <p>Cargando historial...</p>
                 </div>
             ) : history.length === 0 ? (
-                <p>No has completado ningún WOD todavía. ¡Empieza a entrenar! 🏋️‍♂️</p>
+                <p>No has completado ningún WOD este mes. ¡Empieza a entrenar! 🏋️‍♂️</p>
             ) : (
                 <Row className="justify-content-center gy-4">
                     {history.map((log) => {
@@ -133,9 +170,8 @@ const WorkoutHistory = () => {
                                             </Button>
 
                                             <Button variant="danger" className="mt-2" onClick={() => handleDelete(log.id)}>
-                                                🗑️ Eliminar el wod
+                                                🗑️ Eliminar el WOD
                                             </Button>
-
                                         </Form>
                                     </Card.Body>
                                 </Card>
@@ -144,11 +180,13 @@ const WorkoutHistory = () => {
                     })}
                 </Row>
             )}
-             {/* Botón para volver al Dashboard al final */}
-             <Button variant="secondary" className="mt-4" onClick={() => window.location.href = "/dashboard"}>
+
+            {/* Botón para volver al Dashboard al final */}
+            <Button variant="secondary" className="mt-4" onClick={() => window.location.href = "/dashboard"}>
                 ⬅️ Volver al Dashboard
             </Button>
         </Container>
     );
 };
+
 export default WorkoutHistory;

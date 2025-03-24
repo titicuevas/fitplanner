@@ -76,4 +76,20 @@ Route::middleware(['auth', 'verified'])->get('/weekly-plan', function () {
 })->name('weekly.plan');
 
 
+Route::middleware(['auth', 'verified'])->prefix('api')->group(function () {
+    // Ruta para obtener los WODs de un mes
+    Route::get('/monthly-plan', [WeeklyPlanController::class, 'getMonthlyPlan']);
+    
+    // Ruta para contar los WODs de un mes
+    Route::get('/workouts-count', [WeeklyPlanController::class, 'countWorkoutsByMonth']);
+});
+
+Route::middleware(['auth', 'verified'])->prefix('api')->group(function () {
+    Route::get('/workouts-count', [WeeklyPlanController::class, 'countWorkoutsByMonth']);
+});
+
+// Rutas de la API para obtener los WODs realizados por mes
+Route::middleware(['auth', 'verified'])->prefix('api')->group(function () {
+    Route::get('/workouts-by-month', [WeeklyPlanController::class, 'getWorkoutsByMonth']);
+});
 require __DIR__.'/auth.php';
