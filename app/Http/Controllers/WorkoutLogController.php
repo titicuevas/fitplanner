@@ -49,15 +49,9 @@ class WorkoutLogController extends Controller
     }
 
     // 📌 Obtener todos los WODs completados por el usuario
-    public function completedWorkouts(Request $request)
+    public function completedWorkouts()
     {
-        $user = Auth::user();
-        $month = $request->query('month');
-        $year = $request->query('year');
-
-        $completed = WorkoutLog::where('user_id', $user->id)
-            ->whereMonth('created_at', '=', $month)
-            ->whereYear('created_at', '=', $year)
+        $completed = WorkoutLog::where('user_id', Auth::id())
             ->with('workout.category') // Cargar la categoría correctamente
             ->orderBy('created_at', 'desc')
             ->get();
