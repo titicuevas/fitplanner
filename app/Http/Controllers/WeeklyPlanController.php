@@ -62,7 +62,7 @@ class WeeklyPlanController extends Controller
     {
         $user = Auth::user(); // Obtén al usuario autenticado
         $weeklyPlan = WeeklyPlan::where('user_id', $user->id)
-            ->with('workout') // Cargar los detalles del workout
+            ->with('workout.category') // Cargar las categorías de los WODs
             ->get();
     
         return response()->json($weeklyPlan); // Devuelve los datos en formato JSON
@@ -110,4 +110,6 @@ class WeeklyPlanController extends Controller
 
         return response()->json($workouts); // Devuelve los WODs en formato JSON
     }
+
+    
 }

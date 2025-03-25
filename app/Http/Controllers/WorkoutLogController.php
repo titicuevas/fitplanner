@@ -9,7 +9,7 @@ use App\Models\WeeklyPlan;
 
 class WorkoutLogController extends Controller
 {
-    // 📌 Registrar o actualizar un WOD completado sin duplicados
+    // 📌 Registrar o actualizar un WOD completado
     public function store(Request $request)
     {
         $request->validate([
@@ -18,7 +18,7 @@ class WorkoutLogController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        // Usamos updateOrCreate para evitar duplicados
+        // Crear o actualizar el log del entrenamiento
         $log = WorkoutLog::updateOrCreate(
             [
                 'user_id' => Auth::id(),
@@ -32,18 +32,16 @@ class WorkoutLogController extends Controller
 
         // Marcar el WOD como completado en la tabla weekly_plans
         $weeklyPlan = WeeklyPlan::where('user_id', Auth::id())
-            ->where('workout_id', $request->workout_id)
-            ->first();
+                                ->where('workout_id', $request->workout_id)
+                                ->first();
 
         if ($weeklyPlan) {
             $weeklyPlan->completed = true;
-            $weeklyPlan->score = $request->score;
-            $weeklyPlan->notes = $request->notes;
             $weeklyPlan->save();
         }
 
         return response()->json([
-            'message' => 'WOD registrado con éxito',
+            'message' => 'WOD completado y guardado en el historial',
             'data' => $log
         ], 201);
     }
@@ -68,7 +66,18 @@ class WorkoutLogController extends Controller
             return response()->json(['message' => 'No tienes permiso para eliminar este WOD o no existe'], 403);
         }
 
+        // Eliminar el log del WOD
         $log->delete();
+
+        // Actualizar el estado de completado en la tabla weekly_plans
+        $weeklyPlan = WeeklyPlan::where('user_id', Auth::id())
+                                ->where('workout_id', $log->workout_id)
+                                ->first();
+
+        if ($weeklyPlan) {
+            $weeklyPlan->completed = false;
+            $weeklyPlan->save();
+        }
 
         return response()->json(['message' => 'WOD eliminado con éxito']);
     }
@@ -76,30 +85,29 @@ class WorkoutLogController extends Controller
     public function getWeeklyPlan()
     {
         $user_id = Auth::id();
-        $weeklyPlan = WeeklyPlan::where('user_id', $user_id)->get();
-    
+        $weeklyPlan = WeeklyPlan::where('user_id', $user_id)->with('workout.category')->get();
+
         return response()->json($weeklyPlan);
     }
 
     public function completedWorkoutsByMonth(Request $request)
-{
-    // Obtener el usuario autenticado
-    $user = Auth::user();
+    {
+        // Obtener el usuario autenticado
+        $user = Auth::user();
 
-    // Validar que el mes y el año sean proporcionados
-    $request->validate([
-        'month' => 'required|numeric|between:1,12',
-        'year' => 'required|numeric|min:2020', // Asegúrate de que el año sea válido
-    ]);
+        // Validar que el mes y el año sean proporcionados
+        $request->validate([
+            'month' => 'required|numeric|between:1,12',
+            'year' => 'required|numeric|min:2020', // Asegúrate de que el año sea válido
+        ]);
 
-    // Filtrar los WODs completados por el mes y año especificados
-    $workouts = WorkoutLog::where('user_id', $user->id)
-        ->whereMonth('created_at', $request->month)
-        ->whereYear('created_at', $request->year)
-        ->with('workout.category') // Cargar la relación 'category' con 'workout'
-        ->get();
+        // Filtrar los WODs completados por el mes y año especificados
+        $workouts = WorkoutLog::where('user_id', $user->id)
+            ->whereMonth('created_at', $request->month)
+            ->whereYear('created_at', $request->year)
+            ->with('workout.category') // Cargar la relación 'category' con 'workout'
+            ->get();
 
-    return response()->json($workouts);
+        return response()->json($workouts);
+    }
 }
-}
-

@@ -6,6 +6,7 @@ const categoryColors = {
     "Escalado": "primary", // Azul
     "RX": "success", // Verde
     "Élite": "danger", // Rojo
+    "Sin categoría": "secondary", // Gris
 };
 
 const WorkoutHistory = () => {
