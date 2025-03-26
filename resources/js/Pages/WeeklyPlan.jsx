@@ -7,6 +7,7 @@ const categoryColors = {
     "RX": "success", // Verde
     "Élite": "danger", // Rojo
     "Sin categoría": "secondary", // Gris
+    "Actualizacion": "light", // Gris
 };
 
 const WeeklyPlan = () => {
@@ -122,7 +123,7 @@ const WeeklyPlan = () => {
                                                 <Button
                                                     variant="outline-success"
                                                     onClick={() => handleWodSelection(dailyPlan[0])}
-                                                    className={dailyPlan[0].completed ? "btn-secondary" : ""} // Cambiar a gris si está completado
+                                                    className={dailyPlan[0].completed ? "btn-light" : ""} // Cambiar a gris si está completado
                                                 >
                                                     {dailyPlan[0].completed ? "Actualizar" : "Seleccionar"}
                                                 </Button>
