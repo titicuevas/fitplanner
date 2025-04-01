@@ -30,27 +30,24 @@ class RegisteredUserController extends Controller
      * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|string|min:8|confirmed',
+    ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+    // Crear el nuevo usuario
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+    ]);
 
-        event(new Registered($user));
+    // Autenticar al usuario
+    Auth::login($user);
 
-        // Generar la planificación semanal para el nuevo usuario
-        $weeklyPlanController = new WeeklyPlanController();
-        $weeklyPlanController->generateWeeklyPlanForUser($user);
-
-        Auth::login($user);
-
-        return redirect(route('dashboard', absolute: false));
-    }
+    // Redirigir al formulario de objetivos
+    return redirect()->route('objective.form');
+}
 }

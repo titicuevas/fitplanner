@@ -2,7 +2,7 @@ import '../css/app.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/workouts.css';
 
-import { createInertiaApp } from '@inertiajs/react';
+import { createInertiaApp } from "@inertiajs/react";
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
 
@@ -17,7 +17,7 @@ createInertiaApp({
         ),
     setup({ el, App, props }) {
         const root = createRoot(el);
-        root.render(<App {...props} />);
+        root.render(<App {...props} />);  // Asegúrate de pasar las props correctamente
     },
     progress: {
         color: '#4B5563',

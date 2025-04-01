@@ -1,0 +1,28 @@
+/* public/css/objectiveForm.css */
+.card-header {
+    background-color: #007bff; /* Azul brillante */
+    color: white;
+}
+
+.card-body {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+form {
+    padding: 20px;
+}
+
+.form-group label {
+    font-weight: bold;
+}
+
+button[type="submit"] {
+    background-color: #007bff;
+    border: none;
+    color: white;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}

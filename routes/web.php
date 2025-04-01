@@ -6,8 +6,10 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 // Controladores de la App
 use App\Http\Controllers\WorkoutController;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\WorkoutLogController;
 use App\Http\Controllers\WeeklyPlanController;
+use App\Http\Controllers\ObjectiveController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -75,7 +77,6 @@ Route::middleware(['auth', 'verified'])->get('/weekly-plan', function () {
     return Inertia::render('WeeklyPlan');
 })->name('weekly.plan');
 
-
 Route::middleware(['auth', 'verified'])->prefix('api')->group(function () {
     // Ruta para obtener los WODs de un mes
     Route::get('/monthly-plan', [WeeklyPlanController::class, 'getMonthlyPlan']);
@@ -92,4 +93,15 @@ Route::middleware(['auth', 'verified'])->prefix('api')->group(function () {
 Route::middleware(['auth', 'verified'])->prefix('api')->group(function () {
     Route::get('/workouts-by-month', [WorkoutLogController::class, 'completedWorkoutsByMonth']);
 });
+
+// Ruta para mostrar el formulario de objetivos
+Route::middleware('auth')->get('/objective', function () {
+    return Inertia::render('ObjectiveForm', [
+        'user' => Auth::user(),  // Pasa los datos del usuario al componente React
+    ]);
+})->name('objective.form');
+
+// Ruta para guardar el objetivo del usuario
+Route::middleware('auth')->post('/objective', [ObjectiveController::class, 'store'])->name('objective.store');
+
 require __DIR__.'/auth.php';

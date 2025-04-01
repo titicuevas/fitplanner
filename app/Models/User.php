@@ -1,17 +1,13 @@
 <?php
-
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
@@ -23,6 +19,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'objective', // Asegúrate de incluir este campo
+        'age',       // Asegúrate de incluir este campo
+        'height',    // Asegúrate de incluir este campo
+        'weight',    // Asegúrate de incluir este campo
     ];
 
     /**
@@ -47,8 +47,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
     public function weeklyPlans()
-{
-    return $this->hasMany(WeeklyPlan::class);
-}
+    {
+        return $this->hasMany(WeeklyPlan::class);
+    }
 }
