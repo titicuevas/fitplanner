@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  backend:
+    image: php:8.0-fpm
+    container_name: Fitplanner-app
+    restart: unless-stopped
+    networks:
+      - app-network
+    working_dir: /var/www
+    volumes:
+      - .:/var/www   # Esto asegura que el código de Laravel se monte en el contenedor
+    environment:
+      - DB_CONNECTION=sqlite
+      - DB_DATABASE=/var/www/database/database.sqlite  # Ruta al archivo SQLite dentro del contenedor
+    depends_on:
+    
+      - frontend
+
+  frontend:
+    image: node:16
+    container_name: react-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+    working_dir: /var/www
+    volumes:
+      - .:/var/www   # Volumen para compartir el código con el backend
+    command: npm start
+
+networks:
+  app-network:
+    driver: bridge
