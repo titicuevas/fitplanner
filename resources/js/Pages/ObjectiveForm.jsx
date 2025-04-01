@@ -39,6 +39,7 @@ export default function ObjectiveForm({ user }) {
                                             onChange={(e) => setData('objective', e.target.value)}
                                             required
                                         >
+                                            <option value="">Selecciona un objetivo</option>
                                             <option value="Pérdida de peso">Pérdida de peso</option>
                                             <option value="Ganancia muscular">Ganancia muscular</option>
                                             <option value="Mejorar resistencia">Mejorar resistencia</option>

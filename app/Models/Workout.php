@@ -43,4 +43,8 @@ class Workout extends Model
     {
         return $this->belongsTo(Workout::class);
     }
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_workout');
+    }
 }

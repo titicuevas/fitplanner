@@ -52,4 +52,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(WeeklyPlan::class);
     }
+    public function workouts()
+{
+    return $this->belongsToMany(Workout::class, 'user_workout', 'user_id', 'workout_id');
+
+}
 }
