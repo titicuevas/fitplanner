@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Container, Row, Col, Card, Spinner, Badge, Form, Button } from "react-bootstrap";
+import { Container, Row, Col, Card, Spinner, Badge, Form, Button, Alert } from "react-bootstrap";
 
 const categoryColors = {
     "Escalado": "primary", // Azul
@@ -15,69 +15,90 @@ const WorkoutHistory = () => {
     const [saving, setSaving] = useState(false);
     const [notes, setNotes] = useState({});
     const [scores, setScores] = useState({});
-    const [selectedMonth, setSelectedMonth] = useState("03"); // Mes por defecto (Marzo)
-    const [selectedYear, setSelectedYear] = useState("2025"); // Año por defecto
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Mes actual
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Año actual
+    const [message, setMessage] = useState(null); // Mensajes de éxito o error
 
     useEffect(() => {
-        // Obtener los WODs completados por el mes y año seleccionado
-        axios.get(`/api/workouts-by-month`, {
-            params: {
-                month: selectedMonth,
-                year: selectedYear
-            },
-            withCredentials: true
-        })
-        .then((response) => {
-            setHistory(response.data);
-            setLoading(false);
-        })
-        .catch((error) => {
-            console.error("❌ Error al obtener el historial:", error);
-            setLoading(false);
-        });
+        fetchWorkoutHistory();
     }, [selectedMonth, selectedYear]);
+
+    const fetchWorkoutHistory = () => {
+        setLoading(true);
+        axios
+            .get(`/api/workouts-by-month`, {
+                params: {
+                    month: selectedMonth,
+                    year: selectedYear,
+                },
+                withCredentials: true,
+            })
+            .then((response) => {
+                setHistory(response.data);
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error("❌ Error al obtener el historial:", error);
+                setLoading(false);
+                setMessage({ type: "danger", text: "Error al cargar el historial de WODs." });
+            });
+    };
 
     const handleSave = (workoutId) => {
         setSaving(true);
-        axios.post("/api/workouts/complete", {
-            workout_id: workoutId,
-            score: scores[workoutId] || null,
-            notes: notes[workoutId] || null
-        }, { withCredentials: true })
-            .then(response => {
+        axios
+            .post(
+                "/api/workouts/complete",
+                {
+                    workout_id: workoutId,
+                    score: scores[workoutId] || null,
+                    notes: notes[workoutId] || null,
+                },
+                { withCredentials: true }
+            )
+            .then((response) => {
                 console.log("✅ Guardado:", response.data);
                 setSaving(false);
-                // Aquí necesitas asegurar que se recarga el historial
-                axios.get(`/api/workouts-by-month?month=${selectedMonth}&year=${selectedYear}`, { withCredentials: true })
-                    .then((response) => {
-                        setHistory(response.data);
-                    })
-                    .catch((error) => {
-                        console.error("❌ Error al obtener el historial después de guardar:", error);
-                    });
+                setMessage({ type: "success", text: "Nota y puntuación guardadas correctamente." });
+                fetchWorkoutHistory(); // Recargar el historial
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error("❌ Error al guardar:", error);
                 setSaving(false);
+                setMessage({ type: "danger", text: "Error al guardar la nota y puntuación." });
             });
     };
 
     const handleDelete = (id) => {
         if (!window.confirm("¿Estás seguro de que quieres eliminar este WOD?")) return;
 
-        axios.delete(`/api/workouts/completed/${id}`, { withCredentials: true })
-            .then(response => {
+        axios
+            .delete(`/api/workouts/completed/${id}`, { withCredentials: true })
+            .then((response) => {
                 console.log("✅ Eliminado:", response.data);
-                setHistory(history.filter(log => log.id !== id));
+                setHistory(history.filter((log) => log.id !== id));
+                setMessage({ type: "success", text: "WOD eliminado correctamente." });
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error("❌ Error al eliminar el WOD:", error);
+                setMessage({ type: "danger", text: "Error al eliminar el WOD." });
             });
     };
 
     return (
         <Container className="history-container text-center">
             <h2 className="my-4 fw-bold text-uppercase">📜 Historial de Workouts</h2>
+
+            {/* Mensajes de éxito o error */}
+            {message && (
+                <Alert
+                    variant={message.type}
+                    onClose={() => setMessage(null)}
+                    dismissible
+                >
+                    {message.text}
+                </Alert>
+            )}
 
             {/* Selector de mes */}
             <Row className="justify-content-center mb-4">
@@ -86,18 +107,11 @@ const WorkoutHistory = () => {
                         value={selectedMonth}
                         onChange={(e) => setSelectedMonth(e.target.value)}
                     >
-                        <option value="01">Enero</option>
-                        <option value="02">Febrero</option>
-                        <option value="03">Marzo</option>
-                        <option value="04">Abril</option>
-                        <option value="05">Mayo</option>
-                        <option value="06">Junio</option>
-                        <option value="07">Julio</option>
-                        <option value="08">Agosto</option>
-                        <option value="09">Septiembre</option>
-                        <option value="10">Octubre</option>
-                        <option value="11">Noviembre</option>
-                        <option value="12">Diciembre</option>
+                        {[...Array(12)].map((_, i) => (
+                            <option key={i + 1} value={i + 1}>
+                                {new Date(0, i).toLocaleString("es-ES", { month: "long" })}
+                            </option>
+                        ))}
                     </Form.Select>
                 </Col>
             </Row>
@@ -109,8 +123,11 @@ const WorkoutHistory = () => {
                         value={selectedYear}
                         onChange={(e) => setSelectedYear(e.target.value)}
                     >
-                        <option value="2025">2025</option>
-                        <option value="2024">2024</option>
+                        {[2025, 2024, 2023].map((year) => (
+                            <option key={year} value={year}>
+                                {year}
+                            </option>
+                        ))}
                     </Form.Select>
                 </Col>
             </Row>
@@ -137,7 +154,7 @@ const WorkoutHistory = () => {
                                         </Badge>
                                         <Card.Title className="fw-bold fs-4">{log.workout?.title || "Sin título"}</Card.Title>
                                         <Card.Text className="text-muted">
-                                            📅 Completado el: {log.created_at ? new Date(log.created_at).toLocaleDateString() : "Fecha no disponible"}
+                                            📅 Completado el: {log.completed_at ? new Date(log.completed_at).toLocaleDateString() : "Fecha no disponible"}
                                         </Card.Text>
                                         <Card.Text className="text-start">
                                             <strong>🔥 Calentamiento:</strong> {log.workout?.warmup || "N/A"}<br />

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -27,6 +26,7 @@ class WorkoutLogController extends Controller
             [
                 'score' => $request->score,
                 'notes' => $request->notes,
+                'completed_at' => now(),
             ]
         );
 
@@ -51,7 +51,7 @@ class WorkoutLogController extends Controller
     {
         $completed = WorkoutLog::where('user_id', Auth::id())
             ->with('workout.category') // Cargar la categoría correctamente
-            ->orderBy('created_at', 'desc')
+            ->orderBy('completed_at', 'desc')
             ->get();
 
         return response()->json($completed);
@@ -82,6 +82,7 @@ class WorkoutLogController extends Controller
         return response()->json(['message' => 'WOD eliminado con éxito']);
     }
 
+    // 📌 Obtener el plan semanal del usuario
     public function getWeeklyPlan()
     {
         $user_id = Auth::id();
@@ -90,21 +91,17 @@ class WorkoutLogController extends Controller
         return response()->json($weeklyPlan);
     }
 
+    // 📌 Obtener los WODs completados por mes y año
     public function completedWorkoutsByMonth(Request $request)
     {
-        // Obtener el usuario autenticado
-        $user = Auth::user();
-
-        // Validar que el mes y el año sean proporcionados
         $request->validate([
             'month' => 'required|numeric|between:1,12',
-            'year' => 'required|numeric|min:2020', // Asegúrate de que el año sea válido
+            'year' => 'required|numeric|min:2020',
         ]);
 
-        // Filtrar los WODs completados por el mes y año especificados
-        $workouts = WorkoutLog::where('user_id', $user->id)
-            ->whereMonth('created_at', $request->month)
-            ->whereYear('created_at', $request->year)
+        $workouts = WorkoutLog::where('user_id', Auth::id())
+            ->whereMonth('completed_at', $request->month)
+            ->whereYear('completed_at', $request->year)
             ->with('workout.category') // Cargar la relación 'category' con 'workout'
             ->get();
 

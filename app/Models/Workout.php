@@ -45,6 +45,8 @@ class Workout extends Model
     }
     public function users()
     {
-        return $this->belongsToMany(User::class, 'user_workout');
+        return $this->belongsToMany(User::class, 'user_workout')
+            ->withPivot('completed_at', 'score', 'notes')
+            ->withTimestamps();
     }
 }

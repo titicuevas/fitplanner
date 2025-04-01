@@ -12,9 +12,12 @@ return new class extends Migration
     public function up(): void
     {  Schema::create('user_workout', function (Blueprint $table) {
         $table->id();
-        $table->foreignId('user_id')->constrained()->onDelete('cascade');  // Referencia a la tabla 'users'
-        $table->foreignId('workout_id')->constrained()->onDelete('cascade');  // Referencia a la tabla 'workouts'
-        $table->timestamps();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('workout_id')->constrained()->onDelete('cascade');
+            $table->timestamp('completed_at')->nullable(); // Fecha de finalización
+            $table->integer('score')->nullable(); // Puntuación del WOD
+            $table->text('notes')->nullable(); // Notas adicionales
+            $table->timestamps();
     });
     }
 

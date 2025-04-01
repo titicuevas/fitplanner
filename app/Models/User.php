@@ -57,4 +57,14 @@ class User extends Authenticatable
     return $this->belongsToMany(Workout::class, 'user_workout', 'user_id', 'workout_id');
 
 }
+public function completedWorkouts()
+{
+    return $this->belongsToMany(Workout::class, 'user_workout')
+        ->withPivot('completed_at', 'score', 'notes') // Incluye los campos adicionales de la tabla intermedia
+        ->withTimestamps();
+}
+public function workoutLogs()
+{
+    return $this->hasMany(WorkoutLog::class);
+}
 }

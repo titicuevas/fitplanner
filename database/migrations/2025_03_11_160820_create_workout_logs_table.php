@@ -15,6 +15,7 @@ return new class extends Migration
         $table->id();
         $table->foreignId('user_id')->constrained()->onDelete('cascade');
         $table->foreignId('workout_id')->constrained()->onDelete('cascade');
+        $table->timestamp('completed_at')->nullable();
         $table->integer('score')->nullable(); // Tiempo, repeticiones, peso levantado, etc.
         $table->text('notes')->nullable(); // Notas adicionales
         $table->timestamps();
