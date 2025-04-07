@@ -1,0 +1,41 @@
+@import 'sweetalert2/dist/sweetalert2.min.css';
+
+.swal2-popup {
+    @apply font-sans;
+}
+
+.swal2-title {
+    @apply text-gray-900 text-xl font-bold !important;
+}
+
+.swal2-html-container {
+    @apply text-gray-600 !important;
+}
+
+.swal2-confirm {
+    @apply focus:ring-2 focus:ring-offset-2 !important;
+}
+
+.swal2-cancel {
+    @apply focus:ring-2 focus:ring-offset-2 !important;
+}
+
+.swal2-popup.swal2-toast {
+    @apply bg-white shadow-lg !important;
+}
+
+.dark .swal2-popup {
+    @apply bg-gray-800 !important;
+}
+
+.dark .swal2-title {
+    @apply text-white !important;
+}
+
+.dark .swal2-html-container {
+    @apply text-gray-300 !important;
+}
+
+.dark .swal2-content {
+    @apply text-gray-300 !important;
+} 

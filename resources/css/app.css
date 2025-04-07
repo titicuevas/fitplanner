@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @import './theme-toggle.css';
+@import './sweetalert.css';
 
 [type='text']:focus,
 [type='email']:focus,

@@ -1,38 +1,27 @@
-import { useState, useEffect } from 'react';
-import { Link } from '@inertiajs/react';
+import { useState } from 'react';
+import { Link, useForm } from '@inertiajs/react';
 import { usePage } from '@inertiajs/react';
-import "@theme-toggles/react/css/Expand.css"
-import { Expand } from "@theme-toggles/react"
 
-export default function AuthenticatedLayout({ children, header }) {
-    const { auth } = usePage().props || {};
+export default function AuthenticatedLayout({ children }) {
+    const { auth } = usePage().props;
     const user = auth?.user || {};
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
-    const [darkMode, setDarkMode] = useState(() => {
-        if (typeof window !== 'undefined') {
-            return localStorage.getItem('darkMode') === 'true';
-        }
-        return false;
-    });
 
-    useEffect(() => {
-        if (darkMode) {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('darkMode', 'true');
-        } else {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('darkMode', 'false');
-        }
-    }, [darkMode]);
+    const { post } = useForm();
+
+    const handleLogout = (e) => {
+        e.preventDefault();
+        post(route('logout'));
+    };
 
     return (
-        <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
-            <nav className={`border-b ${darkMode ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'}`}>
+        <div className="min-h-screen bg-gray-100">
+            <nav className="fixed top-0 left-0 right-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-sm">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 justify-between">
                         <div className="flex">
                             <div className="flex shrink-0 items-center">
-                                <Link href="/">
+                                <Link href="dashboard">
                                     <div className="relative h-12 w-12 overflow-hidden rounded-full bg-white/10 p-1 ring-2 ring-white/20 backdrop-blur-sm transition-all duration-300 hover:ring-red-500/50">
                                         <img 
                                             src="/images/fitplanner-logo.png" 
@@ -48,12 +37,8 @@ export default function AuthenticatedLayout({ children, header }) {
                                     href={route('dashboard')}
                                     className={`inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium transition duration-150 ease-in-out ${
                                         route().current('dashboard')
-                                            ? darkMode 
-                                                ? 'border-red-500 text-white' 
-                                                : 'border-red-500 text-gray-900'
-                                            : darkMode
-                                                ? 'border-transparent text-gray-300 hover:border-gray-300 hover:text-white'
-                                                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                                            ? 'border-red-500 text-gray-900'
+                                            : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                                     }`}
                                 >
                                     Inicio
@@ -63,12 +48,8 @@ export default function AuthenticatedLayout({ children, header }) {
                                     href={route('workout.history')}
                                     className={`inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium transition duration-150 ease-in-out ${
                                         route().current('workout.history')
-                                            ? darkMode 
-                                                ? 'border-red-500 text-white' 
-                                                : 'border-red-500 text-gray-900'
-                                            : darkMode
-                                                ? 'border-transparent text-gray-300 hover:border-gray-300 hover:text-white'
-                                                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                                            ? 'border-red-500 text-gray-900'
+                                            : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                                     }`}
                                 >
                                     📜 Historial
@@ -78,12 +59,8 @@ export default function AuthenticatedLayout({ children, header }) {
                                     href={route('weekly.plan')}
                                     className={`inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium transition duration-150 ease-in-out ${
                                         route().current('weekly.plan')
-                                            ? darkMode 
-                                                ? 'border-red-500 text-white' 
-                                                : 'border-red-500 text-gray-900'
-                                            : darkMode
-                                                ? 'border-transparent text-gray-300 hover:border-gray-300 hover:text-white'
-                                                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                                            ? 'border-red-500 text-gray-900'
+                                            : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                                     }`}
                                 >
                                     📅 Planificación
@@ -92,20 +69,11 @@ export default function AuthenticatedLayout({ children, header }) {
                         </div>
 
                         <div className="flex items-center gap-4">
-                            <div className="flex items-center">
-                                <Expand
-                                    duration={750}
-                                    className="text-2xl"
-                                    toggled={darkMode}
-                                    toggle={setDarkMode}
-                                />
-                            </div>
-
                             <div className="relative ms-3">
                                 <div className="flex items-center">
                                     <button
                                         type="button"
-                                        className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                                        className="flex rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                                         onClick={() => setShowingNavigationDropdown(!showingNavigationDropdown)}
                                     >
                                         <span className="sr-only">Abrir menú de usuario</span>
@@ -118,21 +86,21 @@ export default function AuthenticatedLayout({ children, header }) {
                                 </div>
 
                                 {showingNavigationDropdown && (
-                                    <div className={`absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md ${darkMode ? 'bg-gray-800' : 'bg-white'} py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none`}>
+                                    <div className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                         <Link
                                             href={route('profile.edit')}
-                                            className={`block px-4 py-2 text-sm ${darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'}`}
+                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         >
                                             Perfil
                                         </Link>
-                                        <Link
-                                            method="post"
-                                            href={route('logout')}
-                                            as="button"
-                                            className={`block w-full px-4 py-2 text-left text-sm ${darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'}`}
-                                        >
-                                            Cerrar Sesión
-                                        </Link>
+                                        <form onSubmit={handleLogout}>
+                                            <button
+                                                type="submit"
+                                                className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
+                                            >
+                                                Cerrar Sesión
+                                            </button>
+                                        </form>
                                     </div>
                                 )}
                             </div>
@@ -141,15 +109,11 @@ export default function AuthenticatedLayout({ children, header }) {
                 </div>
             </nav>
 
-            {header && (
-                <header className={`shadow ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
-                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                        {header}
-                    </div>
-                </header>
-            )}
-
-            <main>{children}</main>
+            <div className="pt-16">
+                <main className="min-h-screen bg-gray-100">
+                    {children}
+                </main>
+            </div>
         </div>
     );
 }
