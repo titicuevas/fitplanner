@@ -1,3 +1,43 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import './theme-toggle.css';
+
+[type='text']:focus,
+[type='email']:focus,
+[type='url']:focus,
+[type='password']:focus,
+[type='number']:focus,
+[type='date']:focus,
+[type='datetime-local']:focus,
+[type='month']:focus,
+[type='search']:focus,
+[type='tel']:focus,
+[type='time']:focus,
+[type='week']:focus,
+[multiple]:focus,
+textarea:focus,
+select:focus {
+    box-shadow: none !important;
+    border-color: rgb(239 68 68 / 0.6) !important;
+}
+
+/* Dark mode styles */
+.dark [type='text']:focus,
+.dark [type='email']:focus,
+.dark [type='url']:focus,
+.dark [type='password']:focus,
+.dark [type='number']:focus,
+.dark [type='date']:focus,
+.dark [type='datetime-local']:focus,
+.dark [type='month']:focus,
+.dark [type='search']:focus,
+.dark [type='tel']:focus,
+.dark [type='time']:focus,
+.dark [type='week']:focus,
+.dark [multiple]:focus,
+.dark textarea:focus,
+.dark select:focus {
+    border-color: rgb(239 68 68 / 0.8) !important;
+}
