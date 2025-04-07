@@ -1,33 +1,56 @@
-# Usa la imagen oficial de PHP
-FROM php:8.0-fpm
+FROM php:8.2-fpm
 
-# Instalar las dependencias necesarias para Laravel
-RUN apt-get update && apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev zip git
+# Argumentos para usuario no root
+ARG user=fitplanner
+ARG uid=1000
+
+# Instalar dependencias del sistema
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    nodejs \
+    npm \
+    sqlite3
+
+# Limpiar cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Instalar extensiones PHP
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg
-RUN docker-php-ext-install gd pdo pdo_mysql
+RUN docker-php-ext-install mbstring exif pcntl bcmath gd pdo_sqlite
 
-# Instalar Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Obtener Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Establecer el directorio de trabajo
+# Crear usuario del sistema
+RUN useradd -G www-data,root -u $uid -d /home/$user $user
+RUN mkdir -p /home/$user/.composer && \
+    chown -R $user:$user /home/$user
+
+# Establecer directorio de trabajo
 WORKDIR /var/www
 
-# Copiar el archivo composer.json y composer.lock
-COPY composer.json composer.lock ./
-
-# Instalar dependencias de Laravel
-RUN composer install
-
-# Copiar todo el proyecto en el contenedor
+# Copiar archivos de la aplicación
 COPY . .
 
-# Establecer los permisos para Laravel
-RUN chown -R www-data:www-data /var/www
-RUN chmod -R 775 /var/www/storage
+# Establecer permisos
+RUN chown -R $user:$user /var/www
+RUN chmod -R 755 /var/www/storage
 
-# Exponer el puerto en el que Laravel estará escuchando
+# Crear directorio para SQLite y dar permisos
+RUN mkdir -p /var/www/database && \
+    touch /var/www/database/database.sqlite && \
+    chown -R $user:$user /var/www/database && \
+    chmod -R 755 /var/www/database
+
+# Cambiar al usuario no root
+USER $user
+
+# Exponer puerto 9000
 EXPOSE 9000
 
 CMD ["php-fpm"]

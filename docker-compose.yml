@@ -1,35 +1,45 @@
 version: '3.8'
 
 services:
-  backend:
-    image: php:8.0-fpm
-    container_name: Fitplanner-app
+  # Servicio de PHP
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        user: fitplanner
+        uid: 1000
+    container_name: fitplanner-app
     restart: unless-stopped
-    networks:
-      - app-network
     working_dir: /var/www
     volumes:
-      - .:/var/www   # Esto asegura que el código de Laravel se monte en el contenedor
-    environment:
-      - DB_CONNECTION=sqlite
-      - DB_DATABASE=/var/www/database/database.sqlite  # Ruta al archivo SQLite dentro del contenedor
-    depends_on:
-    
-      - frontend
+      - ./:/var/www
+    ports:
+      - "8000:80"
+    networks:
+      - fitplanner-network
 
-  frontend:
-    image: node:16
-    container_name: react-app
+  # Servicio de Nginx
+  nginx:
+    image: nginx:alpine
+    container_name: fitplanner-nginx
+    restart: unless-stopped
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx:/etc/nginx/conf.d
+    networks:
+      - fitplanner-network
+
+  # Servicio de Redis
+  redis:
+    image: redis:alpine
+    container_name: fitplanner-redis
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "6379:6379"
     networks:
-      - app-network
-    working_dir: /var/www
-    volumes:
-      - .:/var/www   # Volumen para compartir el código con el backend
-    command: npm start
+      - fitplanner-network
 
 networks:
-  app-network:
+  fitplanner-network:
     driver: bridge
