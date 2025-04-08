@@ -15,13 +15,13 @@ RUN apt-get update && apt-get install -y \
     unzip \
     nodejs \
     npm \
-    sqlite3
+    default-mysql-client
 
 # Limpiar cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Instalar extensiones PHP
-RUN docker-php-ext-install mbstring exif pcntl bcmath gd pdo_sqlite
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
 # Obtener Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -40,12 +40,6 @@ COPY . .
 # Establecer permisos
 RUN chown -R $user:$user /var/www
 RUN chmod -R 755 /var/www/storage
-
-# Crear directorio para SQLite y dar permisos
-RUN mkdir -p /var/www/database && \
-    touch /var/www/database/database.sqlite && \
-    chown -R $user:$user /var/www/database && \
-    chmod -R 755 /var/www/database
 
 # Cambiar al usuario no root
 USER $user
