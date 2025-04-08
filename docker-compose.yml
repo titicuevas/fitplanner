@@ -15,7 +15,13 @@ services:
     volumes:
       - ./:/var/www
     ports:
-      - "8000:80"
+      - "${PORT:-8000}:80"
+    environment:
+      - DB_HOST=${MYSQLHOST}
+      - DB_PORT=${MYSQLPORT}
+      - DB_DATABASE=${MYSQLDATABASE}
+      - DB_USERNAME=${MYSQLUSER}
+      - DB_PASSWORD=${MYSQLPASSWORD}
     networks:
       - fitplanner-network
 
