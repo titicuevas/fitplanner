@@ -1,1 +1,1 @@
-web: echo "Conectando a MySQL en: $MYSQLHOST:$MYSQLPORT como $MYSQLUSER" && php artisan migrate:fresh --force --seed && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan serve --host=0.0.0.0 --port=$PORT 
+web: php artisan migrate:fresh --force --seed && php artisan serve --host=0.0.0.0 --port=$PORT 
