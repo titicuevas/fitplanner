@@ -3,9 +3,9 @@ builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan view:cache && php-fpm"
-healthcheckPath = "/"
-healthcheckTimeout = 100
+startCommand = "php artisan serve --host=0.0.0.0 --port=$PORT"
+healthcheckPath = "/login"
+healthcheckTimeout = 200
 restartPolicyType = "ON_FAILURE"
 numReplicas = 1
 

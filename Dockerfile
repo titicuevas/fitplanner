@@ -1,4 +1,4 @@
-FROM php:8.2-fpm
+FROM php:8.2-cli
 
 # Argumentos para usuario no root
 ARG user=fitplanner
@@ -37,6 +37,15 @@ WORKDIR /var/www
 # Copiar archivos de la aplicación
 COPY . .
 
+# Instalar dependencias
+RUN composer install --no-dev --optimize-autoloader
+RUN npm install && npm run build
+
+# Configurar Laravel
+RUN php artisan config:cache && \
+    php artisan route:cache && \
+    php artisan view:cache
+
 # Establecer permisos
 RUN chown -R $user:$user /var/www
 RUN chmod -R 755 /var/www/storage
@@ -44,7 +53,8 @@ RUN chmod -R 755 /var/www/storage
 # Cambiar al usuario no root
 USER $user
 
-# Exponer puerto 9000
-EXPOSE 9000
+# Exponer el puerto que usará la aplicación
+EXPOSE ${PORT:-8000}
 
-CMD ["php-fpm"]
+# Comando para iniciar la aplicación
+CMD php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
