@@ -37,15 +37,6 @@ WORKDIR /var/www
 # Copiar archivos de la aplicación
 COPY . .
 
-# Instalar dependencias
-RUN composer install --no-dev --optimize-autoloader
-RUN npm install && npm run build
-
-# Configurar Laravel
-RUN php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache
-
 # Establecer permisos
 RUN chown -R $user:$user /var/www
 RUN chmod -R 755 /var/www/storage
@@ -53,8 +44,12 @@ RUN chmod -R 755 /var/www/storage
 # Cambiar al usuario no root
 USER $user
 
-# Exponer el puerto que usará la aplicación
-EXPOSE ${PORT:-8000}
+# Instalar dependencias
+RUN composer install --no-dev --optimize-autoloader
+RUN npm install && npm run build
+
+# Exponer el puerto 8000
+EXPOSE 8000
 
 # Comando para iniciar la aplicación
-CMD php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
