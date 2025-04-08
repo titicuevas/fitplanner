@@ -12,16 +12,16 @@ services:
     container_name: fitplanner-app
     restart: unless-stopped
     working_dir: /var/www
-    volumes:
-      - ./:/var/www
     ports:
-      - "${PORT:-8000}:80"
+      - "${PORT:-8000}:${PORT:-8000}"
     environment:
       - DB_HOST=${MYSQLHOST}
       - DB_PORT=${MYSQLPORT}
       - DB_DATABASE=${MYSQLDATABASE}
       - DB_USERNAME=${MYSQLUSER}
       - DB_PASSWORD=${MYSQLPASSWORD}
+    volumes:
+      - ./:/var/www
     networks:
       - fitplanner-network
 
@@ -41,8 +41,6 @@ services:
     image: redis:alpine
     container_name: fitplanner-redis
     restart: unless-stopped
-    ports:
-      - "6379:6379"
     networks:
       - fitplanner-network
 
