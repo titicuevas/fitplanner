@@ -1,1 +1,1 @@
-web: php artisan migrate:fresh --force --seed && php artisan serve --host=0.0.0.0 --port=$PORT 
+web: echo "Railway detection: RAILWAY_STATIC_URL=${RAILWAY_STATIC_URL}" && echo "Using MySQL: ${MYSQLHOST}:${MYSQLPORT}" && php artisan config:clear && php artisan migrate:fresh --force --seed && php artisan serve --host=0.0.0.0 --port=$PORT 
