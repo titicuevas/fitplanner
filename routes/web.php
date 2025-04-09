@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\WorkoutLogController;
 use App\Http\Controllers\WeeklyPlanController;
 use App\Http\Controllers\ObjectiveController;
+use PDO;
+use PDOException;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -103,5 +105,37 @@ Route::middleware('auth')->get('/objective', function () {
 
 // Ruta para guardar el objetivo del usuario
 Route::middleware('auth')->post('/objective', [ObjectiveController::class, 'store'])->name('objective.store');
+
+// Reemplazar la ruta principal en Railway para evitar usar la base de datos
+if (getenv('RAILWAY_STATIC_URL')) {
+    // La ruta principal será simple para evitar errores
+    Route::get('/', function () {
+        return '<h1>FitPlanner</h1><p>Aplicación desplegada en Railway.</p><p><a href="/railway-test">Ver diagnóstico</a></p>';
+    });
+    
+    // Ruta de diagnóstico
+    Route::get('/railway-test', function () {
+        // Probar conexión a MySQL
+        $mysql_connection = 'No probado';
+        try {
+            $dsn = 'mysql:host='.getenv('MYSQLHOST').';port='.getenv('MYSQLPORT').';dbname='.getenv('MYSQLDATABASE');
+            $pdo = new PDO($dsn, getenv('MYSQLUSER'), getenv('MYSQLPASSWORD'));
+            $mysql_connection = 'Conexión exitosa a MySQL';
+        } catch (PDOException $e) {
+            $mysql_connection = 'Error de conexión: ' . $e->getMessage();
+        }
+
+        return [
+            'status' => 'ok',
+            'message' => 'La aplicación está funcionando en Railway',
+            'railway_url' => getenv('RAILWAY_STATIC_URL'),
+            'mysql_host' => getenv('MYSQLHOST'),
+            'mysql_port' => getenv('MYSQLPORT'),
+            'mysql_database' => getenv('MYSQLDATABASE'),
+            'mysql_user' => getenv('MYSQLUSER'),
+            'mysql_connection' => $mysql_connection
+        ];
+    });
+}
 
 require __DIR__.'/auth.php';
