@@ -10,8 +10,6 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\WorkoutLogController;
 use App\Http\Controllers\WeeklyPlanController;
 use App\Http\Controllers\ObjectiveController;
-use PDO;
-use PDOException;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -119,9 +117,9 @@ if (getenv('RAILWAY_STATIC_URL')) {
         $mysql_connection = 'No probado';
         try {
             $dsn = 'mysql:host='.getenv('MYSQLHOST').';port='.getenv('MYSQLPORT').';dbname='.getenv('MYSQLDATABASE');
-            $pdo = new PDO($dsn, getenv('MYSQLUSER'), getenv('MYSQLPASSWORD'));
+            $pdo = new \PDO($dsn, getenv('MYSQLUSER'), getenv('MYSQLPASSWORD'));
             $mysql_connection = 'Conexión exitosa a MySQL';
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             $mysql_connection = 'Error de conexión: ' . $e->getMessage();
         }
 
