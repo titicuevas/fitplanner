@@ -108,10 +108,33 @@ Route::middleware('auth')->post('/objective', [ObjectiveController::class, 'stor
 if (getenv('RAILWAY_STATIC_URL')) {
     // La ruta principal será simple para evitar errores
     Route::get('/', function () {
-        return '<h1>FitPlanner</h1><p>Aplicación desplegada en Railway.</p><p><a href="/railway-test">Ver diagnóstico</a></p>';
+        return '<!DOCTYPE html>
+        <html>
+        <head>
+            <title>FitPlanner</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+                h1 { color: #4CAF50; }
+                .container { max-width: 800px; margin: 0 auto; }
+                .button { display: inline-block; background: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; }
+                .info { background: #f4f4f4; padding: 20px; border-radius: 5px; margin: 20px 0; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>FitPlanner</h1>
+                <p>Aplicación de gestión de entrenamientos CrossFit desplegada en Railway.</p>
+                <div class="info">
+                    <p>Entorno: '.getenv('APP_ENV').'</p>
+                    <p>URL: '.getenv('RAILWAY_STATIC_URL').'</p>
+                </div>
+                <p><a href="/railway-test" class="button">Ver diagnóstico</a></p>
+            </div>
+        </body>
+        </html>';
     });
     
-    // Ruta de diagnóstico
+    // Ruta de diagnóstico para mostrar información de conexión
     Route::get('/railway-test', function () {
         // Probar conexión a MySQL
         $mysql_connection = 'No probado';
@@ -123,16 +146,52 @@ if (getenv('RAILWAY_STATIC_URL')) {
             $mysql_connection = 'Error de conexión: ' . $e->getMessage();
         }
 
-        return [
-            'status' => 'ok',
-            'message' => 'La aplicación está funcionando en Railway',
-            'railway_url' => getenv('RAILWAY_STATIC_URL'),
-            'mysql_host' => getenv('MYSQLHOST'),
-            'mysql_port' => getenv('MYSQLPORT'),
-            'mysql_database' => getenv('MYSQLDATABASE'),
-            'mysql_user' => getenv('MYSQLUSER'),
-            'mysql_connection' => $mysql_connection
-        ];
+        // Devolver información detallada
+        return '<!DOCTYPE html>
+        <html>
+        <head>
+            <title>Diagnóstico - FitPlanner</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+                h1 { color: #4CAF50; }
+                .container { max-width: 800px; margin: 0 auto; }
+                .info { background: #f4f4f4; padding: 20px; border-radius: 5px; margin: 20px 0; }
+                .success { color: green; }
+                .error { color: red; }
+                table { width: 100%; border-collapse: collapse; }
+                table, th, td { border: 1px solid #ddd; padding: 8px; }
+                th { background-color: #f2f2f2; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Diagnóstico de FitPlanner</h1>
+                <div class="info">
+                    <h2>Información general</h2>
+                    <table>
+                        <tr><th>Configuración</th><th>Valor</th></tr>
+                        <tr><td>Estado</td><td class="success">OK</td></tr>
+                        <tr><td>URL de Railway</td><td>'.getenv('RAILWAY_STATIC_URL').'</td></tr>
+                        <tr><td>Entorno</td><td>'.getenv('APP_ENV').'</td></tr>
+                        <tr><td>Debug</td><td>'.getenv('APP_DEBUG').'</td></tr>
+                    </table>
+                </div>
+                <div class="info">
+                    <h2>Conexión a la base de datos</h2>
+                    <table>
+                        <tr><th>Configuración</th><th>Valor</th></tr>
+                        <tr><td>Estado</td><td>'.($mysql_connection == 'Conexión exitosa a MySQL' ? '<span class="success">Conectado</span>' : '<span class="error">Error</span>').'</td></tr>
+                        <tr><td>Host</td><td>'.getenv('MYSQLHOST').'</td></tr>
+                        <tr><td>Puerto</td><td>'.getenv('MYSQLPORT').'</td></tr>
+                        <tr><td>Base de datos</td><td>'.getenv('MYSQLDATABASE').'</td></tr>
+                        <tr><td>Usuario</td><td>'.getenv('MYSQLUSER').'</td></tr>
+                        <tr><td>Mensaje</td><td>'.$mysql_connection.'</td></tr>
+                    </table>
+                </div>
+                <p><a href="/" style="color: #4CAF50;">← Volver</a></p>
+            </div>
+        </body>
+        </html>';
     });
 }
 
