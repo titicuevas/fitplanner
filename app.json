@@ -1,0 +1,35 @@
+{
+  "name": "FitPlanner",
+  "description": "Aplicación web para planificación de entrenamientos CrossFit",
+  "keywords": [
+    "php",
+    "laravel",
+    "mysql",
+    "fitplanner"
+  ],
+  "addons": [
+    "jawsdb"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    },
+    {
+      "url": "heroku/php"
+    }
+  ],
+  "env": {
+    "APP_NAME": {
+      "value": "FitPlanner"
+    },
+    "APP_ENV": {
+      "value": "production"
+    },
+    "APP_DEBUG": {
+      "value": "false"
+    },
+    "DB_CONNECTION": {
+      "value": "mysql"
+    }
+  }
+} 
