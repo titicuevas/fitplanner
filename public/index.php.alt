@@ -1,0 +1,57 @@
+<?php
+// Archivo índice alternativo para Railway
+// Esta página se muestra cuando el framework Laravel tiene problemas para iniciar
+
+// Mostrar la página principal
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FitPlanner</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8f9fa; }
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        header { text-align: center; margin-bottom: 40px; }
+        h1 { color: #4CAF50; font-size: 2.5em; margin-bottom: 10px; }
+        .subtitle { color: #666; font-size: 1.2em; margin-bottom: 30px; }
+        .card { background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .button { display: inline-block; background: #4CAF50; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold; }
+        .button:hover { background: #45a049; }
+        .status { margin-top: 30px; background: #e9f7ef; padding: 15px; border-radius: 5px; border-left: 5px solid #4CAF50; }
+        .footer { text-align: center; margin-top: 50px; color: #666; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>FitPlanner</h1>
+            <p class="subtitle">Aplicación de planificación de entrenamientos CrossFit</p>
+        </header>
+        
+        <div class="card">
+            <h2>Bienvenido a FitPlanner</h2>
+            <p>FitPlanner es una aplicación para gestionar tus entrenamientos CrossFit, permitiéndote:</p>
+            <ul>
+                <li>Planificar tus WODs semanales</li>
+                <li>Registrar tus resultados</li>
+                <li>Seguir tu progreso</li>
+                <li>Establecer objetivos personales</li>
+            </ul>
+            <p>Esta es una versión de demostración desplegada en Railway.</p>
+            
+            <div class="status">
+                <p><strong>Estado:</strong> Aplicación en mantenimiento</p>
+                <p>Estamos trabajando para resolver algunos problemas técnicos. Disculpa las molestias.</p>
+            </div>
+            
+            <p style="margin-top: 20px;">
+                <a href="/diagnose.php" class="button">Ver diagnóstico del sistema</a>
+            </p>
+        </div>
+        
+        <div class="footer">
+            &copy; <?php echo date('Y'); ?> FitPlanner - Desarrollado con Laravel y React
+        </div>
+    </div>
+</body>
+</html> 
