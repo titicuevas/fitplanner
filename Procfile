@@ -1,1 +1,1 @@
-web: php artisan config:clear && php artisan migrate:fresh --force --seed && php artisan serve --host=0.0.0.0 --port=$PORT 
+web: php -r "echo 'Waiting for MySQL...'; for(\$i=0;\$i<30;\$i++) { if(@fsockopen(getenv('MYSQLHOST'), getenv('MYSQLPORT'))) { echo 'Connected!'; break; } echo '.'; sleep(1); } echo PHP_EOL;" && php artisan config:clear && php artisan migrate:fresh --force --seed && php artisan serve --host=0.0.0.0 --port=$PORT 
