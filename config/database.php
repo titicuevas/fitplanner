@@ -9,13 +9,7 @@ return [
         'mysql' => [
             'driver' => 'mysql',
             'url' => null,
-            'read' => [
-                'host' => 'centerbeam.proxy.rlwy.net',
-            ],
-            'write' => [
-                'host' => 'centerbeam.proxy.rlwy.net',
-            ],
-            'sticky' => true,
+            'host' => 'centerbeam.proxy.rlwy.net',
             'port' => 45325,
             'database' => 'railway',
             'username' => 'root',
@@ -27,13 +21,12 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => [
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::ATTR_TIMEOUT => 60,
                 PDO::ATTR_PERSISTENT => false,
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::MYSQL_ATTR_PROTOCOL => 'TCP',
                 PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci",
-            ],
+            ]) : [],
         ],
     ],
 
