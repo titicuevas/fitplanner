@@ -4,17 +4,11 @@ builder = "nixpacks"
 [deploy]
 startCommand = "php artisan serve --host=0.0.0.0 --port=${PORT}"
 healthcheckPath = "/"
-healthcheckTimeout = 100
 
 [deploy.env]
 APP_ENV = "production"
 APP_DEBUG = "false"
 PHP_MEMORY_LIMIT = "512M"
-NIXPACKS_BUILD_CMD = "composer install && npm ci && npm run build"
-
-# Variables de entorno para MySQL
-DB_CONNECTION = "mysql"
-MYSQL_ATTR_SSL_CA = "/etc/ssl/certs/ca-certificates.crt"
 
 [deploy.buildCommand]
 steps = [
@@ -23,8 +17,8 @@ steps = [
     "npm ci",
     "npm run build",
     "php artisan key:generate --force",
+    "php artisan storage:link",
     "php artisan config:cache",
     "php artisan route:cache",
-    "php artisan view:cache",
-    "php artisan migrate:fresh --force --seed"
+    "php artisan view:cache"
 ] 
