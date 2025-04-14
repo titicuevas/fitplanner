@@ -7,12 +7,12 @@ if (getenv('RAILWAY_STATIC_URL')) {
     $defaultConnection = 'mysql';
     $mysqlConfig = [
         'driver' => 'mysql',
-        'url' => env('DATABASE_URL'),
-        'host' => getenv('MYSQLHOST'),
-        'port' => getenv('MYSQLPORT'),
-        'database' => getenv('MYSQLDATABASE'),
-        'username' => getenv('MYSQLUSER'),
-        'password' => getenv('MYSQLPASSWORD'),
+        'url' => env('MYSQL_URL'),
+        'host' => env('MYSQLHOST', '127.0.0.1'),
+        'port' => env('MYSQLPORT', '3306'),
+        'database' => env('MYSQL_DATABASE', 'railway'),
+        'username' => env('MYSQLUSER', 'root'),
+        'password' => env('MYSQL_ROOT_PASSWORD'),
         'unix_socket' => env('DB_SOCKET', ''),
         'charset' => 'utf8mb4',
         'collation' => 'utf8mb4_unicode_ci',
@@ -21,9 +21,8 @@ if (getenv('RAILWAY_STATIC_URL')) {
         'strict' => true,
         'engine' => null,
         'options' => extension_loaded('pdo_mysql') ? array_filter([
-            PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             PDO::ATTR_TIMEOUT => 60,
-            PDO::ATTR_PERSISTENT => true,
+            PDO::ATTR_PERSISTENT => false,
         ]) : [],
     ];
 } else {
