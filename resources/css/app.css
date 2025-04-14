@@ -1,9 +1,9 @@
+@import './theme-toggle.css';
+@import './sweetalert.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import './theme-toggle.css';
-@import './sweetalert.css';
 
 [type='text']:focus,
 [type='email']:focus,
