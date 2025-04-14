@@ -3,10 +3,11 @@ builder = "nixpacks"
 
 [deploy]
 startCommand = "php artisan serve --host=0.0.0.0 --port=${PORT}"
-restartPolicyType = "on_failure"
-restartPolicyMaxRetries = 3
+healthcheckPath = "/"
+healthcheckTimeout = 100
 
 [deploy.env]
 APP_ENV = "production"
 APP_DEBUG = "false"
-PHP_MEMORY_LIMIT = "512M" 
+PHP_MEMORY_LIMIT = "512M"
+NIXPACKS_BUILD_CMD = "composer install && npm ci && npm run build" 

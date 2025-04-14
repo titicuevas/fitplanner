@@ -7,14 +7,15 @@ nixPkgs = [
 
 [phases.install]
 cmds = [
+    "cp .env.example .env",
     "composer install",
     "npm ci",
-    "npm run build",
-    "php artisan key:generate --force"
+    "npm run build"
 ]
 
 [phases.build]
 cmds = [
+    "php artisan key:generate --force",
     "php artisan config:cache",
     "php artisan route:cache"
 ]
