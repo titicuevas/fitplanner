@@ -21,31 +21,31 @@ export default function Welcome({ auth }) {
                             </div>
                         </div>
                         <div className="flex items-center gap-4">
-                            {auth.user ? (
-                                <Link
-                                    href={route('dashboard')}
+                                {auth.user ? (
+                                    <Link
+                                        href={route('dashboard')}
                                     className="group relative inline-flex items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-red-600 to-red-500 px-6 py-3 font-semibold text-white shadow-lg transition-all duration-200 hover:shadow-red-500/25 focus:outline-none focus:ring-2 focus:ring-red-500/50"
-                                >
+                                    >
                                     <span className="relative">Dashboard</span>
-                                </Link>
-                            ) : (
-                                <>
-                                    <Link
-                                        href={route('login')}
+                                    </Link>
+                                ) : (
+                                    <>
+                                        <Link
+                                            href={route('login')}
                                         className="group relative inline-flex items-center justify-center overflow-hidden rounded-lg border-2 border-white/50 px-6 py-3 font-semibold text-white transition-all duration-300 hover:border-red-500 hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/50"
-                                    >
+                                        >
                                         <span className="relative">Iniciar Sesión</span>
-                                    </Link>
-                                    <Link
-                                        href={route('register')}
+                                        </Link>
+                                        <Link
+                                            href={route('register')}
                                         className="group relative inline-flex items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-red-600 to-red-500 px-6 py-3 font-semibold text-white shadow-lg transition-all duration-200 hover:shadow-red-500/25 focus:outline-none focus:ring-2 focus:ring-red-500/50"
-                                    >
+                                        >
                                         <span className="relative">Registrarse</span>
-                                    </Link>
-                                </>
-                            )}
+                                        </Link>
+                                    </>
+                                )}
                         </div>
-                    </nav>
+                            </nav>
 
                     {/* Contenido principal */}
                     <main className="mx-auto max-w-7xl px-6 py-24 text-center">
@@ -63,21 +63,21 @@ export default function Welcome({ auth }) {
                                 <div className="mb-4 mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-red-600 to-red-500 shadow-lg">
                                     <svg className="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                    </svg>
-                                </div>
+                                        </svg>
+                                    </div>
                                 <h3 className="mb-3 text-xl font-semibold text-white">Seguimiento de Progreso</h3>
                                 <p className="text-gray-100">Registra tus WODs y visualiza tu evolución en tiempo real</p>
-                            </div>
+                                    </div>
 
                             <div className="rounded-xl bg-gray-800/50 p-8 shadow-lg backdrop-blur-sm transition-all duration-300 hover:bg-gray-800/70 hover:shadow-red-500/10">
                                 <div className="mb-4 mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-red-600 to-red-500 shadow-lg">
                                     <svg className="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
+                                        </svg>
+                                    </div>
                                 <h3 className="mb-3 text-xl font-semibold text-white">Programación Semanal</h3>
                                 <p className="text-gray-100">Planifica tus entrenamientos y mantén una rutina consistente</p>
-                            </div>
+                                    </div>
 
                             <div className="rounded-xl bg-gray-800/50 p-8 shadow-lg backdrop-blur-sm transition-all duration-300 hover:bg-gray-800/70 hover:shadow-red-500/10">
                                 <div className="mb-4 mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-red-600 to-red-500 shadow-lg">
@@ -106,7 +106,7 @@ export default function Welcome({ auth }) {
                                 </Link>
                             </div>
                         )}
-                    </main>
+                        </main>
                 </div>
             </div>
         </>
