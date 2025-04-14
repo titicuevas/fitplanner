@@ -3,18 +3,17 @@
 use Illuminate\Support\Str;
 
 return [
-    'default' => 'mysql',
+    'default' => env('DB_CONNECTION', 'mysql'),
 
     'connections' => [
         'mysql' => [
             'driver' => 'mysql',
-            'url' => 'mysql://root:IkQYQPUwzOflKzSgBSAccJWvRyTpEcdT@centerbeam.proxy.rlwy.net:45325/railway',
-            'host' => null,
-            'port' => null,
-            'database' => null,
-            'username' => null,
-            'password' => null,
-            'unix_socket' => '',
+            'host' => env('DB_HOST', 'centerbeam.proxy.rlwy.net'),
+            'port' => env('DB_PORT', 45325),
+            'database' => env('DB_DATABASE', 'railway'),
+            'username' => env('DB_USERNAME', 'root'),
+            'password' => env('DB_PASSWORD', ''),
+            'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',
@@ -22,9 +21,13 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::ATTR_TIMEOUT => 60,
-                PDO::ATTR_PERSISTENT => false,
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+                \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+                \PDO::ATTR_EMULATE_PREPARES => true,
+                \PDO::ATTR_PERSISTENT => false,
+                \PDO::MYSQL_ATTR_SSL_CA => false,
+                \PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
+                \PDO::MYSQL_ATTR_FOUND_ROWS => true,
             ]) : [],
         ],
     ],
