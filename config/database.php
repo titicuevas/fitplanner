@@ -3,17 +3,17 @@
 use Illuminate\Support\Str;
 
 return [
-    'default' => env('DB_CONNECTION', 'mysql'),
+    'default' => 'mysql',
 
     'connections' => [
         'mysql' => [
             'driver' => 'mysql',
-            'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST', 'switchyard.proxy.rlwy.net'),
-            'port' => env('DB_PORT', '24578'),
-            'database' => env('DB_DATABASE', 'railway'),
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD', ''),
+            'url' => null,
+            'host' => 'switchyard.proxy.rlwy.net',
+            'port' => '24578',
+            'database' => 'railway',
+            'username' => 'root',
+            'password' => 'oLExMxuXEJRLEhQVQDJUwnnSBOiACWvJ',
             'unix_socket' => null,
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
@@ -21,11 +21,19 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
+            'modes' => [
+                'ONLY_FULL_GROUP_BY',
+                'STRICT_TRANS_TABLES',
+                'NO_ZERO_IN_DATE',
+                'NO_ZERO_DATE',
+                'ERROR_FOR_DIVISION_BY_ZERO',
+                'NO_ENGINE_SUBSTITUTION',
+            ],
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::ATTR_TIMEOUT => 60,
                 PDO::ATTR_PERSISTENT => false,
                 PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
-                PDO::MYSQL_ATTR_SSL_CA => false,
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             ]) : [],
         ],
     ],
