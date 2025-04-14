@@ -1,11 +1,16 @@
 [phases.setup]
+aptPkgs = [
+    "default-mysql-client",
+    "php-mysql",
+    "php-pdo",
+    "php-xml",
+    "php-curl"
+]
+
 nixPkgs = [
-    "nodejs",
+    "nodejs-18_x",
     "php82",
-    "php82Packages.composer",
-    "php82Packages.pdo_mysql",
-    "php82Packages.mysql",
-    "openssl"
+    "php82Packages.composer"
 ]
 
 [phases.install]
