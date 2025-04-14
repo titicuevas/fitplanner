@@ -104,6 +104,18 @@ Route::middleware('auth')->get('/objective', function () {
 // Ruta para guardar el objetivo del usuario
 Route::middleware('auth')->post('/objective', [ObjectiveController::class, 'store'])->name('objective.store');
 
+// Ruta temporal para debug
+Route::get('/debug-db', function () {
+    return [
+        'MYSQLHOST' => env('MYSQLHOST'),
+        'MYSQLPORT' => env('MYSQLPORT'),
+        'MYSQL_DATABASE' => env('MYSQL_DATABASE'),
+        'MYSQLUSER' => env('MYSQLUSER'),
+        'MYSQL_ROOT_PASSWORD' => env('MYSQL_ROOT_PASSWORD'),
+        'database' => config('database.connections.mysql')
+    ];
+});
+
 // Reemplazar la ruta principal en Railway para evitar usar la base de datos
 if (getenv('RAILWAY_STATIC_URL')) {
     // La ruta principal será simple para evitar errores
