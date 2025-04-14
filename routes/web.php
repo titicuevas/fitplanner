@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\WorkoutLogController;
 use App\Http\Controllers\WeeklyPlanController;
 use App\Http\Controllers\ObjectiveController;
+use Database\ConnectionTest;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -114,6 +115,11 @@ Route::get('/debug-db', function () {
         'MYSQL_ROOT_PASSWORD' => env('MYSQL_ROOT_PASSWORD'),
         'database' => config('database.connections.mysql')
     ];
+});
+
+Route::get('/test-db', function () {
+    $result = ConnectionTest::test();
+    return response()->json($result);
 });
 
 // Reemplazar la ruta principal en Railway para evitar usar la base de datos
