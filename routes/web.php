@@ -128,18 +128,27 @@ Route::get('/test-postgres', function () {
         // Intentar una consulta simple
         $result = DB::select('SELECT 1');
         
-        // Intentar contar usuarios
-        $users = DB::table('users')->count();
+        // Obtener lista de tablas
+        $tables = DB::select("
+            SELECT table_name 
+            FROM information_schema.tables 
+            WHERE table_schema = 'public'
+        ");
         
-        // Intentar contar workouts
-        $workouts = DB::table('workouts')->count();
+        // Intentar contar registros en cada tabla
+        $counts = [];
+        foreach ($tables as $table) {
+            $tableName = $table->table_name;
+            $count = DB::table($tableName)->count();
+            $counts[$tableName] = $count;
+        }
         
         return [
             'connection' => 'Conexión exitosa a PostgreSQL',
             'database' => config('database.connections.pgsql.database'),
             'host' => config('database.connections.pgsql.host'),
-            'users_count' => $users,
-            'workouts_count' => $workouts
+            'tables' => $tables,
+            'record_counts' => $counts
         ];
     } catch (\Exception $e) {
         return [
