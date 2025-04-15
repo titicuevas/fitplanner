@@ -194,62 +194,43 @@ if (getenv('RAILWAY_STATIC_URL')) {
     
     // Ruta de diagnóstico para mostrar información de conexión
     Route::get('/railway-test', function () {
-        // Probar conexión a MySQL
-        $mysql_connection = 'No probado';
+        $diagnostico = [
+            'estado' => 'OK',
+            'conexion_db' => null,
+            'error' => null,
+            'tablas' => [],
+            'config' => [
+                'host' => env('DB_HOST'),
+                'port' => env('DB_PORT'),
+                'database' => env('DB_DATABASE'),
+                'username' => env('DB_USERNAME')
+            ]
+        ];
+
         try {
-            $dsn = 'mysql:host='.getenv('MYSQLHOST').';port='.getenv('MYSQLPORT').';dbname='.getenv('MYSQLDATABASE');
-            $pdo = new \PDO($dsn, getenv('MYSQLUSER'), getenv('MYSQLPASSWORD'));
-            $mysql_connection = 'Conexión exitosa a MySQL';
-        } catch (\PDOException $e) {
-            $mysql_connection = 'Error de conexión: ' . $e->getMessage();
+            // Probar conexión
+            $result = DB::select('SELECT 1');
+            $diagnostico['conexion_db'] = 'Conexión exitosa a PostgreSQL';
+            
+            // Obtener tablas
+            $tables = DB::select("
+                SELECT table_name 
+                FROM information_schema.tables 
+                WHERE table_schema = 'public'
+            ");
+            
+            foreach ($tables as $table) {
+                $count = DB::table($table->table_name)->count();
+                $diagnostico['tablas'][$table->table_name] = $count;
+            }
+        } catch (\Exception $e) {
+            $diagnostico['estado'] = 'Error';
+            $diagnostico['error'] = $e->getMessage();
         }
 
-        // Devolver información detallada
-        return '<!DOCTYPE html>
-        <html>
-        <head>
-            <title>Diagnóstico - FitPlanner</title>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
-                h1 { color: #4CAF50; }
-                .container { max-width: 800px; margin: 0 auto; }
-                .info { background: #f4f4f4; padding: 20px; border-radius: 5px; margin: 20px 0; }
-                .success { color: green; }
-                .error { color: red; }
-                table { width: 100%; border-collapse: collapse; }
-                table, th, td { border: 1px solid #ddd; padding: 8px; }
-                th { background-color: #f2f2f2; }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <h1>Diagnóstico de FitPlanner</h1>
-                <div class="info">
-                    <h2>Información general</h2>
-                    <table>
-                        <tr><th>Configuración</th><th>Valor</th></tr>
-                        <tr><td>Estado</td><td class="success">OK</td></tr>
-                        <tr><td>URL de Railway</td><td>'.getenv('RAILWAY_STATIC_URL').'</td></tr>
-                        <tr><td>Entorno</td><td>'.getenv('APP_ENV').'</td></tr>
-                        <tr><td>Debug</td><td>'.getenv('APP_DEBUG').'</td></tr>
-                    </table>
-                </div>
-                <div class="info">
-                    <h2>Conexión a la base de datos</h2>
-                    <table>
-                        <tr><th>Configuración</th><th>Valor</th></tr>
-                        <tr><td>Estado</td><td>'.($mysql_connection == 'Conexión exitosa a MySQL' ? '<span class="success">Conectado</span>' : '<span class="error">Error</span>').'</td></tr>
-                        <tr><td>Host</td><td>'.getenv('MYSQLHOST').'</td></tr>
-                        <tr><td>Puerto</td><td>'.getenv('MYSQLPORT').'</td></tr>
-                        <tr><td>Base de datos</td><td>'.getenv('MYSQLDATABASE').'</td></tr>
-                        <tr><td>Usuario</td><td>'.getenv('MYSQLUSER').'</td></tr>
-                        <tr><td>Mensaje</td><td>'.$mysql_connection.'</td></tr>
-                    </table>
-                </div>
-                <p><a href="/" style="color: #4CAF50;">← Volver</a></p>
-            </div>
-        </body>
-        </html>';
+        return Inertia::render('Diagnostico', [
+            'diagnostico' => $diagnostico
+        ]);
     });
 }
 
