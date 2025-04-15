@@ -52,7 +52,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env('APP_URL', 'https://fitplanner.up.railway.app'),
 
     /*
     |--------------------------------------------------------------------------
@@ -122,5 +122,9 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+
+    'asset_url' => env('ASSET_URL', 'https://fitplanner.up.railway.app'),
+
+    'force_https' => env('FORCE_HTTPS', true),
 
 ];
