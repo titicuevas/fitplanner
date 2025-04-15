@@ -83,7 +83,7 @@ const WorkoutHistory = () => {
             title: 'Error',
             text: message,
             confirmButtonColor: '#EF4444',
-        });
+            });
     };
 
     const handleDelete = async (id, title) => {
@@ -137,9 +137,9 @@ const WorkoutHistory = () => {
                                 <h2 className="text-3xl font-bold tracking-tight text-gray-900">
                                     📜 Historial de Workouts
                                 </h2>
-                                
-                                {/* Mensajes de éxito o error */}
-                                {message && (
+
+            {/* Mensajes de éxito o error */}
+            {message && (
                                     <div className={`mt-4 rounded-md p-4 ${
                                         message.type === 'success' 
                                             ? 'bg-green-50 text-green-700' 
@@ -152,55 +152,55 @@ const WorkoutHistory = () => {
                                 {/* Selectores de fecha */}
                                 <div className="mt-6 flex justify-center gap-4">
                                     <select
-                                        value={selectedMonth}
-                                        onChange={(e) => setSelectedMonth(e.target.value)}
+                        value={selectedMonth}
+                        onChange={(e) => setSelectedMonth(e.target.value)}
                                         className="rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-red-500 focus:outline-none focus:ring-red-500"
-                                    >
-                                        {[...Array(12)].map((_, i) => (
-                                            <option key={i + 1} value={i + 1}>
-                                                {new Date(0, i).toLocaleString("es-ES", { month: "long" })}
-                                            </option>
-                                        ))}
+                    >
+                        {[...Array(12)].map((_, i) => (
+                            <option key={i + 1} value={i + 1}>
+                                {new Date(0, i).toLocaleString("es-ES", { month: "long" })}
+                            </option>
+                        ))}
                                     </select>
 
                                     <select
-                                        value={selectedYear}
-                                        onChange={(e) => setSelectedYear(e.target.value)}
+                        value={selectedYear}
+                        onChange={(e) => setSelectedYear(e.target.value)}
                                         className="rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-red-500 focus:outline-none focus:ring-red-500"
-                                    >
-                                        {[2025, 2024, 2023].map((year) => (
-                                            <option key={year} value={year}>
-                                                {year}
-                                            </option>
-                                        ))}
+                    >
+                        {[2025, 2024, 2023].map((year) => (
+                            <option key={year} value={year}>
+                                {year}
+                            </option>
+                        ))}
                                     </select>
                                 </div>
                             </div>
 
                             {/* Contenido Principal */}
-                            {loading ? (
+            {loading ? (
                                 <div className="flex items-center justify-center py-12">
                                     <div className="h-8 w-8 animate-spin rounded-full border-4 border-red-500 border-t-transparent"></div>
                                     <span className="ml-3 text-gray-600">Cargando historial...</span>
-                                </div>
-                            ) : history.length === 0 ? (
+                </div>
+            ) : history.length === 0 ? (
                                 <div className="text-center py-12">
                                     <p className="text-gray-600">No has completado ningún WOD este mes. ¡Empieza a entrenar! 🏋️‍♂️</p>
                                 </div>
-                            ) : (
+            ) : (
                                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                                    {history.map((log) => {
-                                        const category = log.workout?.category?.name || "Sin categoría";
+                    {history.map((log) => {
+                        const category = log.workout?.category?.name || "Sin categoría";
                                         const categoryColor = categoryColors[category];
 
-                                        return (
+                        return (
                                             <div key={log.id} className="group relative overflow-hidden rounded-lg bg-white shadow-md transition-all duration-300 hover:shadow-lg">
                                                 <div className="p-6">
                                                     {/* Cabecera */}
                                                     <div className="mb-6">
                                                         <div className="flex items-center justify-between">
                                                             <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold text-white ${categoryColor}`}>
-                                                                {category}
+                                            {category}
                                                             </span>
                                                             <span className="text-sm text-gray-500">
                                                                 📅 {log.completed_at ? new Date(log.completed_at).toLocaleDateString() : "Fecha no disponible"}
@@ -239,7 +239,7 @@ const WorkoutHistory = () => {
                                                     {/* Notas y Puntuación Existentes */}
                                                     {(log.score || log.notes) && (
                                                         <div className="mt-6 space-y-3 rounded-lg bg-blue-50 p-4">
-                                                            {log.score && (
+                                        {log.score && (
                                                                 <div className="flex items-center gap-2">
                                                                     <span className="text-lg">⭐</span>
                                                                     <div>
@@ -247,8 +247,8 @@ const WorkoutHistory = () => {
                                                                         <span className="ml-2 text-blue-800">{log.score}/10</span>
                                                                     </div>
                                                                 </div>
-                                                            )}
-                                                            {log.notes && (
+                                        )}
+                                        {log.notes && (
                                                                 <div className="flex items-start gap-2">
                                                                     <span className="mt-1 text-lg">📝</span>
                                                                     <div>
@@ -269,9 +269,9 @@ const WorkoutHistory = () => {
                                                                         📝 Añadir Nota
                                                                     </label>
                                                                     <textarea
-                                                                        placeholder="Escribe una nota sobre tu entrenamiento"
-                                                                        value={notes[log.workout.id] || ""}
-                                                                        onChange={(e) => setNotes({ ...notes, [log.workout.id]: e.target.value })}
+                                                    placeholder="Escribe una nota sobre tu entrenamiento"
+                                                    value={notes[log.workout.id] || ""}
+                                                    onChange={(e) => setNotes({ ...notes, [log.workout.id]: e.target.value })}
                                                                         rows="2"
                                                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
                                                                     />
@@ -286,18 +286,18 @@ const WorkoutHistory = () => {
                                                                         onChange={(e) => setScores({ ...scores, [log.workout.id]: e.target.value })}
                                                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
                                                                     >
-                                                                        <option value="">Selecciona una puntuación</option>
-                                                                        {[...Array(10)].map((_, i) => (
-                                                                            <option key={i + 1} value={i + 1}>{i + 1}</option>
-                                                                        ))}
+                                                    <option value="">Selecciona una puntuación</option>
+                                                    {[...Array(10)].map((_, i) => (
+                                                        <option key={i + 1} value={i + 1}>{i + 1}</option>
+                                                    ))}
                                                                     </select>
                                                                 </div>
                                                             </div>
 
                                                             <div className="mt-4 flex flex-col gap-3">
                                                                 <button
-                                                                    onClick={() => handleSave(log.workout.id)}
-                                                                    disabled={saving}
+                                                onClick={() => handleSave(log.workout.id)}
+                                                disabled={saving}
                                                                     className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-600 to-green-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:from-green-500 hover:to-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 hover:shadow-md"
                                                                 >
                                                                     {saving ? (
@@ -332,8 +332,8 @@ const WorkoutHistory = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                        );
-                                    })}
+                        );
+                    })}
                                 </div>
                             )}
                         </div>
