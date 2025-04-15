@@ -8,22 +8,15 @@ return [
     'connections' => [
         'pgsql' => [
             'driver' => 'pgsql',
-            'host' => env('DB_HOST', 'trolley.proxy.rlwy.net'),
-            'port' => env('DB_PORT', '38752'),
+            'host' => env('DB_HOST', 'centerbeam.proxy.rlwy.net'),
+            'port' => env('DB_PORT', '20216'),
             'database' => env('DB_DATABASE', 'railway'),
             'username' => env('DB_USERNAME', 'postgres'),
-            'password' => env('DB_PASSWORD'),
+            'password' => env('DB_PASSWORD', 'pFQGkYrWOTLkffffyFAoBjioiiToAVcz'),
             'charset' => 'utf8',
             'prefix' => '',
-            'prefix_indexes' => true,
             'schema' => 'public',
             'sslmode' => 'require',
-            'options' => [
-                PDO::ATTR_PERSISTENT => false,
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_EMULATE_PREPARES => false,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            ],
         ],
     ],
 
