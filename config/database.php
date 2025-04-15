@@ -8,12 +8,12 @@ return [
     'connections' => [
         'pgsql' => [
             'driver' => 'pgsql',
-            'url' => env('DATABASE_PUBLIC_URL', 'postgresql://postgres:VJuMClZMsqEICFkGLmamGEGoOwfLEeuD@trolley.proxy.rlwy.net:38752/railway'),
-            'host' => env('RAILWAY_TCP_PROXY_DOMAIN', 'trolley.proxy.rlwy.net'),
-            'port' => env('RAILWAY_TCP_PROXY_PORT', '38752'),
+            'url' => env('DATABASE_PUBLIC_URL'),
+            'host' => env('RAILWAY_TCP_PROXY_DOMAIN'),
+            'port' => env('RAILWAY_TCP_PROXY_PORT'),
             'database' => env('POSTGRES_DB', 'railway'),
-            'username' => 'postgres',
-            'password' => env('POSTGRES_PASSWORD', 'VJuMClZMsqEICFkGLmamGEGoOwfLEeuD'),
+            'username' => env('POSTGRES_USER', 'postgres'),
+            'password' => env('POSTGRES_PASSWORD'),
             'charset' => 'utf8',
             'prefix' => '',
             'prefix_indexes' => true,
