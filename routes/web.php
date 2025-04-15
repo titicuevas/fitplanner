@@ -11,6 +11,7 @@ use App\Http\Controllers\WorkoutLogController;
 use App\Http\Controllers\WeeklyPlanController;
 use App\Http\Controllers\ObjectiveController;
 use Database\ConnectionTest;
+use Illuminate\Support\Facades\DB;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -120,6 +121,36 @@ Route::get('/debug-db', function () {
 Route::get('/test-db', function () {
     $result = ConnectionTest::test();
     return response()->json($result);
+});
+
+Route::get('/test-postgres', function () {
+    try {
+        // Intentar una consulta simple
+        $result = DB::select('SELECT 1');
+        
+        // Intentar contar usuarios
+        $users = DB::table('users')->count();
+        
+        // Intentar contar workouts
+        $workouts = DB::table('workouts')->count();
+        
+        return [
+            'connection' => 'Conexión exitosa a PostgreSQL',
+            'database' => config('database.connections.pgsql.database'),
+            'host' => config('database.connections.pgsql.host'),
+            'users_count' => $users,
+            'workouts_count' => $workouts
+        ];
+    } catch (\Exception $e) {
+        return [
+            'error' => 'Error de conexión: ' . $e->getMessage(),
+            'config' => [
+                'database' => config('database.connections.pgsql.database'),
+                'host' => config('database.connections.pgsql.host'),
+                'port' => config('database.connections.pgsql.port')
+            ]
+        ];
+    }
 });
 
 // Reemplazar la ruta principal en Railway para evitar usar la base de datos
