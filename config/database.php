@@ -8,9 +8,9 @@ return [
     'connections' => [
         'pgsql' => [
             'driver' => 'pgsql',
-            'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST'),
-            'port' => env('DB_PORT'),
+            'url' => env('DATABASE_URL', ''),
+            'host' => env('DB_HOST', 'monorail.proxy.rlwy.net'),
+            'port' => env('DB_PORT', '45325'),
             'database' => env('DB_DATABASE', 'railway'),
             'username' => env('DB_USERNAME', 'postgres'),
             'password' => env('DB_PASSWORD'),
@@ -22,7 +22,6 @@ return [
             'options' => [
                 PDO::ATTR_PERSISTENT => false,
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_TIMEOUT => 300,
             ],
         ],
     ],
