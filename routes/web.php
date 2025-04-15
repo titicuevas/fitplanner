@@ -162,76 +162,44 @@ Route::get('/test-postgres', function () {
     }
 });
 
-// Reemplazar la ruta principal en Railway para evitar usar la base de datos
-if (getenv('RAILWAY_STATIC_URL')) {
-    // La ruta principal será simple para evitar errores
-    Route::get('/', function () {
-        return '<!DOCTYPE html>
-        <html>
-        <head>
-            <title>FitPlanner</title>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
-                h1 { color: #4CAF50; }
-                .container { max-width: 800px; margin: 0 auto; }
-                .button { display: inline-block; background: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; }
-                .info { background: #f4f4f4; padding: 20px; border-radius: 5px; margin: 20px 0; }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <h1>FitPlanner</h1>
-                <p>Aplicación de gestión de entrenamientos CrossFit desplegada en Railway.</p>
-                <div class="info">
-                    <p>Entorno: '.getenv('APP_ENV').'</p>
-                    <p>URL: '.getenv('RAILWAY_STATIC_URL').'</p>
-                </div>
-                <p><a href="/railway-test" class="button">Ver diagnóstico</a></p>
-            </div>
-        </body>
-        </html>';
-    });
-    
-    // Ruta de diagnóstico para mostrar información de conexión
-    Route::get('/railway-test', function () {
-        $diagnostico = [
-            'estado' => 'OK',
-            'conexion_db' => null,
-            'error' => null,
-            'tablas' => [],
+// Ruta de diagnóstico para mostrar información de conexión
+Route::get('/railway-test', function () {
+    try {
+        // Intentar una consulta simple
+        $result = DB::select('SELECT 1');
+        
+        // Obtener lista de tablas
+        $tables = DB::select("
+            SELECT table_name 
+            FROM information_schema.tables 
+            WHERE table_schema = 'public'
+        ");
+        
+        // Intentar contar registros en cada tabla
+        $counts = [];
+        foreach ($tables as $table) {
+            $tableName = $table->table_name;
+            $count = DB::table($tableName)->count();
+            $counts[$tableName] = $count;
+        }
+        
+        return [
+            'connection' => 'Conexión exitosa a PostgreSQL',
+            'database' => config('database.connections.pgsql.database'),
+            'host' => config('database.connections.pgsql.host'),
+            'tables' => $tables,
+            'record_counts' => $counts
+        ];
+    } catch (\Exception $e) {
+        return [
+            'error' => 'Error de conexión: ' . $e->getMessage(),
             'config' => [
-                'host' => env('DB_HOST'),
-                'port' => env('DB_PORT'),
-                'database' => env('DB_DATABASE'),
-                'username' => env('DB_USERNAME')
+                'database' => config('database.connections.pgsql.database'),
+                'host' => config('database.connections.pgsql.host'),
+                'port' => config('database.connections.pgsql.port')
             ]
         ];
-
-        try {
-            // Probar conexión
-            $result = DB::select('SELECT 1');
-            $diagnostico['conexion_db'] = 'Conexión exitosa a PostgreSQL';
-            
-            // Obtener tablas
-            $tables = DB::select("
-                SELECT table_name 
-                FROM information_schema.tables 
-                WHERE table_schema = 'public'
-            ");
-            
-            foreach ($tables as $table) {
-                $count = DB::table($table->table_name)->count();
-                $diagnostico['tablas'][$table->table_name] = $count;
-            }
-        } catch (\Exception $e) {
-            $diagnostico['estado'] = 'Error';
-            $diagnostico['error'] = $e->getMessage();
-        }
-
-        return Inertia::render('Diagnostico', [
-            'diagnostico' => $diagnostico
-        ]);
-    });
-}
+    }
+});
 
 require __DIR__.'/auth.php';
