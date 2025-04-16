@@ -13,9 +13,9 @@ return new class extends Migration
             $table->date('birth_date')->nullable()->after('age');
         });
 
-        // Actualizar los datos existentes (opcional)
+        // Actualizar los datos existentes usando sintaxis PostgreSQL
         DB::table('users')->whereNotNull('age')->update([
-            'birth_date' => DB::raw('DATE_SUB(CURDATE(), INTERVAL age YEAR)')
+            'birth_date' => DB::raw("CURRENT_DATE - (age || ' years')::interval")
         ]);
 
         Schema::table('users', function (Blueprint $table) {
@@ -29,9 +29,9 @@ return new class extends Migration
             $table->integer('age')->nullable()->after('birth_date');
         });
 
-        // Revertir los datos (opcional)
+        // Revertir los datos usando sintaxis PostgreSQL
         DB::table('users')->whereNotNull('birth_date')->update([
-            'age' => DB::raw('TIMESTAMPDIFF(YEAR, birth_date, CURDATE())')
+            'age' => DB::raw("EXTRACT(YEAR FROM age(birth_date))")
         ]);
 
         Schema::table('users', function (Blueprint $table) {
