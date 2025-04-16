@@ -11,8 +11,55 @@ export default function Register() {
         password_confirmation: '',
     });
 
+    const validateForm = () => {
+        const validationErrors = {};
+
+        // Validación del nombre
+        if (!data.name) {
+            validationErrors.name = 'El nombre es requerido';
+        } else if (data.name.length > 255) {
+            validationErrors.name = 'El nombre no puede tener más de 255 caracteres';
+        }
+
+        // Validación del email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!data.email) {
+            validationErrors.email = 'El correo electrónico es requerido';
+        } else if (!emailRegex.test(data.email)) {
+            validationErrors.email = 'El correo electrónico no es válido';
+        } else if (data.email.length > 255) {
+            validationErrors.email = 'El correo electrónico no puede tener más de 255 caracteres';
+        }
+
+        // Validación de la contraseña
+        if (!data.password) {
+            validationErrors.password = 'La contraseña es requerida';
+        } else if (data.password.length < 8) {
+            validationErrors.password = 'La contraseña debe tener al menos 8 caracteres';
+        }
+
+        // Validación de la confirmación de contraseña
+        if (!data.password_confirmation) {
+            validationErrors.password_confirmation = 'La confirmación de contraseña es requerida';
+        } else if (data.password !== data.password_confirmation) {
+            validationErrors.password_confirmation = 'Las contraseñas no coinciden';
+        }
+
+        return validationErrors;
+    };
+
     const submit = (e) => {
         e.preventDefault();
+
+        const validationErrors = validateForm();
+        if (Object.keys(validationErrors).length > 0) {
+            e.preventDefault();
+            // Mostrar errores de validación
+            Object.keys(validationErrors).forEach(field => {
+                setData(field, data[field]); // Esto activará la visualización de errores
+            });
+            return;
+        }
 
         post(route('register'), {
             onFinish: () => reset('password', 'password_confirmation'),
