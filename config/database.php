@@ -9,8 +9,8 @@ return [
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => null,
-            'host' => env('DB_HOST', 'centerbeam.proxy.rlwy.net'),
-            'port' => env('DB_PORT', '20216'),
+            'host' => env('DB_HOST', 'trolley.proxy.rlwy.net'),
+            'port' => env('DB_PORT', '25493'),
             'database' => env('DB_DATABASE', 'railway'),
             'username' => env('DB_USERNAME', 'postgres'),
             'password' => env('DB_PASSWORD'),
@@ -19,8 +19,8 @@ return [
             'schema' => 'public',
             'sslmode' => 'require',
             'options' => [
-                PDO::ATTR_EMULATE_PREPARES => true,
-                PDO::ATTR_TIMEOUT => 30,
+                PDO::ATTR_PERSISTENT => false,
+                PDO::ATTR_TIMEOUT => 60,
             ],
         ],
     ],
