@@ -242,13 +242,13 @@ const WeeklyPlan = () => {
                                                                             key={i + 1}
                                                                             onClick={() => setScore((i + 1).toString())}
                                                                             className={`
-                                                                                relative p-2 rounded-lg transition-all duration-200 
+                                                                                w-full h-10 rounded-lg transition-all duration-200 
                                                                                 ${parseInt(score) === i + 1
-                                                                                    ? 'bg-green-500 text-white ring-2 ring-green-500 ring-offset-2 transform scale-105'
-                                                                                    : 'bg-gray-50 hover:bg-gray-100 text-gray-700 hover:text-gray-900'
+                                                                                    ? 'bg-green-500 text-white ring-2 ring-green-500 ring-offset-2 transform scale-105 shadow-md'
+                                                                                    : 'bg-gray-50 hover:bg-gray-100 text-gray-700 hover:text-gray-900 hover:shadow-md'
                                                                                 }
-                                                                                font-semibold text-center
-                                                                                hover:shadow-md focus:outline-none
+                                                                                font-semibold text-center flex items-center justify-center
+                                                                                focus:outline-none active:scale-95
                                                                             `}
                                                                         >
                                                                             {i + 1}
