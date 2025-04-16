@@ -8,12 +8,12 @@ return [
     'connections' => [
         'pgsql' => [
             'driver' => 'pgsql',
-            'url' => null,
-            'host' => env('DB_HOST', 'trolley.proxy.rlwy.net'),
-            'port' => env('DB_PORT', '25493'),
+            'url' => env('DATABASE_URL', 'postgresql://postgres:pFQGkYrWOTLkffffyFAoBjioiiToAVcz@centerbeam.proxy.rlwy.net:20216/railway'),
+            'host' => env('DB_HOST', 'centerbeam.proxy.rlwy.net'),
+            'port' => env('DB_PORT', '20216'),
             'database' => env('DB_DATABASE', 'railway'),
             'username' => env('DB_USERNAME', 'postgres'),
-            'password' => env('DB_PASSWORD'),
+            'password' => env('DB_PASSWORD', 'pFQGkYrWOTLkffffyFAoBjioiiToAVcz'),
             'charset' => 'utf8',
             'prefix' => '',
             'schema' => 'public',
