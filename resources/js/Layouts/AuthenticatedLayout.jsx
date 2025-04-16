@@ -35,9 +35,9 @@ export default function AuthenticatedLayout({ children }) {
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <Link
                                     href={route('dashboard')}
-                                    className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition duration-150 ease-in-out ${
+                                    className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 no-underline ${
                                         route().current('dashboard')
-                                            ? 'bg-red-50 text-red-600 font-semibold'
+                                            ? 'bg-red-50 text-red-600 font-semibold shadow-sm'
                                             : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
                                     }`}
                                 >
@@ -46,9 +46,9 @@ export default function AuthenticatedLayout({ children }) {
 
                                 <Link
                                     href={route('workout.history')}
-                                    className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition duration-150 ease-in-out ${
+                                    className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 no-underline ${
                                         route().current('workout.history')
-                                            ? 'bg-red-50 text-red-600 font-semibold'
+                                            ? 'bg-red-50 text-red-600 font-semibold shadow-sm'
                                             : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
                                     }`}
                                 >
@@ -57,9 +57,9 @@ export default function AuthenticatedLayout({ children }) {
 
                                 <Link
                                     href={route('weekly.plan')}
-                                    className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition duration-150 ease-in-out ${
+                                    className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 no-underline ${
                                         route().current('weekly.plan')
-                                            ? 'bg-red-50 text-red-600 font-semibold'
+                                            ? 'bg-red-50 text-red-600 font-semibold shadow-sm'
                                             : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
                                     }`}
                                 >
