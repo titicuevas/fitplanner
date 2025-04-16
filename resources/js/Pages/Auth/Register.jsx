@@ -1,6 +1,7 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { InputLabel, TextInput } from '@/Components/Forms/InputLabel';
-import { InputError } from '@/Components/Forms/InputError';
+import InputLabel from '@/Components/InputLabel';
+import TextInput from '@/Components/TextInput';
+import InputError from '@/Components/InputError';
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
