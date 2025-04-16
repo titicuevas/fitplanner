@@ -134,14 +134,14 @@ const WeeklyPlan = () => {
                                 const workout = dailyPlan[0]?.workout;
 
                                 return (
-                                    <div key={index} className="bg-white rounded-lg shadow-sm overflow-hidden">
+                                    <div key={index} className="bg-white rounded-lg shadow-sm overflow-hidden flex flex-col h-full">
                                         {/* Cabecera del día */}
                                         <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
                                             <h3 className="text-base font-semibold text-gray-900 text-center">{day}</h3>
                                         </div>
 
                                         {dailyPlan.length > 0 ? (
-                                            <div className="p-4">
+                                            <div className="p-4 flex flex-col flex-grow">
                                                 {/* Header con RX */}
                                                 <div className="flex items-center mb-4">
                                                     <span className={`px-3 py-1 rounded-full text-xs font-medium text-white ${categoryColors[workout.category?.name] || "bg-gray-500"}`}>
@@ -149,43 +149,46 @@ const WeeklyPlan = () => {
                                                     </span>
                                                 </div>
 
-                                                {/* Nombre del WOD */}
-                                                <h3 className="text-lg font-semibold text-gray-900 mb-6">
-                                                    {workout.title}
-                                                </h3>
+                                                {/* Contenido principal */}
+                                                <div className="flex-grow">
+                                                    {/* Nombre del WOD */}
+                                                    <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                                                        {workout.title}
+                                                    </h3>
 
-                                                {/* Secciones con iconos */}
-                                                <div className="space-y-6">
-                                                    <div className="flex items-start gap-3">
-                                                        <span className="flex-shrink-0 text-orange-500">
-                                                            🔥
-                                                        </span>
-                                                        <div className="flex-1">
-                                                            <p className="text-sm text-gray-600">{workout.warmup}</p>
+                                                    {/* Secciones con iconos */}
+                                                    <div className="space-y-6">
+                                                        <div className="flex items-start gap-3">
+                                                            <span className="flex-shrink-0 text-orange-500">
+                                                                🔥
+                                                            </span>
+                                                            <div className="flex-1">
+                                                                <p className="text-sm text-gray-600">{workout.warmup}</p>
+                                                            </div>
                                                         </div>
-                                                    </div>
 
-                                                    <div className="flex items-start gap-3">
-                                                        <span className="flex-shrink-0 text-yellow-500">
-                                                            💪
-                                                        </span>
-                                                        <div className="flex-1">
-                                                            <p className="text-sm text-gray-600">{workout.movements}</p>
+                                                        <div className="flex items-start gap-3">
+                                                            <span className="flex-shrink-0 text-yellow-500">
+                                                                💪
+                                                            </span>
+                                                            <div className="flex-1">
+                                                                <p className="text-sm text-gray-600">{workout.movements}</p>
+                                                            </div>
                                                         </div>
-                                                    </div>
 
-                                                    <div className="flex items-start gap-3">
-                                                        <span className="flex-shrink-0 text-gray-400">
-                                                            🏋️
-                                                        </span>
-                                                        <div className="flex-1">
-                                                            <p className="text-sm text-gray-600">{workout.wod}</p>
+                                                        <div className="flex items-start gap-3">
+                                                            <span className="flex-shrink-0 text-gray-400">
+                                                                🏋️
+                                                            </span>
+                                                            <div className="flex-1">
+                                                                <p className="text-sm text-gray-600">{workout.wod}</p>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
 
-                                                {/* Botón de Seleccionar WOD */}
-                                                <div className="mt-6">
+                                                {/* Botón de Seleccionar WOD - Siempre al final */}
+                                                <div className="mt-6 pt-4 border-t border-gray-100">
                                                     <button
                                                         onClick={() => handleWodSelection(dailyPlan[0])}
                                                         disabled={dailyPlan[0].completed}
@@ -249,8 +252,10 @@ const WeeklyPlan = () => {
                                                 )}
                                             </div>
                                         ) : (
-                                            <div className="p-4 text-center text-gray-500 text-sm">
-                                                No hay WOD programado
+                                            <div className="p-4 flex flex-col flex-grow">
+                                                <div className="flex-grow text-center text-gray-500 text-sm">
+                                                    No hay WOD programado
+                                                </div>
                                             </div>
                                         )}
                                     </div>

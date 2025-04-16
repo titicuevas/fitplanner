@@ -1,7 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, Button } from "react-bootstrap";
 
 const WorkoutCard = ({ workout, onComplete, isCompleted }) => {
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleComplete = async () => {
+        setIsLoading(true);
+        try {
+            await onComplete(workout.id);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <Card className="shadow-lg workout-card text-center border-0">
             <Card.Body className="p-4">
@@ -19,10 +30,10 @@ const WorkoutCard = ({ workout, onComplete, isCompleted }) => {
                 <Button 
                     variant={isCompleted ? "success" : "outline-success"}
                     className="w-100 btn-lg fw-bold"
-                    onClick={() => onComplete(workout.id)}
-                    disabled={isCompleted}
+                    onClick={handleComplete}
+                    disabled={isCompleted || isLoading}
                 >
-                    {isCompleted ? "✅ WOD Completado" : "Registrar como Completado"}
+                    {isLoading ? "Procesando..." : (isCompleted ? "✅ WOD Completado" : "Registrar como Completado")}
                 </Button>
             </Card.Body>
         </Card>
