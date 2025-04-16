@@ -14,7 +14,8 @@ const categoryColors = {
 const WorkoutHistory = () => {
     const [history, setHistory] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
+    const [saving, setSaving] = useState({});
+    const [deleting, setDeleting] = useState({});
     const [notes, setNotes] = useState({});
     const [scores, setScores] = useState({});
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
@@ -47,7 +48,9 @@ const WorkoutHistory = () => {
     };
 
     const handleSave = async (workoutId) => {
-        setSaving(true);
+        if (saving[workoutId]) return;
+        
+        setSaving(prev => ({ ...prev, [workoutId]: true }));
         try {
             await axios.post(
                 "/api/workouts/complete",
@@ -73,7 +76,7 @@ const WorkoutHistory = () => {
             console.error("❌ Error al guardar:", error);
             showErrorMessage("Error al guardar la nota y puntuación.");
         } finally {
-            setSaving(false);
+            setSaving(prev => ({ ...prev, [workoutId]: false }));
         }
     };
 
@@ -87,6 +90,8 @@ const WorkoutHistory = () => {
     };
 
     const handleDelete = async (id, title) => {
+        if (deleting[id]) return;
+
         const result = await Swal.fire({
             title: '¿Estás seguro?',
             html: `
@@ -104,6 +109,7 @@ const WorkoutHistory = () => {
         });
 
         if (result.isConfirmed) {
+            setDeleting(prev => ({ ...prev, [id]: true }));
             try {
                 await axios.delete(`/api/workouts/completed/${id}`, { withCredentials: true });
                 
@@ -120,6 +126,8 @@ const WorkoutHistory = () => {
             } catch (error) {
                 console.error("❌ Error al eliminar el WOD:", error);
                 showErrorMessage("Error al eliminar el WOD.");
+            } finally {
+                setDeleting(prev => ({ ...prev, [id]: false }));
             }
         }
     };
@@ -297,16 +305,23 @@ const WorkoutHistory = () => {
                                                             <div className="mt-4 flex flex-col gap-3">
                                                                 <button
                                                 onClick={() => handleSave(log.workout.id)}
-                                                disabled={saving}
-                                                                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-600 to-green-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:from-green-500 hover:to-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 hover:shadow-md"
+                                                disabled={saving[log.workout.id]}
+                                                                    className={`
+                                                                        inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-300
+                                                                        ${saving[log.workout.id] 
+                                                                            ? 'bg-gray-400 cursor-not-allowed' 
+                                                                            : 'bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-600'
+                                                                        }
+                                                                        focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 hover:shadow-md
+                                                                    `}
                                                                 >
-                                                                    {saving ? (
+                                                                    {saving[log.workout.id] ? (
                                                                         <>
                                                                             <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24">
                                                                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                                                                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                                                                             </svg>
-                                                                            <span>Guardando cambios...</span>
+                                                                            <span>Guardando...</span>
                                                                         </>
                                                                     ) : (
                                                                         <>
@@ -320,12 +335,32 @@ const WorkoutHistory = () => {
 
                                                                 <button
                                                                     onClick={() => handleDelete(log.id, log.workout?.title || "Sin título")}
-                                                                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:from-red-500 hover:to-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 hover:shadow-md"
+                                                                    disabled={deleting[log.id]}
+                                                                    className={`
+                                                                        inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-300
+                                                                        ${deleting[log.id]
+                                                                            ? 'bg-gray-400 cursor-not-allowed'
+                                                                            : 'bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-600'
+                                                                        }
+                                                                        focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 hover:shadow-md
+                                                                    `}
                                                                 >
-                                                                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                                    </svg>
-                                                                    <span>Eliminar WOD</span>
+                                                                    {deleting[log.id] ? (
+                                                                        <>
+                                                                            <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24">
+                                                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                                                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                                                            </svg>
+                                                                            <span>Eliminando...</span>
+                                                                        </>
+                                                                    ) : (
+                                                                        <>
+                                                                            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                                            </svg>
+                                                                            <span>Eliminar WOD</span>
+                                                                        </>
+                                                                    )}
                                                                 </button>
                                                             </div>
                                                         </div>
