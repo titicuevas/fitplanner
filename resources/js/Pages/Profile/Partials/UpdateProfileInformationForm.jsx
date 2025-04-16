@@ -6,7 +6,7 @@ export default function UpdateProfileInformation({ status, className = '' }) {
     const user = usePage().props.auth.user;
     const [photoPreview, setPhotoPreview] = useState(null);
     const photoInput = useRef();
-    const { flash } = usePage().props;
+    const { flash } = usePage().props || {};
 
     const { data, setData, patch, errors, processing, recentlySuccessful, reset } = useForm({
         photo: null,
@@ -112,13 +112,13 @@ export default function UpdateProfileInformation({ status, className = '' }) {
                     {errors.photo && <p className="mt-2 text-sm text-red-600">{errors.photo}</p>}
                 </div>
 
-                {flash.message && (
+                {flash?.message && (
                     <div className="mt-4 p-4 rounded-md bg-green-50 text-green-700">
                         {flash.message}
                     </div>
                 )}
 
-                {flash.error && (
+                {flash?.error && (
                     <div className="mt-4 p-4 rounded-md bg-red-50 text-red-700">
                         {flash.error}
                     </div>
