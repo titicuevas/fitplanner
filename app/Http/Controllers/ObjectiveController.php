@@ -34,16 +34,16 @@ class ObjectiveController extends Controller
         $category_id = null;
 
         switch ($objective) {
-            case 'perder_peso':
+            case 'Pérdida de peso':
                 $category_id = 1;
                 break;
-            case 'ganar_musculo':
+            case 'Ganancia muscular':
                 $category_id = 2;
                 break;
-            case 'mejorar_rendimiento':
+            case 'Mejorar resistencia':
                 $category_id = 3;
                 break;
-            case 'mantener_forma':
+            case 'Mejorar flexibilidad':
                 $category_id = 4;
                 break;
         }
