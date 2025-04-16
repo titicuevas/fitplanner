@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -44,12 +45,22 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
-    protected function casts(): array
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
+
+    protected $appends = [
+        'profile_photo_url',
+    ];
+
+    public function getProfilePhotoUrlAttribute()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        if ($this->profile_photo_path) {
+            return Storage::disk('public')->url($this->profile_photo_path);
+        }
+
+        return null;
     }
 
     public function weeklyPlans()
@@ -57,18 +68,17 @@ class User extends Authenticatable
         return $this->hasMany(WeeklyPlan::class);
     }
     public function workouts()
-{
-    return $this->belongsToMany(Workout::class, 'user_workout', 'user_id', 'workout_id');
-
-}
-public function completedWorkouts()
-{
-    return $this->belongsToMany(Workout::class, 'user_workout')
-        ->withPivot('completed_at', 'score', 'notes') // Incluye los campos adicionales de la tabla intermedia
-        ->withTimestamps();
-}
-public function workoutLogs()
-{
-    return $this->hasMany(WorkoutLog::class);
-}
+    {
+        return $this->belongsToMany(Workout::class, 'user_workout', 'user_id', 'workout_id');
+    }
+    public function completedWorkouts()
+    {
+        return $this->belongsToMany(Workout::class, 'user_workout')
+            ->withPivot('completed_at', 'score', 'notes') // Incluye los campos adicionales de la tabla intermedia
+            ->withTimestamps();
+    }
+    public function workoutLogs()
+    {
+        return $this->hasMany(WorkoutLog::class);
+    }
 }

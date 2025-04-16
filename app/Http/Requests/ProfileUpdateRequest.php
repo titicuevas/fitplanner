@@ -25,6 +25,21 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            'photo' => ['nullable', 'image', 'max:1024'], // Máximo 1MB
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'name.required' => 'El nombre es obligatorio.',
+            'name.max' => 'El nombre no puede tener más de :max caracteres.',
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'El correo electrónico debe ser una dirección válida.',
+            'email.max' => 'El correo electrónico no puede tener más de :max caracteres.',
+            'email.unique' => 'Este correo electrónico ya está registrado.',
+            'photo.image' => 'El archivo debe ser una imagen.',
+            'photo.max' => 'La imagen no puede ser mayor de 1MB.',
         ];
     }
 }
