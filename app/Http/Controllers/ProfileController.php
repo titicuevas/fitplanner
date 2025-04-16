@@ -31,25 +31,26 @@ class ProfileController extends Controller
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $user = $request->user();
-        
-        $user->fill($request->validated());
 
         if ($request->hasFile('photo')) {
-            // Eliminar la foto anterior si existe
-            if ($user->profile_photo_path) {
-                Storage::disk('public')->delete($user->profile_photo_path);
+            try {
+                // Eliminar la foto anterior si existe
+                if ($user->profile_photo_path) {
+                    Storage::disk('public')->delete($user->profile_photo_path);
+                }
+
+                // Guardar la nueva foto
+                $path = $request->file('photo')->store('profile-photos', 'public');
+                
+                // Actualizar el path de la foto en la base de datos
+                $user->profile_photo_path = $path;
+                $user->save();
+
+                return Redirect::route('profile.edit')->with('message', 'Foto actualizada correctamente');
+            } catch (\Exception $e) {
+                return Redirect::route('profile.edit')->with('error', 'Error al actualizar la foto');
             }
-
-            // Guardar la nueva foto
-            $path = $request->file('photo')->store('profile-photos', 'public');
-            $user->profile_photo_path = $path;
         }
-
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
-        }
-
-        $user->save();
 
         return Redirect::route('profile.edit');
     }
