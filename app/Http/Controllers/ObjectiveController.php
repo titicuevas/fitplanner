@@ -21,6 +21,9 @@ class ObjectiveController extends Controller
         $user = Auth::user();
         $user->update($validated);
 
+        // Asignar entrenamientos según el objetivo
+        $this->assignWorkoutsToUser($user, $validated['objective']);
+
         return redirect()->route('dashboard')->with('success', '¡Perfil actualizado correctamente!');
     }
 
@@ -31,22 +34,31 @@ class ObjectiveController extends Controller
         $category_id = null;
 
         switch ($objective) {
-            case 'Pérdida de peso':
+            case 'perder_peso':
                 $category_id = 1;
                 break;
-            case 'Ganancia muscular':
+            case 'ganar_musculo':
                 $category_id = 2;
                 break;
-            case 'Mejorar resistencia':
+            case 'mejorar_rendimiento':
                 $category_id = 3;
                 break;
-            case 'Mejorar flexibilidad':
+            case 'mantener_forma':
                 $category_id = 4;
                 break;
         }
 
+        // Si no hay categoría válida, no asignar entrenamientos
+        if (!$category_id) {
+            return;
+        }
+
+        // Eliminar asignaciones anteriores si existen
+        $user->workouts()->detach();
+        WeeklyPlan::where('user_id', $user->id)->delete();
+
         // Obtener los WODs correspondientes al objetivo
-        $workouts = Workout::where('category_id', $category_id)->take(5)->get(); // Obtener los primeros 5 WODs
+        $workouts = Workout::where('category_id', $category_id)->take(5)->get();
 
         // Días de la semana para asignar los WODs
         $daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
@@ -60,8 +72,8 @@ class ObjectiveController extends Controller
             WeeklyPlan::create([
                 'user_id' => $user->id,
                 'workout_id' => $workout->id,
-                'assigned_day' => $daysOfWeek[$index % count($daysOfWeek)], // Asignar un día de la semana
-                'month' => now()->month, // Mes actual
+                'assigned_day' => $daysOfWeek[$index % count($daysOfWeek)],
+                'month' => now()->month,
             ]);
         }
     }
