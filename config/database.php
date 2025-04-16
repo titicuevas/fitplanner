@@ -8,20 +8,16 @@ return [
     'connections' => [
         'pgsql' => [
             'driver' => 'pgsql',
-            'url' => env('DATABASE_URL', 'postgresql://postgres:pFQGkYrWOTLkffffyFAoBjioiiToAVcz@centerbeam.proxy.rlwy.net:20216/railway'),
-            'host' => env('DB_HOST', 'centerbeam.proxy.rlwy.net'),
-            'port' => env('DB_PORT', '20216'),
-            'database' => env('DB_DATABASE', 'railway'),
-            'username' => env('DB_USERNAME', 'postgres'),
-            'password' => env('DB_PASSWORD', 'pFQGkYrWOTLkffffyFAoBjioiiToAVcz'),
+            'url' => env('DATABASE_URL'),
+            'host' => env('PGHOST', 'postgres.railway.internal'),
+            'port' => env('PGPORT', '5432'),
+            'database' => env('PGDATABASE', 'railway'),
+            'username' => env('PGUSER', 'postgres'),
+            'password' => env('PGPASSWORD', 'pFQGkYrWOTLkffffyFAoBjioiiToAVcz'),
             'charset' => 'utf8',
             'prefix' => '',
             'schema' => 'public',
             'sslmode' => 'require',
-            'options' => [
-                PDO::ATTR_PERSISTENT => false,
-                PDO::ATTR_TIMEOUT => 60,
-            ],
         ],
     ],
 
