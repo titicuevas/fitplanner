@@ -110,153 +110,98 @@ const WeeklyPlan = () => {
         <AuthenticatedLayout>
             <Head title="Plan Semanal - FitPlanner" />
 
-            <div className="py-6 bg-gray-50 min-h-screen">
+            <div className="min-h-screen bg-gray-50 py-6">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    {/* Días de la semana */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                    {/* Título y descripción */}
+                    <div className="mb-8 text-center">
+                        <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Tu Plan Semanal</h1>
+                        <p className="mt-2 text-sm text-gray-600 sm:text-base">Aquí puedes ver tus entrenamientos programados para la semana</p>
+                    </div>
+
+                    {/* Días de la semana - Vista móvil */}
+                    <div className="block space-y-4 lg:hidden">
+                        {daysOfWeek.map((day) => {
+                            const dayWorkouts = plan.filter(workout => workout.assigned_day === day);
+                            return (
+                                <div key={day} className="overflow-hidden rounded-lg bg-white shadow">
+                                    <div className="bg-gray-50 px-4 py-3">
+                                        <h3 className="text-base font-semibold text-gray-900">{day}</h3>
+                                    </div>
+                                    <div className="divide-y divide-gray-200 px-4">
+                                        {dayWorkouts.length > 0 ? (
+                                            dayWorkouts.map((workout) => (
+                                                <div key={workout.id} className="py-4">
+                                                    <div className="flex items-center justify-between">
+                                                        <div>
+                                                            <h4 className="text-sm font-medium text-gray-900">{workout.name}</h4>
+                                                            <p className="mt-1 text-sm text-gray-500">{workout.description}</p>
+                                                        </div>
+                                                        <button
+                                                            onClick={() => handleWorkoutClick(workout)}
+                                                            className="ml-4 rounded-full bg-red-500 p-2 text-white shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                                                        >
+                                                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="py-4 text-center text-sm text-gray-500">
+                                                No hay entrenamientos programados
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    {/* Días de la semana - Vista desktop */}
+                    <div className="hidden lg:grid lg:grid-cols-5 lg:gap-6">
                         {daysOfWeek.map((day) => (
-                            <div key={day} className="flex justify-center">
-                                <div className="text-base font-medium text-gray-700 bg-white rounded-full px-6 py-2 shadow-sm">
-                                    {day}
+                            <div key={day} className="overflow-hidden rounded-lg bg-white shadow">
+                                <div className="bg-gray-50 px-4 py-3">
+                                    <h3 className="text-center text-base font-semibold text-gray-900">{day}</h3>
+                                </div>
+                                <div className="divide-y divide-gray-200 px-4">
+                                    {plan.filter(workout => workout.assigned_day === day).map((workout) => (
+                                        <div key={workout.id} className="py-4">
+                                            <div className="flex flex-col items-start space-y-2">
+                                                <h4 className="text-sm font-medium text-gray-900">{workout.name}</h4>
+                                                <p className="text-sm text-gray-500">{workout.description}</p>
+                                                <button
+                                                    onClick={() => handleWorkoutClick(workout)}
+                                                    className="inline-flex items-center rounded-md bg-red-500 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                                                >
+                                                    Ver detalles
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {!plan.some(workout => workout.assigned_day === day) && (
+                                        <div className="py-4 text-center text-sm text-gray-500">
+                                            No hay entrenamientos programados
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         ))}
                     </div>
 
-                    {/* Contenido Principal */}
-                    {loading ? (
+                    {/* Estado de carga */}
+                    {loading && (
                         <div className="flex items-center justify-center py-12">
                             <div className="h-8 w-8 animate-spin rounded-full border-4 border-red-500 border-t-transparent"></div>
                             <span className="ml-3 text-gray-600">Cargando plan semanal...</span>
                         </div>
-                    ) : plan.length === 0 ? (
-                        <div className="text-center py-12">
+                    )}
+
+                    {/* Mensaje cuando no hay plan */}
+                    {!loading && plan.length === 0 && (
+                        <div className="rounded-lg bg-white p-6 text-center shadow">
                             <p className="text-gray-600">No hay plan disponible para esta semana.</p>
-                        </div>
-                    ) : (
-                        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                            {daysOfWeek.map((day, index) => {
-                                const dailyPlan = plan.filter(item => item.assigned_day === day);
-                                const workout = dailyPlan[0]?.workout;
-
-                                return (
-                                    <div key={index} className="bg-white rounded-lg shadow-sm">
-                                        {dailyPlan.length > 0 ? (
-                                            <div className="p-4">
-                                                {/* Header con RX */}
-                                                <div className="flex items-center mb-4">
-                                                    <span className={`px-3 py-1 rounded-full text-xs font-medium text-white ${categoryColors[workout.category?.name] || "bg-gray-500"}`}>
-                                                        {workout.category?.name || "RX"}
-                                                    </span>
-                                                </div>
-
-                                                {/* Nombre del atleta */}
-                                                <h3 className="text-lg font-semibold text-gray-900 mb-6">
-                                                    {workout.title}
-                                                </h3>
-
-                                                {/* Secciones con iconos */}
-                                                <div className="space-y-6">
-                                                    <div className="flex items-start gap-3">
-                                                        <span className="flex-shrink-0 text-orange-500">
-                                                            🔥
-                                                        </span>
-                                                        <div className="flex-1">
-                                                            <p className="text-sm text-gray-600">{workout.warmup}</p>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="flex items-start gap-3">
-                                                        <span className="flex-shrink-0 text-yellow-500">
-                                                            💪
-                                                        </span>
-                                                        <div className="flex-1">
-                                                            <p className="text-sm text-gray-600">{workout.movements}</p>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="flex items-start gap-3">
-                                                        <span className="flex-shrink-0 text-gray-400">
-                                                            🏋️
-                                                        </span>
-                                                        <div className="flex-1">
-                                                            <p className="text-sm text-gray-600">{workout.wod}</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* Botón de Seleccionar WOD */}
-                                                <div className="mt-6 flex items-center justify-center">
-                                                    <button
-                                                        onClick={() => handleWodSelection(dailyPlan[0])}
-                                                        disabled={dailyPlan[0].completed}
-                                                        className={`
-                                                            w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 
-                                                            text-sm font-medium rounded-lg transition-colors duration-200
-                                                            ${dailyPlan[0].completed 
-                                                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                                                : 'bg-green-500 text-white hover:bg-green-600 focus:ring-2 focus:ring-green-500 focus:ring-offset-2'
-                                                            }
-                                                        `}
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                                                            <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clipRule="evenodd" />
-                                                        </svg>
-                                                        <span>Seleccionar WOD</span>
-                                                    </button>
-                                                </div>
-
-                                                {/* Formulario cuando está seleccionado */}
-                                                {selectedWod && selectedWod.workout.id === workout.id && (
-                                                    <div className="mt-4 pt-4 border-t border-gray-100">
-                                                        <div className="space-y-4">
-                                                            <div>
-                                                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                                    📝 Nota
-                                                                </label>
-                                                                <textarea
-                                                                    value={notes}
-                                                                    onChange={(e) => setNotes(e.target.value)}
-                                                                    rows="2"
-                                                                    className="w-full rounded-lg border-gray-200 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
-                                                                    placeholder="Añade una nota..."
-                                                                />
-                                                            </div>
-
-                                                            <div>
-                                                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                                    ⭐ Puntuación
-                                                                </label>
-                                                                <select
-                                                                    value={score}
-                                                                    onChange={(e) => setScore(e.target.value)}
-                                                                    className="w-full rounded-lg border-gray-200 text-sm focus:border-green-500 focus:ring-1 focus:ring-green-500"
-                                                                >
-                                                                    <option value="">Selecciona puntuación</option>
-                                                                    {[...Array(10)].map((_, i) => (
-                                                                        <option key={i + 1} value={i + 1}>{i + 1}</option>
-                                                                    ))}
-                                                                </select>
-                                                            </div>
-
-                                                            <button
-                                                                onClick={handleCompleteWod}
-                                                                className="w-full bg-green-500 hover:bg-green-600 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors duration-200"
-                                                            >
-                                                                Completar WOD
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ) : (
-                                            <div className="p-4 text-center text-gray-500 text-sm">
-                                                No hay WOD programado
-                                            </div>
-                                        )}
-                                    </div>
-                                );
-                            })}
                         </div>
                     )}
                 </div>
