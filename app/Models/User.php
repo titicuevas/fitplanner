@@ -19,10 +19,13 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'objective', // Asegúrate de incluir este campo
-        'age',       // Asegúrate de incluir este campo
-        'height',    // Asegúrate de incluir este campo
-        'weight',    // Asegúrate de incluir este campo
+        'birth_date',
+        'height',
+        'weight',
+        'gender',
+        'fitness_level',
+        'goal',
+        'profile_photo_path',
     ];
 
     /**
