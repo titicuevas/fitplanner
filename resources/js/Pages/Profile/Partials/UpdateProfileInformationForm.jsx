@@ -8,13 +8,13 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
     const photoInput = useRef();
 
     const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
-        name: user.name,
-        email: user.email,
         photo: null,
     });
 
     const submit = (e) => {
         e.preventDefault();
+        if (!data.photo) return;
+
         patch(route('profile.update'), {
             preserveScroll: true,
             onSuccess: () => {
@@ -39,15 +39,14 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
     return (
         <section className={className}>
             <header>
-                <h2 className="text-lg font-medium text-gray-900">Información del Perfil</h2>
+                <h2 className="text-lg font-medium text-gray-900">Foto de Perfil</h2>
                 <p className="mt-1 text-sm text-gray-600">
-                    Actualiza la información de tu perfil y tu dirección de correo electrónico.
+                    Actualiza tu foto de perfil.
                 </p>
             </header>
 
-            <form onSubmit={submit} className="mt-6 space-y-6" encType="multipart/form-data">
+            <form onSubmit={submit} className="mt-6" encType="multipart/form-data">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Foto de Perfil</label>
                     <div className="mt-2 flex items-center gap-x-3">
                         <div className="relative h-24 w-24 overflow-hidden rounded-full">
                             {photoPreview ? (
@@ -70,97 +69,44 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
                                 />
                             )}
                         </div>
-                        <input
-                            type="file"
-                            ref={photoInput}
-                            onChange={handlePhotoChange}
-                            className="hidden"
-                            accept="image/*"
-                        />
-                        <button
-                            type="button"
-                            onClick={() => photoInput.current.click()}
-                            className="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                        >
-                            Cambiar foto
-                        </button>
+                        <div className="flex flex-col gap-2">
+                            <input
+                                type="file"
+                                ref={photoInput}
+                                onChange={handlePhotoChange}
+                                className="hidden"
+                                accept="image/*"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => photoInput.current.click()}
+                                className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                            >
+                                Cambiar foto
+                            </button>
+                            {photoPreview && (
+                                <button
+                                    type="submit"
+                                    className="rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                                    disabled={processing}
+                                >
+                                    {processing ? 'Guardando...' : 'Guardar foto'}
+                                </button>
+                            )}
+                        </div>
                     </div>
                     {errors.photo && <p className="mt-2 text-sm text-red-600">{errors.photo}</p>}
                 </div>
 
-                <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                        Nombre
-                    </label>
-                    <input
-                        id="name"
-                        type="text"
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500"
-                        value={data.name}
-                        onChange={e => setData('name', e.target.value)}
-                        required
-                        autoComplete="name"
-                    />
-                    {errors.name && <p className="mt-2 text-sm text-red-600">{errors.name}</p>}
-                </div>
-
-                <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                        Correo Electrónico
-                    </label>
-                    <input
-                        id="email"
-                        type="email"
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500"
-                        value={data.email}
-                        onChange={e => setData('email', e.target.value)}
-                        required
-                        autoComplete="username"
-                    />
-                    {errors.email && <p className="mt-2 text-sm text-red-600">{errors.email}</p>}
-                </div>
-
-                {mustVerifyEmail && user.email_verified_at === null && (
-                    <div>
-                        <p className="mt-2 text-sm text-gray-800">
-                            Tu dirección de correo electrónico no está verificada.
-                            <Link
-                                href={route('verification.send')}
-                                method="post"
-                                as="button"
-                                className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                            >
-                                Haz clic aquí para reenviar el correo de verificación.
-                            </Link>
-                        </p>
-
-                        {status === 'verification-link-sent' && (
-                            <div className="mt-2 text-sm font-medium text-green-600">
-                                Se ha enviado un nuevo enlace de verificación a tu dirección de correo electrónico.
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                <div className="flex items-center gap-4">
-                    <button
-                        type="submit"
-                        className="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-500 active:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150"
-                        disabled={processing}
-                    >
-                        Guardar
-                    </button>
-
-                    <Transition
-                        show={recentlySuccessful}
-                        enter="transition ease-in-out"
-                        enterFrom="opacity-0"
-                        leave="transition ease-in-out"
-                        leaveTo="opacity-0"
-                    >
-                        <p className="text-sm text-gray-600">Guardado.</p>
-                    </Transition>
-                </div>
+                <Transition
+                    show={recentlySuccessful}
+                    enter="transition ease-in-out"
+                    enterFrom="opacity-0"
+                    leave="transition ease-in-out"
+                    leaveTo="opacity-0"
+                >
+                    <p className="mt-2 text-sm text-green-600">Foto actualizada correctamente.</p>
+                </Transition>
             </form>
         </section>
     );
