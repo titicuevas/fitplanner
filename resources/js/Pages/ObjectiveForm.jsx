@@ -129,10 +129,10 @@ export default function ObjectiveForm({ user }) {
                                         required
                                     >
                                         <option value="">Selecciona un objetivo</option>
-                                        <option value="perder_peso">Perder peso</option>
-                                        <option value="ganar_musculo">Ganar músculo</option>
-                                        <option value="mejorar_rendimiento">Mejorar rendimiento</option>
-                                        <option value="mantener_forma">Mantener la forma</option>
+                                        <option value="Pérdida de peso">Pérdida de peso</option>
+                                        <option value="Ganancia muscular">Ganancia muscular</option>
+                                        <option value="Mejorar resistencia">Mejorar resistencia</option>
+                                        <option value="Mejorar flexibilidad">Mejorar flexibilidad</option>
                                     </select>
                                     {errors.objective && (
                                         <p className="mt-1 text-sm text-red-600">{errors.objective}</p>
