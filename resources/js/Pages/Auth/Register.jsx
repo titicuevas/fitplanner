@@ -9,7 +9,6 @@ export default function Register() {
         email: '',
         password: '',
         password_confirmation: '',
-        birth_date: '',
     });
 
     const submit = (e) => {
@@ -133,21 +132,6 @@ export default function Register() {
                             {errors.password_confirmation && (
                                 <p className="mt-2 text-sm font-medium text-red-400">{errors.password_confirmation}</p>
                             )}
-                        </div>
-
-                        <div>
-                            <InputLabel htmlFor="birth_date" value="Fecha de Nacimiento" />
-                            <TextInput
-                                id="birth_date"
-                                type="date"
-                                name="birth_date"
-                                value={data.birth_date}
-                                className="mt-1 block w-full"
-                                autoComplete="birth_date"
-                                onChange={(e) => setData('birth_date', e.target.value)}
-                                required
-                            />
-                            <InputError message={errors.birth_date} className="mt-2" />
                         </div>
 
                         <div>
