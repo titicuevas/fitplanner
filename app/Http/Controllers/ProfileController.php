@@ -35,6 +35,13 @@ class ProfileController extends Controller
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $user = $request->user();
+        
+        // Actualizar nombre y email
+        $user->fill($request->validated());
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
 
         if ($request->hasFile('photo')) {
             try {
@@ -48,15 +55,14 @@ class ProfileController extends Controller
                 
                 // Actualizar el path de la foto en la base de datos
                 $user->profile_photo_path = $path;
-                $user->save();
-
-                return Redirect::route('profile.edit')->with('message', 'Foto actualizada correctamente');
             } catch (\Exception $e) {
                 return Redirect::route('profile.edit')->with('error', 'Error al actualizar la foto');
             }
         }
 
-        return Redirect::route('profile.edit');
+        $user->save();
+
+        return Redirect::route('profile.edit')->with('message', 'Perfil actualizado correctamente');
     }
 
     /**

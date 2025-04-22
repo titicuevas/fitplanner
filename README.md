@@ -1,158 +1,183 @@
-<div align="center">
-  <img src="public/images/fitplanner-logo.png" alt="FitPlanner Logo" width="200"/>
-</div>
+# FitPlanner 🏋️‍♂️
 
-# FitPlanner
+![FitPlanner Logo](public/images/fitplanner-logo.png)
 
-FitPlanner es una aplicación web moderna diseñada para la gestión y seguimiento de entrenamientos CrossFit. Permite a los usuarios planificar sus WODs (Workout of the Day), realizar un seguimiento de sus progresos y gestionar sus objetivos de forma eficiente.
+FitPlanner es una aplicación web diseñada para ayudarte a planificar y realizar un seguimiento de tus entrenamientos de CrossFit. La aplicación está construida con Laravel, React, Inertia.js y Tailwind CSS.
 
-## 🚀 Características
+## Características Principales
 
-- Planificación semanal de WODs
-- Registro de resultados y notas
-- Seguimiento de objetivos personales
-- Diferentes categorías de entrenamiento (RX, Escalado, Élite)
-- Interfaz moderna y responsive
-- Notificaciones en tiempo real
-- Modo oscuro
+- 📅 Planificación semanal de entrenamientos
+- 🎯 Objetivos personalizados según tus necesidades
+- 📊 Seguimiento de progreso
+- 📝 Registro de entrenamientos completados
+- 👤 Perfil personalizable
+- 🏆 Sistema de puntuación para WODs
 
-## 🛠️ Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
-- **Frontend:**
-  - React
-  - Tailwind CSS
-  - SweetAlert2
+### Backend
+- **Framework**: Laravel 12
+- **Base de datos**: PostgreSQL 15
+- **Autenticación**: Laravel Sanctum
+- **Validación**: Laravel Validation
+- **Testing**: PHPUnit
+- **Manejo de archivos**: Laravel Storage
+
+### Frontend
+- **Framework**: React 18
+- **Routing**: Inertia.js
+- **Estilos**: Tailwind CSS
+- **Componentes UI**: 
+  - Headless UI
   - Heroicons
-  - DaisyUI
+- **Testing**: 
+  - Jest
+  - React Testing Library
+- **Manejo de estado**: 
+  - React Hooks
+  - Inertia.js Forms
+- **Optimización de imágenes**: UI Avatars API
 
-- **Backend:**
-  - Laravel 12
-  - PHP 8.2
-  - SQLite
-  - Redis
-  - Nginx
+### Desarrollo
+- **Versionado**: Git
+- **Despliegue**: Railway
+- **Linting**: ESLint
+- **Formateo**: Prettier
+- **Bundling**: Vite
+- **Transpilación**: Babel
 
-## 🐳 Instalación con Docker
+## Requisitos del Sistema
 
-### Requisitos Previos
-- Docker instalado en tu sistema ([Instalar Docker](https://docs.docker.com/get-docker/))
-- Docker Compose instalado ([Instalar Docker Compose](https://docs.docker.com/compose/install/))
-- Git instalado
+- PHP 8.2 o superior
+- Node.js 18 o superior
+- PostgreSQL 15 o superior
+- Composer
+- NPM
 
-### Pasos de Instalación
+## Instalación Local
 
-1. **Clonar el Repositorio**
+1. Clonar el repositorio:
 ```bash
-git clone https://github.com/titicuevas/fitplanner.git
+git clone https://github.com/tu-usuario/fitplanner.git
 cd fitplanner
 ```
 
-2. **Configurar el Entorno**
+2. Instalar dependencias de PHP:
 ```bash
-# Copiar el archivo de entorno
+composer install
+```
+
+3. Instalar dependencias de JavaScript:
+```bash
+npm install
+```
+
+4. Configurar el archivo .env:
+```bash
 cp .env.example .env
 ```
 
-3. **Construir y Levantar los Contenedores**
-```bash
-# Esto puede tomar unos minutos la primera vez
-docker-compose up -d --build
+5. Configurar las variables de entorno en .env:
+```env
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=fitplanner
+DB_USERNAME=tu_usuario
+DB_PASSWORD=tu_contraseña
 ```
 
-4. **Instalar Dependencias y Configurar la Aplicación**
+6. Generar la clave de aplicación:
 ```bash
-# Instalar dependencias de PHP
-docker-compose exec app composer install
-
-# Generar clave de la aplicación
-docker-compose exec app php artisan key:generate
-
-# Ejecutar migraciones
-docker-compose exec app php artisan migrate
-
-# Instalar dependencias de Node.js
-docker-compose exec app npm install
-
-# Compilar assets
-docker-compose exec app npm run build
+php artisan key:generate
 ```
 
-### Acceso a la Aplicación
-
-Una vez completados los pasos anteriores, puedes acceder a:
-- 🌐 **Aplicación Web**: [http://localhost:8000](http://localhost:8000)
-
-### Comandos Útiles de Docker
-
+7. Ejecutar las migraciones:
 ```bash
-# Ver el estado de los contenedores
-docker-compose ps
-
-# Ver logs de los contenedores
-docker-compose logs -f
-
-# Detener los contenedores
-docker-compose down
-
-# Reiniciar los contenedores
-docker-compose restart
-
-# Acceder al contenedor de la aplicación
-docker-compose exec app bash
+php artisan migrate
 ```
 
-### Estructura de Docker
-
-El proyecto utiliza tres servicios principales:
-
-1. **App (PHP-FPM)**
-   - PHP 8.2 con todas las extensiones necesarias
-   - Composer para gestión de dependencias PHP
-   - Node.js y NPM para assets
-
-2. **Nginx**
-   - Servidor web
-   - Configurado para Laravel
-   - Expone el puerto 8000
-
-3. **Redis**
-   - Caché y colas
-   - Expone el puerto 6379
-
-### Solución de Problemas Comunes
-
-1. **Error de permisos**
+8. Compilar los assets:
 ```bash
-# Ajustar permisos de storage
-docker-compose exec app chmod -R 775 storage bootstrap/cache
+npm run build
 ```
 
-2. **Error de base de datos**
+9. Iniciar el servidor de desarrollo:
 ```bash
-# Recrear base de datos
-docker-compose exec app php artisan migrate:fresh
+php artisan serve
 ```
 
-3. **Error de dependencias**
+## Testing
+
+### Tests de PHP
 ```bash
-# Limpiar caché de dependencias
-docker-compose exec app composer clear-cache
-docker-compose exec app composer install
+php artisan test
 ```
 
-## 🤝 Contribuir
+### Tests de JavaScript
+```bash
+npm test
+```
 
-Las contribuciones son bienvenidas. Por favor, lee el archivo CONTRIBUTING.md para más detalles.
+## Despliegue en Railway
 
-## 📝 Licencia
+El proyecto está configurado para desplegarse en Railway. Para desplegar tu propia instancia:
 
-Este proyecto está bajo la Licencia MIT - ver el archivo LICENSE.md para más detalles.
+1. Crea una cuenta en [Railway](https://railway.app/)
+2. Conecta tu repositorio de GitHub
+3. Configura las variables de entorno en Railway:
+   - `APP_KEY`
+   - `DB_CONNECTION`
+   - `DB_HOST`
+   - `DB_PORT`
+   - `DB_DATABASE`
+   - `DB_USERNAME`
+   - `DB_PASSWORD`
+   - `APP_URL`
+   - `RAILWAY_STATIC_URL`
 
-## 👥 Autor
+4. Railway se encargará automáticamente del despliegue cuando hagas push a tu repositorio.
 
-- **Nombre**: [Enrique Cuevas]
-- **GitHub**: [@titicuevas](https://github.com/titicuevas)
+## Estructura del Proyecto
 
-## 📞 Soporte
+```
+fitplanner/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   └── Requests/
+│   ├── Models/
+│   └── Services/
+├── database/
+│   ├── migrations/
+│   └── seeders/
+├── resources/
+│   ├── js/
+│   │   ├── Components/
+│   │   ├── Layouts/
+│   │   ├── Pages/
+│   │   └── __tests__/
+│   └── css/
+├── routes/
+└── tests/
+```
 
-Si tienes alguna pregunta o problema, por favor abre un issue en el repositorio.
+## Contribución
+
+1. Haz fork del proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+
+## Contacto
+
+Para cualquier consulta o sugerencia, por favor abre un issue en el repositorio.
+
+---
+
+Desarrollado con ❤️ por [Enrique Cuevas]
