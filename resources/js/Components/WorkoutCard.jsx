@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Card, Button } from "react-bootstrap";
 
 const WorkoutCard = ({ workout, onComplete, isCompleted }) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -14,38 +13,41 @@ const WorkoutCard = ({ workout, onComplete, isCompleted }) => {
     };
 
     return (
-        <Card className="shadow-lg workout-card text-center border-0">
-            <Card.Body className="p-4">
-                <Card.Title className="fw-bold fs-4 text-uppercase">{workout.title}</Card.Title>
-                <Card.Subtitle className="mb-3 text-muted">
-                    Categoría: <span className={`badge bg-${getCategoryColor(workout.category.name)}`}>
+        <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm">
+            <div className="text-center">
+                <h3 className="text-xl font-bold uppercase mb-2">{workout.title}</h3>
+                <div className="mb-4">
+                    Categoría: <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${getCategoryColor(workout.category.name)}`}>
                         {workout.category.name}
                     </span>
-                </Card.Subtitle>
-                <Card.Text className="text-start">
-                    <strong>🔥 Calentamiento:</strong> {workout.warmup}<br />
-                    <strong>💪 Movimientos:</strong> {workout.movements}<br />
-                    <strong>🏋️ WOD:</strong> {workout.wod}
-                </Card.Text>
-                <Button 
-                    variant={isCompleted ? "success" : "outline-success"}
-                    className="w-100 btn-lg fw-bold"
+                </div>
+                <div className="text-left space-y-2 mb-4">
+                    <p><span className="font-bold">🔥 Calentamiento:</span> {workout.warmup}</p>
+                    <p><span className="font-bold">💪 Movimientos:</span> {workout.movements}</p>
+                    <p><span className="font-bold">🏋️ WOD:</span> {workout.wod}</p>
+                </div>
+                <button 
+                    className={`w-full py-3 px-4 rounded-lg font-bold transition-colors
+                        ${isCompleted 
+                            ? 'bg-green-500 text-white' 
+                            : 'bg-white text-green-600 border-2 border-green-500 hover:bg-green-50'} 
+                        ${(isCompleted || isLoading) && 'opacity-75 cursor-not-allowed'}`}
                     onClick={handleComplete}
                     disabled={isCompleted || isLoading}
                 >
                     {isLoading ? "Procesando..." : (isCompleted ? "✅ WOD Completado" : "Registrar como Completado")}
-                </Button>
-            </Card.Body>
-        </Card>
+                </button>
+            </div>
+        </div>
     );
 };
 
 const getCategoryColor = (category) => {
     switch (category) {
-        case "Escalado": return "primary";
-        case "RX": return "warning";
-        case "Élite": return "danger";
-        default: return "secondary";
+        case "Escalado": return "bg-blue-500 text-white";
+        case "RX": return "bg-yellow-500 text-white";
+        case "Élite": return "bg-red-500 text-white";
+        default: return "bg-gray-500 text-white";
     }
 };
 
