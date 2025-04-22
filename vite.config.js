@@ -15,16 +15,7 @@ export default defineConfig({
             '@': '/resources/js'
         }
     },
-    build: {
-        rollupOptions: {
-            external: ['nprogress'],
-        },
-        commonjsOptions: {
-            esmExternals: true,
-            requireReturnsDefault: true
-        }
-    },
     optimizeDeps: {
-        include: ['@inertiajs/react', '@inertiajs/core', 'axios']
+        include: ['@inertiajs/react', '@inertiajs/core', 'axios', 'nprogress']
     }
 });
