@@ -10,13 +10,6 @@ export default defineConfig({
         }),
         react(),
     ],
-    server: {
-        https: true,
-        host: '0.0.0.0',
-        hmr: {
-            host: 'localhost'
-        }
-    },
     build: {
         commonjsOptions: {
             transformMixedEsModules: true
