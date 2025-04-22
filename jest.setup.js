@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+require('@testing-library/jest-dom');
 
 // Mock para las llamadas a la API
 global.fetch = jest.fn(() =>
