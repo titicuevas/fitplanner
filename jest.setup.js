@@ -1,4 +1,4 @@
-require('@testing-library/jest-dom');
+import '@testing-library/jest-dom';
 
 // Mock para las llamadas a la API
 global.fetch = jest.fn(() =>
@@ -33,4 +33,24 @@ Object.defineProperty(window, 'matchMedia', {
 });
 
 // Mock para route helper
-global.route = jest.fn((name) => `/${name}`); 
+global.route = jest.fn((name) => `/${name}`);
+
+// Mock para las imágenes
+export const mockImage = {
+    src: '',
+    onload: null,
+    onerror: null,
+    set src(value) {
+        this._src = value;
+        if (value) {
+            this.onload?.();
+        } else {
+            this.onerror?.();
+        }
+    },
+    get src() {
+        return this._src;
+    }
+};
+
+global.Image = jest.fn(() => mockImage); 

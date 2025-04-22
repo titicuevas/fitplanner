@@ -10,9 +10,21 @@ export default defineConfig({
         }),
         react(),
     ],
-    build: {
-        commonjsOptions: {
-            transformMixedEsModules: true
+    resolve: {
+        alias: {
+            '@': '/resources/js'
         }
+    },
+    build: {
+        rollupOptions: {
+            external: ['nprogress'],
+        },
+        commonjsOptions: {
+            esmExternals: true,
+            requireReturnsDefault: true
+        }
+    },
+    optimizeDeps: {
+        include: ['@inertiajs/react', '@inertiajs/core', 'axios']
     }
 });

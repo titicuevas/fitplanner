@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Container, Row, Col, Button, Spinner } from "react-bootstrap";
 import WorkoutCard from "../Components/WorkoutCard";
-import Swal from 'sweetalert2';
+import Swal from 'sweetalert2/dist/sweetalert2.js';
+import 'sweetalert2/dist/sweetalert2.css';
 
 const WorkoutList = () => {
     const [workouts, setWorkouts] = useState([]);
@@ -85,59 +85,67 @@ const WorkoutList = () => {
         : workouts.filter(workout => workout.category.name === category);
 
     return (
-        <Container className="workout-container text-center">
-            <h2 className="my-4 fw-bold text-uppercase">🏋️ Lista de Workouts</h2>
+        <div className="container mx-auto px-4 py-8">
+            <h2 className="text-3xl font-bold text-center uppercase mb-8">🏋️ Lista de Workouts</h2>
 
-            <div className="d-flex justify-content-center flex-wrap gap-3 mb-4">
-                <Button 
-                    variant="dark"
-                    className={`btn-lg fs-5 px-4 ${category === "all" ? "active" : ""}`} 
+            <div className="flex justify-center flex-wrap gap-4 mb-8">
+                <button 
+                    className={`px-6 py-2 text-lg font-semibold rounded-lg transition-colors
+                        ${category === "all" 
+                            ? "bg-gray-800 text-white" 
+                            : "bg-gray-200 text-gray-700 hover:bg-gray-300"}`}
                     onClick={() => setCategory("all")}
                 >
                     Todos
-                </Button>
-                <Button 
-                    variant="primary"
-                    className={`btn-lg fs-5 px-4 ${category === "Escalado" ? "active" : ""}`} 
+                </button>
+                <button 
+                    className={`px-6 py-2 text-lg font-semibold rounded-lg transition-colors
+                        ${category === "Escalado" 
+                            ? "bg-blue-600 text-white" 
+                            : "bg-blue-100 text-blue-700 hover:bg-blue-200"}`}
                     onClick={() => setCategory("Escalado")}
                 >
                     Escalado
-                </Button>
-                <Button 
-                    variant="warning"
-                    className={`btn-lg fs-5 px-4 ${category === "RX" ? "active" : ""}`} 
+                </button>
+                <button 
+                    className={`px-6 py-2 text-lg font-semibold rounded-lg transition-colors
+                        ${category === "RX" 
+                            ? "bg-yellow-500 text-white" 
+                            : "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"}`}
                     onClick={() => setCategory("RX")}
                 >
                     RX
-                </Button>
-                <Button 
-                    variant="danger"
-                    className={`btn-lg fs-5 px-4 ${category === "Élite" ? "active" : ""}`} 
+                </button>
+                <button 
+                    className={`px-6 py-2 text-lg font-semibold rounded-lg transition-colors
+                        ${category === "Élite" 
+                            ? "bg-red-600 text-white" 
+                            : "bg-red-100 text-red-700 hover:bg-red-200"}`}
                     onClick={() => setCategory("Élite")}
                 >
                     Élite
-                </Button>
+                </button>
             </div>
 
             {loading ? (
                 <div className="text-center">
-                    <Spinner animation="border" />
-                    <p>Cargando entrenamientos...</p>
+                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-blue-600"></div>
+                    <p className="mt-2 text-gray-600">Cargando entrenamientos...</p>
                 </div>
             ) : (
-                <Row className="justify-content-center gy-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredWorkouts.map((workout) => (
-                        <Col xs={12} sm={10} md={6} lg={4} key={workout.id} className="d-flex justify-content-center">
+                        <div key={workout.id} className="flex justify-center">
                             <WorkoutCard 
                                 workout={workout} 
                                 onComplete={() => handleCompleteWorkout(workout.id, workout.title)}
                                 isCompleted={completedWorkouts.has(workout.id)}
                             />
-                        </Col>
+                        </div>
                     ))}
-                </Row>
+                </div>
             )}
-        </Container>
+        </div>
     );
 };
 
