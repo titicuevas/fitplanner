@@ -1,25 +1,17 @@
-import React, { useEffect } from 'react';
+import NProgress from 'nprogress';
 import { router } from '@inertiajs/react';
+import '../../../node_modules/nprogress/nprogress.css';
 
 export default function Progress() {
-    useEffect(() => {
-        const showProgress = () => {
-            // Aquí puedes agregar tu propia lógica de progreso
-            // Por ejemplo, mostrar un spinner o una barra de progreso personalizada
-        };
+    NProgress.configure({ showSpinner: false });
 
-        const hideProgress = () => {
-            // Aquí puedes ocultar tu indicador de progreso
-        };
+    router.on('start', () => {
+        NProgress.start();
+    });
 
-        router.on('start', showProgress);
-        router.on('finish', hideProgress);
-
-        return () => {
-            router.off('start', showProgress);
-            router.off('finish', hideProgress);
-        };
-    }, []);
+    router.on('finish', () => {
+        NProgress.done();
+    });
 
     return null;
 } 
