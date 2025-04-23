@@ -12,24 +12,41 @@ export default function ObjectiveForm({ user }) {
     });
 
     const [age, setAge] = useState(null);
+    const [ageDisplay, setAgeDisplay] = useState('');
 
     // Calcular edad cuando cambia la fecha de nacimiento
     useEffect(() => {
         if (data.birth_date) {
             const birthDate = new Date(data.birth_date);
             const today = new Date();
-            let age = today.getFullYear() - birthDate.getFullYear();
+            let calculatedAge = today.getFullYear() - birthDate.getFullYear();
             const m = today.getMonth() - birthDate.getMonth();
             if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-                age--;
+                calculatedAge--;
             }
-            setAge(age);
+            setAge(calculatedAge);
+            setAgeDisplay(calculatedAge < 18 ? 'Menor de 18 años' : `${calculatedAge} años`);
         }
     }, [data.birth_date]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         post(route('objective.store'));
+    };
+
+    // Manejadores para peso y altura
+    const handleHeightChange = (e) => {
+        const value = e.target.value;
+        if (value === '' || (value.length <= 3 && value >= 0)) {
+            setData('height', value);
+        }
+    };
+
+    const handleWeightChange = (e) => {
+        const value = e.target.value;
+        if (value === '' || (value.length <= 3 && value >= 0)) {
+            setData('weight', value);
+        }
     };
 
     // Validaciones
@@ -107,9 +124,9 @@ export default function ObjectiveForm({ user }) {
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                         required
                                     />
-                                    {age && (
+                                    {ageDisplay && (
                                         <p className="mt-1 text-sm text-gray-500">
-                                            Edad: {age} años
+                                            {ageDisplay}
                                         </p>
                                     )}
                                     {errors.birth_date && (
@@ -147,7 +164,7 @@ export default function ObjectiveForm({ user }) {
                                     <input
                                         type="number"
                                         value={data.height}
-                                        onChange={e => setData('height', e.target.value)}
+                                        onChange={handleHeightChange}
                                         min="100"
                                         max="250"
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
@@ -166,7 +183,7 @@ export default function ObjectiveForm({ user }) {
                                     <input
                                         type="number"
                                         value={data.weight}
-                                        onChange={e => setData('weight', e.target.value)}
+                                        onChange={handleWeightChange}
                                         min="30"
                                         max="200"
                                         step="0.1"
