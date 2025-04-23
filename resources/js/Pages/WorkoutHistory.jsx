@@ -250,18 +250,49 @@ const WorkoutHistory = () => {
 
                                                     {/* Notas y Puntuación Existentes */}
                                                     {(log.score || log.notes) && (
-                                                        <div className="mt-6 space-y-3 rounded-lg bg-blue-50 p-4">
-                                        {log.score && (
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className="text-lg">⭐</span>
-                                                                    <div>
-                                                                        <span className="font-semibold text-blue-900">Puntuación:</span>
-                                                                        <span className="ml-2 text-blue-800">{log.score}/10</span>
+                                                        <div className="mt-6 space-y-3 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 p-4 border border-blue-200">
+                                                            <div className="flex justify-between items-start">
+                                                                {log.score && (
+                                                                    <div className="flex items-center gap-4">
+                                                                        <div className="relative w-16 h-16">
+                                                                            <svg className="w-full h-full" viewBox="0 0 36 36">
+                                                                                {/* Círculo base */}
+                                                                                <circle cx="18" cy="18" r="15.91549430918954" 
+                                                                                    fill="none" 
+                                                                                    stroke="#E2E8F0" 
+                                                                                    strokeWidth="2">
+                                                                                </circle>
+                                                                                {/* Círculo de progreso */}
+                                                                                <circle cx="18" cy="18" r="15.91549430918954" 
+                                                                                    fill="none" 
+                                                                                    stroke="#3B82F6"
+                                                                                    strokeWidth="2"
+                                                                                    strokeDasharray={`${(log.score/10) * 100} 100`}
+                                                                                    strokeDashoffset="25"
+                                                                                    className="transform -rotate-90 origin-center">
+                                                                                </circle>
+                                                                                <text x="18" y="18" 
+                                                                                    className="font-bold text-blue-600"
+                                                                                    textAnchor="middle" 
+                                                                                    dy=".3em"
+                                                                                    fontSize="12">
+                                                                                    {log.score}/10
+                                                                                </text>
+                                                                            </svg>
+                                                                        </div>
+                                                                        <div className="flex flex-col">
+                                                                            <span className="font-semibold text-blue-900">Puntuación</span>
+                                                                            <span className="text-sm text-blue-700">
+                                                                                {log.score < 5 ? '¡A mejorar!' : 
+                                                                                 log.score < 7 ? '¡Buen trabajo!' : 
+                                                                                 log.score < 9 ? '¡Excelente!' : '¡Perfecto! 🏆'}
+                                                                            </span>
+                                                                        </div>
                                                                     </div>
-                                                                </div>
-                                        )}
-                                        {log.notes && (
-                                                                <div className="flex items-start gap-2">
+                                                                )}
+                                                            </div>
+                                                            {log.notes && (
+                                                                <div className="flex items-start gap-2 mt-4 border-t border-blue-200 pt-4">
                                                                     <span className="mt-1 text-lg">📝</span>
                                                                     <div>
                                                                         <span className="font-semibold text-blue-900">Nota:</span>
