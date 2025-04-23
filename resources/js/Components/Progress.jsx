@@ -14,8 +14,11 @@ export default function Progress() {
         router.on('finish', handleFinish);
 
         return () => {
-            router.removeListener('start', handleStart);
-            router.removeListener('finish', handleFinish);
+            router.off?.('start', handleStart);
+            router.off?.('finish', handleFinish);
+
+            NProgress.done();
+            NProgress.remove();
         };
     }, []);
 
