@@ -46,11 +46,8 @@ class ObjectiveController extends Controller
             case 'Mejorar flexibilidad':
                 $category_id = 4;
                 break;
-        }
-
-        // Si no hay categoría válida, no asignar entrenamientos
-        if (!$category_id) {
-            return;
+            default:
+                $category_id = 1; // Categoría por defecto
         }
 
         // Eliminar asignaciones anteriores si existen
@@ -58,23 +55,29 @@ class ObjectiveController extends Controller
         WeeklyPlan::where('user_id', $user->id)->delete();
 
         // Obtener los WODs correspondientes al objetivo
-        $workouts = Workout::where('category_id', $category_id)->take(5)->get();
+        $workouts = Workout::where('category_id', $category_id)->inRandomOrder()->take(5)->get();
 
         // Días de la semana para asignar los WODs
         $daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+        $currentMonth = now()->month;
 
         // Asignar los WODs al usuario y crear el plan semanal
         foreach ($workouts as $index => $workout) {
             // Asignar el WOD al usuario (relación many-to-many)
             $user->workouts()->attach($workout->id);
 
-            // Crear una entrada en la tabla `weekly_plans`
+            // Crear una entrada en la tabla weekly_plans
             WeeklyPlan::create([
                 'user_id' => $user->id,
                 'workout_id' => $workout->id,
-                'assigned_day' => $daysOfWeek[$index % count($daysOfWeek)],
-                'month' => now()->month,
+                'assigned_day' => $daysOfWeek[$index],
+                'month' => $currentMonth,
+                'completed' => false
             ]);
         }
+
+        // Asegurarse de que el objetivo se guarda en el usuario
+        $user->objective = $objective;
+        $user->save();
     }
 }
