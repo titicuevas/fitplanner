@@ -9,28 +9,29 @@ const WorkoutList = () => {
     const [completedWorkouts, setCompletedWorkouts] = useState(new Set());
     const [loading, setLoading] = useState(true);
     const [category, setCategory] = useState("all");
+    const [selectedWorkout, setSelectedWorkout] = useState(null);
+    const [isProcessing, setIsProcessing] = useState(false);
 
     useEffect(() => {
-        axios.get("/api/workouts")
-            .then((response) => {
-                setWorkouts(response.data);
-                setLoading(false);
-            })
-            .catch((error) => {
-                console.error("Error al cargar los entrenamientos:", error);
-                setLoading(false);
-                showErrorMessage("Error al cargar los entrenamientos");
-            });
-
-        axios.get("/api/workouts/completed", { withCredentials: true })
-            .then((response) => {
-                setCompletedWorkouts(new Set(response.data.map(wod => wod.workout_id)));
-            })
-            .catch(error => {
-                console.error("Error al cargar WODs completados:", error);
-                showErrorMessage("Error al cargar los WODs completados");
-            });
+        fetchWorkouts();
     }, []);
+
+    const fetchWorkouts = async () => {
+        try {
+            const [workoutsResponse, completedResponse] = await Promise.all([
+                axios.get("/api/workouts"),
+                axios.get("/api/workouts/completed", { withCredentials: true })
+            ]);
+
+            setWorkouts(workoutsResponse.data);
+            setCompletedWorkouts(new Set(completedResponse.data.map(wod => wod.workout_id)));
+            setLoading(false);
+        } catch (error) {
+            console.error("Error al cargar los datos:", error);
+            showErrorMessage("Error al cargar los entrenamientos");
+            setLoading(false);
+        }
+    };
 
     const showSuccessMessage = (title, text) => {
         Swal.fire({
@@ -66,17 +67,29 @@ const WorkoutList = () => {
             return;
         }
 
+        if (isProcessing) return;
+
+        setIsProcessing(true);
+        setSelectedWorkout(workoutId);
+
         try {
             await axios.post("/api/workouts/complete", { workout_id: workoutId }, { withCredentials: true });
-            setCompletedWorkouts(new Set(completedWorkouts).add(workoutId));
+            setCompletedWorkouts(new Set([...completedWorkouts, workoutId]));
             
             showSuccessMessage(
                 "¡WOD Completado!",
                 `Has completado el WOD "${workoutTitle}" con éxito`
             );
+
+            // Actualizar la lista de entrenamientos completados
+            const completedResponse = await axios.get("/api/workouts/completed", { withCredentials: true });
+            setCompletedWorkouts(new Set(completedResponse.data.map(wod => wod.workout_id)));
         } catch (error) {
             console.error("Error al registrar el entrenamiento:", error);
             showErrorMessage("Error al registrar el WOD");
+        } finally {
+            setIsProcessing(false);
+            setSelectedWorkout(null);
         }
     };
 
@@ -140,6 +153,7 @@ const WorkoutList = () => {
                                 workout={workout} 
                                 onComplete={() => handleCompleteWorkout(workout.id, workout.title)}
                                 isCompleted={completedWorkouts.has(workout.id)}
+                                isDisabled={isProcessing && selectedWorkout !== workout.id}
                             />
                         </div>
                     ))}

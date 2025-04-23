@@ -113,6 +113,8 @@ const WorkoutHistory = () => {
             try {
                 await axios.delete(`/api/workouts/completed/${id}`, { withCredentials: true });
                 
+                setHistory(prevHistory => prevHistory.filter(log => log.id !== id));
+                
                 await Swal.fire({
                     icon: 'success',
                     title: '¡Eliminado!',
@@ -122,7 +124,9 @@ const WorkoutHistory = () => {
                     timerProgressBar: true,
                 });
                 
-                setHistory(history.filter((log) => log.id !== id));
+                if (history.length === 1) {
+                    await fetchWorkoutHistory();
+                }
             } catch (error) {
                 console.error("❌ Error al eliminar el WOD:", error);
                 showErrorMessage("Error al eliminar el WOD.");
