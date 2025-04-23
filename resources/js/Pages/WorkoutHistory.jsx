@@ -48,7 +48,7 @@ const WorkoutHistory = () => {
     };
 
     const handleSave = async (workoutId) => {
-        if (saving[workoutId]) return;
+        if (saving[workoutId] || deleting[workoutId]) return;
         
         setSaving(prev => ({ ...prev, [workoutId]: true }));
         try {
@@ -90,7 +90,7 @@ const WorkoutHistory = () => {
     };
 
     const handleDelete = async (id, title) => {
-        if (deleting[id]) return;
+        if (deleting[id] || saving[id]) return;
 
         const result = await Swal.fire({
             title: '¿Estás seguro?',
@@ -305,10 +305,10 @@ const WorkoutHistory = () => {
                                                             <div className="mt-4 flex flex-col gap-3">
                                                                 <button
                                                 onClick={() => handleSave(log.workout.id)}
-                                                disabled={saving[log.workout.id]}
+                                                disabled={saving[log.workout.id] || deleting[log.id]}
                                                                     className={`
                                                                         inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-300
-                                                                        ${saving[log.workout.id] 
+                                                                        ${(saving[log.workout.id] || deleting[log.id]) 
                                                                             ? 'bg-gray-400 cursor-not-allowed' 
                                                                             : 'bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-600'
                                                                         }
@@ -335,10 +335,10 @@ const WorkoutHistory = () => {
 
                                                                 <button
                                                                     onClick={() => handleDelete(log.id, log.workout?.title || "Sin título")}
-                                                                    disabled={deleting[log.id]}
+                                                                    disabled={deleting[log.id] || saving[log.workout.id]}
                                                                     className={`
                                                                         inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-300
-                                                                        ${deleting[log.id]
+                                                                        ${(deleting[log.id] || saving[log.workout.id])
                                                                             ? 'bg-gray-400 cursor-not-allowed'
                                                                             : 'bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-600'
                                                                         }
