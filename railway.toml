@@ -14,7 +14,7 @@ PHP_MEMORY_LIMIT = "512M"
 steps = [
     "cp .env.railway .env",
     "composer install --no-dev --optimize-autoloader",
-    "npm ci",
+    "npm install",
     "npm run build",
     "php artisan key:generate --force",
     "php artisan storage:link",

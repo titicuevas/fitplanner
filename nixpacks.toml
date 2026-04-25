@@ -17,7 +17,7 @@ nixPkgs = [
 cmds = [
     "cp .env.example .env",
     "composer install --no-dev --optimize-autoloader",
-    "npm ci",
+    "npm install",
     "npm run build"
 ]
 

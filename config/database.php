@@ -9,10 +9,10 @@ return [
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),
-            'host' => env('PGHOST', 'postgres.railway.internal'),
+            'host' => env('PGHOST', '127.0.0.1'),
             'port' => env('PGPORT', '5432'),
-            'database' => env('PGDATABASE', 'railway'),
-            'username' => env('PGUSER', 'postgres'),
+            'database' => env('PGDATABASE', ''),
+            'username' => env('PGUSER', ''),
             'password' => env('PGPASSWORD', ''),
             'charset' => 'utf8',
             'prefix' => '',
