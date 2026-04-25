@@ -1,7 +1,8 @@
+@reference "tailwindcss";
 @import 'sweetalert2/dist/sweetalert2.min.css';
 
 .swal2-popup {
-    @apply font-sans;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 .swal2-title {
