@@ -8,7 +8,7 @@ aptPkgs = [
 ]
 
 nixPkgs = [
-    "nodejs-18_x",
+    "nodejs-22_x",
     "php82",
     "php82Packages.composer"
 ]

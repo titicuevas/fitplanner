@@ -7,6 +7,9 @@
         "test": "jest",
         "test:watch": "jest --watch"
     },
+    "engines": {
+        "node": ">=20.19.0"
+    },
     "dependencies": {
         "@headlessui/react": "^2.2.10",
         "@inertiajs/react": "^3.0.3",

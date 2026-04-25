@@ -1,11 +1,11 @@
 
 <?php
 
-$host = '127.0.0.1';
-$port = 3306;
-$dbname = '''';
-$username = '''';
-$password = '';
+$host = getenv('MYSQLHOST') ?: '127.0.0.1';
+$port = (int) (getenv('MYSQLPORT') ?: 3306);
+$dbname = getenv('MYSQLDATABASE') ?: '';
+$username = getenv('MYSQLUSER') ?: '';
+$password = getenv('MYSQLPASSWORD') ?: '';
 
 try {
     $dsn = "mysql:host=$host;port=$port;dbname=$dbname";

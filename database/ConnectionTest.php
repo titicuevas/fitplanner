@@ -6,11 +6,11 @@ class ConnectionTest
 {
     public static function test()
     {
-        $host = '127.0.0.1';
-        $port = 3306;
-        $dbname = '''';
-        $username = '''';
-        $password = '';
+        $host = env('MYSQLHOST', '127.0.0.1');
+        $port = (int) env('MYSQLPORT', 3306);
+        $dbname = env('MYSQLDATABASE', '');
+        $username = env('MYSQLUSER', '');
+        $password = env('MYSQLPASSWORD', '');
 
         try {
             // Forzar conexión TCP explícita
