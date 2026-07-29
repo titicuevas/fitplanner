@@ -15,7 +15,8 @@ class ObjectiveControllerTest extends TestCase
     public function test_user_can_set_objective_and_get_weekly_plan()
     {
         $user = User::factory()->create();
-        $workout = Workout::factory()->create(['category_id' => 1]);
+        $category = \App\Models\Category::factory()->create();
+        $workout = Workout::factory()->create(['category_id' => $category->id]);
 
         $response = $this->actingAs($user)
             ->post(route('objective.store'), [
