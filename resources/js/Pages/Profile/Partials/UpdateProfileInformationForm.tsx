@@ -28,15 +28,8 @@ export default function UpdateProfileInformationForm({ status, className = '' }:
     const submit = (e: FormEvent) => {
         e.preventDefault();
 
-        const formData = new FormData();
-        formData.append('name', data.name);
-        formData.append('email', data.email);
-        if (data.photo) {
-            formData.append('photo', data.photo);
-        }
-
         patch(route('profile.update'), {
-            data: formData as any,
+            forceFormData: true,
             preserveScroll: true,
             onSuccess: () => {
                 if (data.photo && photoInput.current) {
@@ -64,41 +57,41 @@ export default function UpdateProfileInformationForm({ status, className = '' }:
     return (
         <section className={className}>
             <header>
-                <h2 className="text-lg font-medium text-gray-900">Información del Perfil</h2>
-                <p className="mt-1 text-sm text-gray-600">
+                <h2 className="text-lg font-medium text-gray-900 dark:text-white">Información del Perfil</h2>
+                <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
                     Actualiza tu información de perfil y dirección de correo electrónico.
                 </p>
             </header>
 
             <form onSubmit={submit} className="mt-6 space-y-6" encType="multipart/form-data">
                 <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nombre</label>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</label>
                     <input
                         id="name"
                         type="text"
                         value={data.name}
                         onChange={(e) => setData('name', e.target.value)}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
                     />
                     {errors.name && <p className="mt-2 text-sm text-red-600">{errors.name}</p>}
                 </div>
 
                 <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
                     <input
                         id="email"
                         type="email"
                         value={data.email}
                         onChange={(e) => setData('email', e.target.value)}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
                     />
                     {errors.email && <p className="mt-2 text-sm text-red-600">{errors.email}</p>}
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Foto de Perfil</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Foto de Perfil</label>
                     <div className="mt-2 flex items-center gap-x-3">
-                        <div className="relative h-24 w-24 overflow-hidden rounded-full ring-2 ring-gray-200">
+                        <div className="relative h-24 w-24 overflow-hidden rounded-full ring-2 ring-gray-200 dark:ring-gray-600">
                             {photoPreview ? (
                                 <img src={photoPreview} alt="Vista previa" className="h-full w-full object-cover" />
                             ) : user.profile_photo_path ? (
@@ -118,7 +111,7 @@ export default function UpdateProfileInformationForm({ status, className = '' }:
                             <button
                                 type="button"
                                 onClick={() => photoInput.current?.click()}
-                                className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-900 dark:text-gray-100 dark:ring-gray-600 dark:hover:bg-gray-700"
                             >
                                 Cambiar foto
                             </button>

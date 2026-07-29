@@ -1,4 +1,4 @@
-import NProgress from 'nprogress/nprogress';
+import NProgress from 'nprogress';
 import { router } from '@inertiajs/react';
 import 'nprogress/nprogress.css';
 import { useEffect } from 'react';
@@ -10,12 +10,12 @@ export default function Progress() {
         const handleStart = () => NProgress.start();
         const handleFinish = () => NProgress.done();
 
-        router.on('start', handleStart);
-        router.on('finish', handleFinish);
+        const removeStart = router.on('start', handleStart);
+        const removeFinish = router.on('finish', handleFinish);
 
         return () => {
-            router.off?.('start', handleStart);
-            router.off?.('finish', handleFinish);
+            removeStart();
+            removeFinish();
             NProgress.done();
             NProgress.remove();
         };

@@ -6,6 +6,7 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
 import { useForm } from '@inertiajs/react';
 import { FormEvent, useRef, useState } from 'react';
+import type { TextInputRef } from '@/Components/TextInput';
 
 type Props = {
     className?: string;
@@ -13,7 +14,7 @@ type Props = {
 
 export default function DeleteUserForm({ className = '' }: Props) {
     const [confirmingUserDeletion, setConfirmingUserDeletion] = useState(false);
-    const passwordInput = useRef<HTMLInputElement>(null);
+    const passwordInput = useRef<TextInputRef>(null);
 
     const {
         data,
@@ -49,8 +50,8 @@ export default function DeleteUserForm({ className = '' }: Props) {
     return (
         <section className={`space-y-6 ${className}`}>
             <header>
-                <h2 className="text-lg font-medium text-gray-900">Eliminar Cuenta</h2>
-                <p className="mt-1 text-sm text-gray-600">
+                <h2 className="text-lg font-medium text-gray-900 dark:text-white">Eliminar Cuenta</h2>
+                <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
                     Una vez que tu cuenta sea eliminada, todos sus recursos y datos serán eliminados permanentemente.
                     Antes de eliminar tu cuenta, por favor descarga cualquier dato o información que desees conservar.
                 </p>
@@ -62,10 +63,10 @@ export default function DeleteUserForm({ className = '' }: Props) {
 
             <Modal show={confirmingUserDeletion} onClose={closeModal}>
                 <form onSubmit={deleteUser} className="p-6">
-                    <h2 className="text-lg font-medium text-gray-900">
+                    <h2 className="text-lg font-medium text-gray-900 dark:text-white">
                         ¿Estás seguro de que quieres eliminar tu cuenta?
                     </h2>
-                    <p className="mt-1 text-sm text-gray-600">
+                    <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
                         Una vez que tu cuenta sea eliminada, todos sus recursos y datos serán eliminados permanentemente.
                         Por favor, ingresa tu contraseña para confirmar que deseas eliminar tu cuenta de forma permanente.
                     </p>

@@ -47,13 +47,13 @@ export default function AuthenticatedLayout({ children, header }: Props) {
                             </div>
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <Link href={route('dashboard')} className={navLinkClass(route().current('dashboard'))}>
+                                <Link href={route('dashboard')} className={navLinkClass(!!route().current('dashboard'))}>
                                     Inicio
                                 </Link>
-                                <Link href={route('workout.history')} className={navLinkClass(route().current('workout.history'))}>
+                                <Link href={route('workout.history')} className={navLinkClass(!!route().current('workout.history'))}>
                                     Historial
                                 </Link>
-                                <Link href={route('weekly.plan')} className={navLinkClass(route().current('weekly.plan'))}>
+                                <Link href={route('weekly.plan')} className={navLinkClass(!!route().current('weekly.plan'))}>
                                     Planificación
                                 </Link>
                             </div>

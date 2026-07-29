@@ -4,14 +4,15 @@ import TextInput from '@/Components/TextInput';
 import { Transition } from '@headlessui/react';
 import { useForm } from '@inertiajs/react';
 import { FormEvent, useRef } from 'react';
+import type { TextInputRef } from '@/Components/TextInput';
 
 type Props = {
     className?: string;
 };
 
 export default function UpdatePasswordForm({ className = '' }: Props) {
-    const passwordInput = useRef<HTMLInputElement>(null);
-    const currentPasswordInput = useRef<HTMLInputElement>(null);
+    const passwordInput = useRef<TextInputRef>(null);
+    const currentPasswordInput = useRef<TextInputRef>(null);
 
     const {
         data,
@@ -49,8 +50,8 @@ export default function UpdatePasswordForm({ className = '' }: Props) {
     return (
         <section className={className}>
             <header>
-                <h2 className="text-lg font-medium text-gray-900">Actualizar Contraseña</h2>
-                <p className="mt-1 text-sm text-gray-600">
+                <h2 className="text-lg font-medium text-gray-900 dark:text-white">Actualizar Contraseña</h2>
+                <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
                     Asegúrate de que tu cuenta use una contraseña larga y aleatoria para mantenerla segura.
                 </p>
             </header>
