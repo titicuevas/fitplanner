@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\WeeklyPlan;
 use App\Models\Workout;
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Http\Requests\MonthlyPlanRequest;
+use App\Http\Requests\WorkoutsByMonthRequest;
 use Illuminate\Support\Facades\Auth;
 
 class WeeklyPlanController extends Controller
@@ -99,11 +100,9 @@ class WeeklyPlanController extends Controller
         return response()->json($weeklyPlan);
     }
 
-    public function getMonthlyPlan(Request $request)
+    public function getMonthlyPlan(MonthlyPlanRequest $request)
     {
-        $validated = $request->validate([
-            'month' => 'required|integer|between:1,12',
-        ]);
+        $validated = $request->validated();
 
         $user = Auth::user();
 
@@ -115,11 +114,9 @@ class WeeklyPlanController extends Controller
         return response()->json($monthlyPlan);
     }
 
-    public function countWorkoutsByMonth(Request $request)
+    public function countWorkoutsByMonth(MonthlyPlanRequest $request)
     {
-        $validated = $request->validate([
-            'month' => 'required|integer|between:1,12',
-        ]);
+        $validated = $request->validated();
 
         $user = Auth::user();
 
@@ -130,14 +127,10 @@ class WeeklyPlanController extends Controller
         return response()->json(['count' => $workoutCount]);
     }
 
-    public function getWorkoutsByMonth(Request $request)
+    public function getWorkoutsByMonth(WorkoutsByMonthRequest $request)
     {
         $user = Auth::user();
-        $validated = $request->validate([
-            'month' => 'required|integer|between:1,12',
-            'year' => 'required|integer|min:2020',
-        ]);
-
+        $validated = $request->validated();
         $workouts = WeeklyPlan::where('user_id', $user->id)
             ->whereMonth('created_at', '=', $validated['month'])
             ->whereYear('created_at', '=', $validated['year'])

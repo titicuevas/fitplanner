@@ -2,63 +2,46 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreWorkoutRequest;
+use App\Http\Requests\UpdateWorkoutRequest;
 use App\Models\Workout;
-use Illuminate\Http\Request;
 
 class WorkoutController extends Controller
 {
-    // Lista todos los entrenamientos
     public function index()
     {
         $workouts = Workout::with('category')->get();
+
         return response()->json($workouts);
     }
-    
-    // Crea un nuevo workout
-    public function store(Request $request)
+
+    public function store(StoreWorkoutRequest $request)
     {
-        $data = $request->validate([
-            'title'       => 'required|string|max:255',
-            'warmup'      => 'required|string',
-            'movements'   => 'required|string',
-            'wod'         => 'required|string',
-            'duration'    => 'required|integer',
-            'category_id' => 'required|exists:categories,id'
-        ]);
-        
-        $workout = Workout::create($data);
+        $workout = Workout::create($request->validated());
+
         return response()->json($workout, 201);
     }
-    
-    // Muestra un workout específico
-    public function show($id)
+
+    public function show(int $id)
     {
         $workout = Workout::with(['category', 'logs', 'comments'])->findOrFail($id);
+
         return response()->json($workout);
     }
-    
-    // Actualiza un workout
-    public function update(Request $request, $id)
+
+    public function update(UpdateWorkoutRequest $request, int $id)
     {
-        $data = $request->validate([
-            'title'       => 'sometimes|required|string|max:255',
-            'warmup'      => 'sometimes|required|string',
-            'movements'   => 'sometimes|required|string',
-            'wod'         => 'sometimes|required|string',
-            'duration'    => 'sometimes|required|integer',
-            'category_id' => 'sometimes|required|exists:categories,id'
-        ]);
-        
         $workout = Workout::findOrFail($id);
-        $workout->update($data);
+        $workout->update($request->validated());
+
         return response()->json($workout);
     }
-    
-    // Elimina un workout
-    public function destroy($id)
+
+    public function destroy(int $id)
     {
         $workout = Workout::findOrFail($id);
         $workout->delete();
+
         return response()->json(['message' => 'Workout eliminado correctamente.']);
     }
 }

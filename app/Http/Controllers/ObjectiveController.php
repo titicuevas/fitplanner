@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreObjectiveRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Workout;
@@ -16,14 +16,9 @@ class ObjectiveController extends Controller
         'Mejorar flexibilidad' => 4,
     ];
 
-    public function store(Request $request)
+    public function store(StoreObjectiveRequest $request)
     {
-        $validated = $request->validate([
-            'objective' => 'required|string',
-            'birth_date' => 'required|date|before:today|after:1920-01-01',
-            'height' => 'required|numeric|between:100,250',
-            'weight' => 'required|numeric|between:30,200',
-        ]);
+        $validated = $request->validated();
 
         $user = Auth::user();
         $user->update($validated);
