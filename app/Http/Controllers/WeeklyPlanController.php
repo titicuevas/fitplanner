@@ -10,134 +10,145 @@ use Illuminate\Support\Facades\Auth;
 
 class WeeklyPlanController extends Controller
 {
-    // Método para generar la planificación semanal para todos los usuarios
+    private const OBJECTIVE_CATEGORY_MAP = [
+        'Pérdida de peso' => 1,
+        'Ganancia muscular' => 2,
+        'Mejorar resistencia' => 3,
+        'Mejorar flexibilidad' => 4,
+    ];
+
     public function generateWeeklyPlan()
     {
-        $users = User::all(); // Obtener todos los usuarios en la base de datos
-        $workouts = Workout::all(); // Obtener todos los WODs disponibles
+        $users = User::query()
+            ->whereNotNull('objective')
+            ->get();
 
-        // Días de la semana para asignar los WODs
-        $daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+        $generatedPlans = 0;
 
-        // Iterar sobre todos los usuarios
         foreach ($users as $user) {
-            $this->generateWeeklyPlanForUser($user);
+            if ($this->generateWeeklyPlanForUser($user)) {
+                $generatedPlans++;
+            }
         }
 
-        return response()->json(['message' => 'Planificación semanal generada para todos los usuarios con éxito']);
+        return response()->json([
+            'message' => 'Planificación semanal generada correctamente.',
+            'generated_plans' => $generatedPlans,
+            'processed_users' => $users->count(),
+        ]);
     }
 
-    // Método para generar la planificación semanal para un usuario específico
     public function generateWeeklyPlanForUser($user)
     {
-        // Verificar si el usuario ya tiene un plan asignado
-        $existingPlans = WeeklyPlan::where('user_id', $user->id)->exists();
+        $existingPlans = WeeklyPlan::where('user_id', $user->id)
+            ->where('month', now()->month)
+            ->exists();
+
         if ($existingPlans) {
-            return; // Si ya tiene un plan asignado, no asignar nuevos
+            return false;
         }
 
-        // Obtener los WODs correspondientes al objetivo del usuario
-        $objective = $user->objective; // Objetivo del usuario (ej. "Pérdida de peso")
-        $category_id = null;
+        $categoryId = $this->resolveCategoryId($user->objective);
 
-        // Asignar la categoría en función del objetivo
-        switch ($objective) {
-            case 'Pérdida de peso':
-                $category_id = 1; // Asumiendo que la categoría de "Pérdida de peso" es 1
-                break;
-            case 'Ganancia muscular':
-                $category_id = 2; // Categoría para "Ganancia muscular"
-                break;
-            case 'Mejorar resistencia':
-                $category_id = 3; // Categoría para "Mejorar resistencia"
-                break;
-            case 'Mejorar flexibilidad':
-                $category_id = 4; // Categoría para "Mejorar flexibilidad"
-                break;
-            default:
-                $category_id = 1; // Si no se encuentra un objetivo, asignamos por defecto "Pérdida de peso"
+        $workouts = Workout::where('category_id', $categoryId)
+            ->inRandomOrder()
+            ->limit(5)
+            ->get();
+
+        if ($workouts->isEmpty()) {
+            $workouts = Workout::query()
+                ->inRandomOrder()
+                ->limit(5)
+                ->get();
         }
 
-        // Obtener los WODs de la categoría correspondiente
-        $workouts = Workout::where('category_id', $category_id)->get(); // WODs de la categoría del objetivo del usuario
-        $daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']; // Los días de la semana para asignar WODs
-        $currentMonth = now()->month; // Mes actual
+        if ($workouts->isEmpty()) {
+            return false;
+        }
+
+        $daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+        $currentMonth = now()->month;
         $weeklyPlan = [];
 
-        // Asignar un WOD a cada día de la semana
-        foreach ($daysOfWeek as $day) {
-            // Seleccionar un WOD aleatorio de la categoría correspondiente
-            $workout = $workouts->random();
+        foreach ($daysOfWeek as $index => $day) {
+            $workout = $workouts[$index % $workouts->count()];
 
-            // Asignar el WOD al día de la semana
             $weeklyPlan[] = [
                 'user_id' => $user->id,
                 'workout_id' => $workout->id,
-                'assigned_day' => $day,
-                'month' => $currentMonth, // Mes actual
+                'assigned_day' => $day, 
+                'month' => $currentMonth,
+                'completed' => false,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
         }
 
-        // Insertar la planificación semanal en la base de datos
         WeeklyPlan::insert($weeklyPlan);
+        return true;
     }
 
-    // Método para obtener el plan semanal de un usuario específico
     public function getWeeklyPlan()
     {
-        $user = Auth::user(); // Obtén al usuario autenticado
+        $user = Auth::user();
         $weeklyPlan = WeeklyPlan::where('user_id', $user->id)
-            ->with('workout.category') // Cargar las categorías de los WODs
+            ->with('workout.category')
+            ->orderBy('month')
             ->get();
     
-        return response()->json($weeklyPlan); // Devuelve los datos en formato JSON
+        return response()->json($weeklyPlan);
     }
 
-    // Método para obtener el plan mensual de un usuario específico
     public function getMonthlyPlan(Request $request)
     {
-        $user = Auth::user(); // Obtén al usuario autenticado
-        $month = $request->input('month'); // Mes solicitado
+        $validated = $request->validate([
+            'month' => 'required|integer|between:1,12',
+        ]);
 
-        // Obtener los WODs del mes solicitado
+        $user = Auth::user();
+
         $monthlyPlan = WeeklyPlan::where('user_id', $user->id)
-            ->where('month', $month) // Filtrar por mes
-            ->with('workout') // Cargar los detalles del workout
+            ->where('month', $validated['month'])
+            ->with('workout.category')
             ->get();
 
-        return response()->json($monthlyPlan); // Devuelve los datos en formato JSON
+        return response()->json($monthlyPlan);
     }
 
-    // Método para contar los WODs realizados por mes
     public function countWorkoutsByMonth(Request $request)
     {
-        $user = Auth::user(); // Obtén al usuario autenticado
-        $month = $request->input('month'); // Mes solicitado
+        $validated = $request->validate([
+            'month' => 'required|integer|between:1,12',
+        ]);
 
-        // Contar los WODs realizados en el mes
+        $user = Auth::user();
+
         $workoutCount = WeeklyPlan::where('user_id', $user->id)
-            ->where('month', $month)
+            ->where('month', $validated['month'])
             ->count();
 
-        return response()->json(['count' => $workoutCount]); // Devuelve el conteo de WODs
+        return response()->json(['count' => $workoutCount]);
     }
 
-    // Método para obtener los WODs realizados por mes
     public function getWorkoutsByMonth(Request $request)
     {
         $user = Auth::user();
-        $month = $request->input('month');  // Recibe el mes desde la solicitud
-        $year = $request->input('year');    // Recibe el año (si es necesario)
+        $validated = $request->validate([
+            'month' => 'required|integer|between:1,12',
+            'year' => 'required|integer|min:2020',
+        ]);
 
-        // Filtrar los WODs por el mes y año
         $workouts = WeeklyPlan::where('user_id', $user->id)
-            ->whereMonth('created_at', '=', $month)
-            ->whereYear('created_at', '=', $year)
-            ->with('workout') // Cargar los detalles del workout
+            ->whereMonth('created_at', '=', $validated['month'])
+            ->whereYear('created_at', '=', $validated['year'])
+            ->with('workout.category')
             ->get();
 
-        return response()->json($workouts); // Devuelve los WODs en formato JSON
+        return response()->json($workouts);
+    }
+
+    private function resolveCategoryId(?string $objective): int
+    {
+        return self::OBJECTIVE_CATEGORY_MAP[$objective] ?? self::OBJECTIVE_CATEGORY_MAP['Pérdida de peso'];
     }
 }

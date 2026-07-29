@@ -9,6 +9,13 @@ use App\Models\WeeklyPlan;
 
 class ObjectiveController extends Controller
 {
+    private const OBJECTIVE_CATEGORY_MAP = [
+        'Pérdida de peso' => 1,
+        'Ganancia muscular' => 2,
+        'Mejorar resistencia' => 3,
+        'Mejorar flexibilidad' => 4,
+    ];
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -21,63 +28,57 @@ class ObjectiveController extends Controller
         $user = Auth::user();
         $user->update($validated);
 
-        // Asignar entrenamientos según el objetivo
         $this->assignWorkoutsToUser($user, $validated['objective']);
 
         return redirect()->route('dashboard')->with('success', '¡Perfil actualizado correctamente!');
     }
 
-    // Asignar WODs según el objetivo
     private function assignWorkoutsToUser($user, $objective)
     {
-        // Determinar el ID de categoría de WOD en función del objetivo
-        $category_id = null;
+        $categoryId = $this->resolveCategoryId($objective);
 
-        switch ($objective) {
-            case 'Pérdida de peso':
-                $category_id = 1;
-                break;
-            case 'Ganancia muscular':
-                $category_id = 2;
-                break;
-            case 'Mejorar resistencia':
-                $category_id = 3;
-                break;
-            case 'Mejorar flexibilidad':
-                $category_id = 4;
-                break;
-            default:
-                $category_id = 1; // Categoría por defecto
-        }
-
-        // Eliminar asignaciones anteriores si existen
         $user->workouts()->detach();
         WeeklyPlan::where('user_id', $user->id)->delete();
 
-        // Obtener los WODs correspondientes al objetivo
-        $workouts = Workout::where('category_id', $category_id)->inRandomOrder()->take(5)->get();
+        $workouts = Workout::where('category_id', $categoryId)
+            ->inRandomOrder()
+            ->take(5)
+            ->get();
 
-        // Días de la semana para asignar los WODs
+        if ($workouts->isEmpty()) {
+            $workouts = Workout::query()
+                ->inRandomOrder()
+                ->take(5)
+                ->get();
+        }
+
+        if ($workouts->isEmpty()) {
+            return;
+        }
+
         $daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
         $currentMonth = now()->month;
 
-        // Asignar los WODs al usuario y crear el plan semanal
-        foreach ($workouts as $index => $workout) {
-            // Asignar el WOD al usuario (relación many-to-many)
+        foreach ($daysOfWeek as $index => $day) {
+            $workout = $workouts[$index % $workouts->count()];
+
             $user->workouts()->attach($workout->id);
 
-            // Crear una entrada en la tabla weekly_plans
             WeeklyPlan::create([
                 'user_id' => $user->id,
                 'workout_id' => $workout->id,
-                'assigned_day' => $daysOfWeek[$index],
+                'assigned_day' => $day,
                 'month' => $currentMonth,
-                'completed' => false
+                'completed' => false,
             ]);
         }
 
-        // Asegurarse de que el objetivo se guarda en el usuario
         $user->objective = $objective;
         $user->save();
+    }
+
+    private function resolveCategoryId(string $objective): int
+    {
+        return self::OBJECTIVE_CATEGORY_MAP[$objective] ?? self::OBJECTIVE_CATEGORY_MAP['Pérdida de peso'];
     }
 }
