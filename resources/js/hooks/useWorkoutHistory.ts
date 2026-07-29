@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import api from '@/lib/api';
-import { showErrorMessage, showSuccessMessage } from '@/lib/notify';
+import { showErrorMessage, showSuccessMessage, getErrorMessage } from '@/lib/notify';
 import type { WorkoutLog } from '@/types/workout';
 
 export function useWorkoutHistory() {
@@ -27,7 +27,7 @@ export function useWorkoutHistory() {
             setHistory(response.data);
         } catch (error) {
             console.error('Error al obtener historial:', error);
-            showErrorMessage('Error al cargar el historial de WODs.');
+            showErrorMessage(getErrorMessage(error, 'Error al cargar el historial de WODs.'));
         } finally {
             setLoading(false);
         }
@@ -46,7 +46,7 @@ export function useWorkoutHistory() {
             await fetchHistory();
         } catch (error) {
             console.error('Error al guardar:', error);
-            showErrorMessage('Error al guardar la nota y puntuación.');
+            showErrorMessage(getErrorMessage(error, 'Error al guardar la nota y puntuación.'));
         } finally {
             setSaving((prev) => ({ ...prev, [workoutId]: false }));
         }
@@ -57,7 +57,7 @@ export function useWorkoutHistory() {
 
         const result = await Swal.fire({
             title: '¿Estás seguro?',
-            html: `<p>Vas a eliminar el WOD:</p><p class="font-semibold text-red-600">${title}</p><p class="text-sm text-gray-500 mt-2">Esta acción no se puede deshacer.</p>`,
+            text: `Vas a eliminar el WOD: ${title}. Esta acción no se puede deshacer.`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#EF4444',
@@ -76,7 +76,7 @@ export function useWorkoutHistory() {
             await showSuccessMessage('El WOD ha sido eliminado correctamente.');
         } catch (error) {
             console.error('Error al eliminar:', error);
-            showErrorMessage('Error al eliminar el WOD.');
+            showErrorMessage(getErrorMessage(error, 'Error al eliminar el WOD.'));
         } finally {
             setDeleting((prev) => ({ ...prev, [id]: false }));
         }

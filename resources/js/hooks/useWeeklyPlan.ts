@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import api from '@/lib/api';
-import { showErrorMessage, showSuccessMessage } from '@/lib/notify';
+import { showErrorMessage, showSuccessMessage, getErrorMessage } from '@/lib/notify';
 import type { WeeklyPlanItem, WorkoutLog } from '@/types/workout';
 
 const DAYS_OF_WEEK = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
@@ -29,7 +29,7 @@ export function useWeeklyPlan() {
             setCompletedWorkouts(completedResponse.data);
         } catch (error) {
             console.error('Error al obtener datos:', error);
-            showErrorMessage('Error al cargar los datos del plan semanal.');
+            showErrorMessage(getErrorMessage(error, 'Error al cargar los datos del plan semanal.'));
         } finally {
             setLoading(false);
         }
@@ -84,7 +84,7 @@ export function useWeeklyPlan() {
             setNotes('');
         } catch (error) {
             console.error('Error al completar el WOD:', error);
-            showErrorMessage('Error al guardar el WOD.');
+            showErrorMessage(getErrorMessage(error, 'Error al guardar el WOD.'));
         } finally {
             setIsCompleting(false);
         }

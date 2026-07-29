@@ -1,11 +1,16 @@
 import { useState, PropsWithChildren, ReactNode, FormEvent } from 'react';
 import { Link, useForm, usePage } from '@inertiajs/react';
-import Progress from '@/Components/Progress';
 import { useTheme } from '@/hooks/useTheme';
 
 type Props = PropsWithChildren<{
     header?: ReactNode;
 }>;
+
+const NAV_ITEMS = [
+    { href: 'dashboard', label: 'Inicio', match: 'dashboard' },
+    { href: 'workout.history', label: 'Historial', match: 'workout.history' },
+    { href: 'weekly.plan', label: 'Planificación', match: 'weekly.plan' },
+] as const;
 
 function navLinkClass(active: boolean) {
     return `inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 no-underline ${
@@ -15,10 +20,19 @@ function navLinkClass(active: boolean) {
     }`;
 }
 
+function mobileNavLinkClass(active: boolean) {
+    return `block rounded-lg px-3 py-2 text-base font-medium transition-colors ${
+        active
+            ? 'bg-red-50 text-red-600 dark:bg-red-950/50 dark:text-red-400'
+            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white'
+    }`;
+}
+
 export default function AuthenticatedLayout({ children, header }: Props) {
     const { auth } = usePage<{ auth: { user: { name: string; email: string } } }>().props;
     const user = auth?.user || { name: 'Usuario', email: '' };
-    const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+    const [showingUserMenu, setShowingUserMenu] = useState(false);
+    const [showingMobileNav, setShowingMobileNav] = useState(false);
     const { isDark, toggle } = useTheme();
     const { post } = useForm();
 
@@ -27,15 +41,19 @@ export default function AuthenticatedLayout({ children, header }: Props) {
         post(route('logout'));
     };
 
+    const closeMenus = () => {
+        setShowingUserMenu(false);
+        setShowingMobileNav(false);
+    };
+
     return (
         <div className="min-h-screen bg-gray-100 transition-colors duration-300 dark:bg-gray-900">
-            <Progress />
             <nav className="fixed top-0 left-0 right-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-sm transition-colors duration-300 dark:border-gray-700 dark:bg-gray-800/95">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 justify-between">
                         <div className="flex">
                             <div className="flex shrink-0 items-center">
-                                <Link href={route('dashboard')} aria-label="Ir al inicio">
+                                <Link href={route('dashboard')} aria-label="Ir al inicio" onClick={closeMenus}>
                                     <div className="relative h-12 w-12 overflow-hidden rounded-full bg-white/10 p-1 ring-2 ring-white/20 backdrop-blur-sm transition-all duration-300 hover:ring-red-500/50">
                                         <img
                                             src="/images/fitplanner-logo.png"
@@ -47,19 +65,19 @@ export default function AuthenticatedLayout({ children, header }: Props) {
                             </div>
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <Link href={route('dashboard')} className={navLinkClass(!!route().current('dashboard'))}>
-                                    Inicio
-                                </Link>
-                                <Link href={route('workout.history')} className={navLinkClass(!!route().current('workout.history'))}>
-                                    Historial
-                                </Link>
-                                <Link href={route('weekly.plan')} className={navLinkClass(!!route().current('weekly.plan'))}>
-                                    Planificación
-                                </Link>
+                                {NAV_ITEMS.map((item) => (
+                                    <Link
+                                        key={item.href}
+                                        href={route(item.href)}
+                                        className={navLinkClass(!!route().current(item.match))}
+                                    >
+                                        {item.label}
+                                    </Link>
+                                ))}
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 sm:gap-4">
                             <button
                                 type="button"
                                 onClick={toggle}
@@ -77,12 +95,15 @@ export default function AuthenticatedLayout({ children, header }: Props) {
                                 )}
                             </button>
 
-                            <div className="relative ms-3">
+                            <div className="relative hidden sm:block">
                                 <button
                                     type="button"
                                     className="flex rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
-                                    onClick={() => setShowingNavigationDropdown(!showingNavigationDropdown)}
-                                    aria-expanded={showingNavigationDropdown}
+                                    onClick={() => {
+                                        setShowingUserMenu(!showingUserMenu);
+                                        setShowingMobileNav(false);
+                                    }}
+                                    aria-expanded={showingUserMenu}
                                     aria-haspopup="menu"
                                 >
                                     <span className="sr-only">Abrir menú de usuario</span>
@@ -93,7 +114,7 @@ export default function AuthenticatedLayout({ children, header }: Props) {
                                     />
                                 </button>
 
-                                {showingNavigationDropdown && (
+                                {showingUserMenu && (
                                     <div
                                         role="menu"
                                         className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-none dark:bg-gray-800 dark:ring-white/10"
@@ -102,7 +123,7 @@ export default function AuthenticatedLayout({ children, header }: Props) {
                                             href={route('profile.edit')}
                                             role="menuitem"
                                             className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-                                            onClick={() => setShowingNavigationDropdown(false)}
+                                            onClick={closeMenus}
                                         >
                                             Perfil
                                         </Link>
@@ -118,9 +139,80 @@ export default function AuthenticatedLayout({ children, header }: Props) {
                                     </div>
                                 )}
                             </div>
+
+                            <button
+                                type="button"
+                                className="inline-flex items-center justify-center rounded-lg p-2 text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500 dark:text-gray-400 dark:hover:bg-gray-700 sm:hidden"
+                                onClick={() => {
+                                    setShowingMobileNav(!showingMobileNav);
+                                    setShowingUserMenu(false);
+                                }}
+                                aria-expanded={showingMobileNav}
+                                aria-controls="mobile-nav"
+                                aria-label="Abrir menú de navegación"
+                            >
+                                {showingMobileNav ? (
+                                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                ) : (
+                                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                                    </svg>
+                                )}
+                            </button>
                         </div>
                     </div>
                 </div>
+
+                {showingMobileNav && (
+                    <div
+                        id="mobile-nav"
+                        className="border-t border-gray-200 bg-white px-4 pb-4 pt-2 dark:border-gray-700 dark:bg-gray-800 sm:hidden"
+                    >
+                        <div className="space-y-1">
+                            {NAV_ITEMS.map((item) => (
+                                <Link
+                                    key={item.href}
+                                    href={route(item.href)}
+                                    className={mobileNavLinkClass(!!route().current(item.match))}
+                                    onClick={closeMenus}
+                                >
+                                    {item.label}
+                                </Link>
+                            ))}
+                        </div>
+
+                        <div className="mt-4 border-t border-gray-200 pt-4 dark:border-gray-700">
+                            <div className="mb-3 flex items-center gap-3 px-3">
+                                <img
+                                    className="h-10 w-10 rounded-full"
+                                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`}
+                                    alt=""
+                                />
+                                <div className="min-w-0">
+                                    <p className="truncate text-sm font-medium text-gray-900 dark:text-white">{user.name}</p>
+                                    <p className="truncate text-xs text-gray-500 dark:text-gray-400">{user.email}</p>
+                                </div>
+                            </div>
+                            <Link
+                                href={route('profile.edit')}
+                                className={mobileNavLinkClass(!!route().current('profile.edit'))}
+                                onClick={closeMenus}
+                            >
+                                Perfil
+                            </Link>
+                            <form onSubmit={handleLogout} className="mt-1">
+                                <button
+                                    type="submit"
+                                    className="block w-full rounded-lg px-3 py-2 text-left text-base font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40"
+                                >
+                                    Cerrar Sesión
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                )}
             </nav>
 
             {header && (

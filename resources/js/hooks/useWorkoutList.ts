@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import api from '@/lib/api';
-import { showErrorToast, showSuccessToast } from '@/lib/notify';
+import { showErrorToast, showSuccessToast, getErrorMessage } from '@/lib/notify';
 import type { Workout, WorkoutLog } from '@/types/workout';
 
 export const CATEGORY_OPTIONS = [
@@ -35,7 +35,7 @@ export function useWorkoutList() {
             setCompletedWorkouts(new Set(completedResponse.data.map((wod) => wod.workout_id)));
         } catch (error) {
             console.error('Error al cargar los datos:', error);
-            showErrorToast('Error al cargar los entrenamientos');
+            showErrorToast(getErrorMessage(error, 'Error al cargar los entrenamientos'));
         } finally {
             setLoading(false);
         }
@@ -64,7 +64,7 @@ export function useWorkoutList() {
             setCompletedWorkouts(new Set(completedResponse.data.map((wod) => wod.workout_id)));
         } catch (error) {
             console.error('Error al registrar el entrenamiento:', error);
-            showErrorToast('Error al registrar el WOD');
+            showErrorToast(getErrorMessage(error, 'Error al registrar el WOD'));
         } finally {
             setIsProcessing(false);
             setSelectedWorkout(null);
