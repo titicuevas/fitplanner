@@ -11,6 +11,9 @@ const categoryColors: Record<string, string> = {
     'Sin categoría': 'bg-gray-500',
 };
 
+const TODAY_DAY = new Date().toLocaleDateString('es-ES', { weekday: 'long' })
+    .replace(/^\w/, (c) => c.toUpperCase());
+
 export default function WeeklyPlan() {
     const {
         daysOfWeek,
@@ -49,11 +52,25 @@ export default function WeeklyPlan() {
                             {daysOfWeek.map((day) => {
                                 const dailyPlan = planByDay[day];
                                 const workout = dailyPlan?.workout;
+                                const isToday = day === TODAY_DAY;
 
                                 return (
-                                    <div key={day} className="flex h-full flex-col overflow-hidden rounded-lg bg-white shadow-sm transition-colors dark:bg-gray-800 dark:shadow-none">
-                                        <div className="border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-700 dark:bg-gray-800/80">
-                                            <h3 className="text-center text-base font-semibold text-gray-900 dark:text-white">{day}</h3>
+                                    <div
+                                        key={day}
+                                        className={`flex h-full flex-col overflow-hidden rounded-lg bg-white shadow-sm transition-colors dark:bg-gray-800 dark:shadow-none ${
+                                            isToday ? 'ring-2 ring-red-500 dark:ring-red-400' : ''
+                                        }`}
+                                    >
+                                        <div className={`border-b px-4 py-3 ${
+                                            isToday
+                                                ? 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/40'
+                                                : 'border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/80'
+                                        }`}>
+                                            <h3 className={`text-center text-base font-semibold ${
+                                                isToday ? 'text-red-700 dark:text-red-300' : 'text-gray-900 dark:text-white'
+                                            }`}>
+                                                {day}{isToday ? ' · Hoy' : ''}
+                                            </h3>
                                         </div>
 
                                         {dailyPlan && workout ? (
@@ -94,23 +111,24 @@ export default function WeeklyPlan() {
                                                 </div>
 
                                                 <div className="mt-6 border-t border-gray-100 pt-4 dark:border-gray-700">
-                                                    <button
-                                                        onClick={() => handleWodSelection(dailyPlan)}
-                                                        disabled={dailyPlan.completed}
-                                                        className={`
-                                                            w-full inline-flex items-center justify-center gap-2 px-4 py-2.5
-                                                            text-sm font-medium rounded-lg transition-colors duration-200
-                                                            ${dailyPlan.completed
-                                                                ? 'cursor-not-allowed bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500'
-                                                                : 'bg-green-500 text-white hover:bg-green-600 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800'
-                                                            }
-                                                        `}
-                                                    >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                                                            <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clipRule="evenodd" />
-                                                        </svg>
-                                                        <span>Seleccionar WOD</span>
-                                                    </button>
+                                                    {dailyPlan.completed ? (
+                                                        <div className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-green-100 px-4 py-2.5 text-sm font-medium text-green-800 dark:bg-green-950 dark:text-green-300">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+                                                                <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clipRule="evenodd" />
+                                                            </svg>
+                                                            <span>WOD completado</span>
+                                                        </div>
+                                                    ) : (
+                                                        <button
+                                                            onClick={() => handleWodSelection(dailyPlan)}
+                                                            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-green-500 px-4 py-2.5 text-sm font-medium text-white transition-colors duration-200 hover:bg-green-600 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
+                                                                <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clipRule="evenodd" />
+                                                            </svg>
+                                                            <span>Seleccionar WOD</span>
+                                                        </button>
+                                                    )}
                                                 </div>
 
                                                 {selectedWod && selectedWod.workout.id === workout.id && (

@@ -4,10 +4,30 @@ import { showErrorToast, showSuccessToast, getErrorMessage } from '@/lib/notify'
 import type { Workout, WorkoutLog } from '@/types/workout';
 
 export const CATEGORY_OPTIONS = [
-    { value: 'all', label: 'Todos', active: 'bg-gray-800 text-white', idle: 'bg-gray-200 text-gray-700 hover:bg-gray-300' },
-    { value: 'Escalado', label: 'Escalado', active: 'bg-blue-600 text-white', idle: 'bg-blue-100 text-blue-700 hover:bg-blue-200' },
-    { value: 'RX', label: 'RX', active: 'bg-yellow-500 text-white', idle: 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' },
-    { value: 'Élite', label: 'Élite', active: 'bg-red-600 text-white', idle: 'bg-red-100 text-red-700 hover:bg-red-200' },
+    {
+        value: 'all',
+        label: 'Todos',
+        active: 'bg-gray-800 text-white dark:bg-gray-100 dark:text-gray-900',
+        idle: 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600',
+    },
+    {
+        value: 'Escalado',
+        label: 'Escalado',
+        active: 'bg-blue-600 text-white',
+        idle: 'bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-950 dark:text-blue-200 dark:hover:bg-blue-900',
+    },
+    {
+        value: 'RX',
+        label: 'RX',
+        active: 'bg-yellow-500 text-white',
+        idle: 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-950 dark:text-yellow-200 dark:hover:bg-yellow-900',
+    },
+    {
+        value: 'Élite',
+        label: 'Élite',
+        active: 'bg-red-600 text-white',
+        idle: 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-950 dark:text-red-200 dark:hover:bg-red-900',
+    },
 ] as const;
 
 export type CategoryFilter = (typeof CATEGORY_OPTIONS)[number]['value'];

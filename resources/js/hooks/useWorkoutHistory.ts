@@ -24,7 +24,18 @@ export function useWorkoutHistory() {
             const response = await api.get<WorkoutLog[]>('/api/workouts-by-month', {
                 params: { month: selectedMonth, year: selectedYear },
             });
-            setHistory(response.data);
+            const logs = response.data;
+            setHistory(logs);
+
+            const nextNotes: Record<number, string> = {};
+            const nextScores: Record<number, string> = {};
+            logs.forEach((log) => {
+                const workoutId = log.workout?.id ?? log.workout_id;
+                nextNotes[workoutId] = log.notes ?? '';
+                nextScores[workoutId] = log.score != null ? String(log.score) : '';
+            });
+            setNotes(nextNotes);
+            setScores(nextScores);
         } catch (error) {
             console.error('Error al obtener historial:', error);
             showErrorMessage(getErrorMessage(error, 'Error al cargar el historial de WODs.'));
@@ -33,8 +44,8 @@ export function useWorkoutHistory() {
         }
     };
 
-    const saveEntry = async (workoutId: number) => {
-        if (saving[workoutId] || deleting[workoutId]) return;
+    const saveEntry = async (workoutId: number): Promise<boolean> => {
+        if (saving[workoutId] || deleting[workoutId]) return false;
         setSaving((prev) => ({ ...prev, [workoutId]: true }));
         try {
             await api.post('/api/workouts/complete', {
@@ -44,9 +55,11 @@ export function useWorkoutHistory() {
             });
             await showSuccessMessage('La nota y puntuación se han guardado correctamente.');
             await fetchHistory();
+            return true;
         } catch (error) {
             console.error('Error al guardar:', error);
             showErrorMessage(getErrorMessage(error, 'Error al guardar la nota y puntuación.'));
+            return false;
         } finally {
             setSaving((prev) => ({ ...prev, [workoutId]: false }));
         }
