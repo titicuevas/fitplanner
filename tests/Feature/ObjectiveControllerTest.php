@@ -44,4 +44,37 @@ class ObjectiveControllerTest extends TestCase
 
         $response->assertSessionHasErrors(['objective', 'birth_date', 'height', 'weight']);
     }
+
+    public function test_objective_is_saved_even_when_no_workouts_are_available(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post(route('objective.store'), [
+            'objective' => 'Pérdida de peso',
+            'birth_date' => '1990-01-01',
+            'height' => 170,
+            'weight' => 70,
+        ]);
+
+        $response->assertRedirect(route('dashboard'))
+            ->assertSessionHas('error');
+
+        $this->assertEquals('Pérdida de peso', $user->fresh()->objective);
+        $this->assertDatabaseCount('weekly_plans', 0);
+    }
+
+    public function test_objective_form_renders_for_authenticated_user(): void
+    {
+        $user = User::factory()->withObjective()->create();
+
+        $response = $this->actingAs($user)->get(route('objective.form'));
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page
+            ->component('ObjectiveForm')
+            ->has('user')
+            ->where('user.objective', $user->objective)
+            ->missing('user.password')
+        );
+    }
 }

@@ -34,15 +34,24 @@ Route::middleware('auth')->group(function () {
  
     // Ruta para mostrar el formulario de objetivos
     Route::get('/objective', function () {
+        $user = Auth::user();
+
         return Inertia::render('ObjectiveForm', [
-            'user' => Auth::user(),
+            'user' => [
+                'name' => $user->name,
+                'objective' => $user->objective,
+                'birth_date' => optional($user->birth_date)?->format('Y-m-d'),
+                'height' => $user->height,
+                'weight' => $user->weight,
+            ],
         ]);
     })->name('objective.form');
 
     // Ruta para guardar el objetivo del usuario
-    Route::post('/objective', [ObjectiveController::class, 'store'])->name('objective.store');
+    Route::post('/objective', [ObjectiveController::class, 'store'])
+        ->middleware('throttle:10,1')
+        ->name('objective.store');
 });
-
 // Rutas para la planificación semanal
 Route::middleware(['auth', 'verified'])->get('/weekly-plan', function () {
     return Inertia::render('WeeklyPlan');

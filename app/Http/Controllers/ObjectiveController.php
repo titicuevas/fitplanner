@@ -19,8 +19,19 @@ class ObjectiveController extends Controller
         $user = Auth::user();
         $user->update($validated);
 
-        $this->weeklyPlanService->assignPlanForObjective($user, $validated['objective']);
+        $assigned = $this->weeklyPlanService->assignPlanForObjective(
+            $user->fresh(),
+            $validated['objective']
+        );
 
-        return redirect()->route('dashboard')->with('success', '¡Perfil actualizado correctamente!');
+        if (! $assigned) {
+            return redirect()
+                ->route('dashboard')
+                ->with('error', 'Objetivo guardado, pero no hay entrenamientos disponibles para generar el plan.');
+        }
+
+        return redirect()
+            ->route('dashboard')
+            ->with('success', '¡Objetivo guardado y plan semanal actualizado!');
     }
 }
