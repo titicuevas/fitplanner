@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MonthlyPlanRequest;
-use App\Http\Requests\WorkoutsByMonthRequest;
 use App\Models\WeeklyPlan;
 use App\Services\WeeklyPlanService;
 use Illuminate\Support\Facades\Auth;
@@ -66,18 +65,5 @@ class WeeklyPlanController extends Controller
             ->count();
 
         return response()->json(['count' => $workoutCount]);
-    }
-
-    public function getWorkoutsByMonth(WorkoutsByMonthRequest $request)
-    {
-        $validated = $request->validated();
-
-        $workouts = WeeklyPlan::where('user_id', Auth::id())
-            ->whereMonth('created_at', $validated['month'])
-            ->whereYear('created_at', $validated['year'])
-            ->with('workout.category')
-            ->get();
-
-        return response()->json($workouts);
     }
 }

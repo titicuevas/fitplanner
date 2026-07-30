@@ -11,16 +11,8 @@ use Illuminate\Support\Str;
  */
 class UserFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
     protected static ?string $password;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
@@ -30,16 +22,25 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
             'birth_date' => fake()->date('Y-m-d', '-18 years'),
+            'objective' => null,
+            'height' => null,
+            'weight' => null,
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
     public function unverified(): static
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    public function withObjective(string $objective = 'Pérdida de peso'): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'objective' => $objective,
+            'height' => fake()->numberBetween(155, 195),
+            'weight' => fake()->randomFloat(1, 55, 100),
         ]);
     }
 }
