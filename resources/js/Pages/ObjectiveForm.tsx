@@ -3,15 +3,26 @@ import { Head, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 type Props = {
-    user?: { name: string };
+    user?: {
+        name: string;
+        objective?: string | null;
+        birth_date?: string | null;
+        height?: number | string | null;
+        weight?: number | string | null;
+    };
 };
+
+function toDateInputValue(value?: string | null): string {
+    if (!value) return '';
+    return value.slice(0, 10);
+}
 
 export default function ObjectiveForm({ user }: Props) {
     const { data, setData, post, processing, errors } = useForm({
-        objective: '',
-        birth_date: '',
-        height: '',
-        weight: '',
+        objective: user?.objective ?? '',
+        birth_date: toDateInputValue(user?.birth_date),
+        height: user?.height != null ? String(user.height) : '',
+        weight: user?.weight != null ? String(user.weight) : '',
     });
 
     const [ageDisplay, setAgeDisplay] = useState('');
@@ -69,10 +80,12 @@ export default function ObjectiveForm({ user }: Props) {
                         <div className="p-6">
                             <div className="mb-8">
                                 <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
-                                    ¡Personaliza tu experiencia!
+                                    {user?.objective ? 'Actualiza tu perfil de entrenamiento' : 'Personaliza tu experiencia'}
                                 </h3>
                                 <p className="text-gray-600 dark:text-gray-300">
-                                    Ayúdanos a entender mejor tus objetivos y características para poder ofrecerte un plan más personalizado.
+                                    {user?.objective
+                                        ? 'Revisa tus datos y ajusta el objetivo para regenerar tu plan semanal.'
+                                        : 'Cuéntanos tu objetivo y características para ofrecerte un plan más personalizado.'}
                                 </p>
                             </div>
 
@@ -152,7 +165,7 @@ export default function ObjectiveForm({ user }: Props) {
                                                 Guardando...
                                             </>
                                         ) : (
-                                            'Guardar Objetivos'
+                                            user?.objective ? 'Actualizar objetivos' : 'Guardar objetivos'
                                         )}
                                     </button>
                                 </div>
