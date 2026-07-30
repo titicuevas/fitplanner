@@ -1,8 +1,9 @@
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import EmptyState from '@/Components/EmptyState';
 import LoadingSpinner from '@/Components/LoadingSpinner';
 import { useWeeklyPlan } from '@/hooks/useWeeklyPlan';
+import type { AuthUser } from '@/types/auth';
 
 const categoryColors: Record<string, string> = {
     RX: 'bg-yellow-500',
@@ -15,11 +16,16 @@ const TODAY_DAY = new Date().toLocaleDateString('es-ES', { weekday: 'long' })
     .replace(/^\w/, (c) => c.toUpperCase());
 
 export default function WeeklyPlan() {
+    const { auth } = usePage<{ auth: { user: AuthUser } }>().props;
+    const hasObjective = Boolean(auth.user.objective);
+
     const {
         daysOfWeek,
         handleWodSelection,
         completeSelectedWod,
+        generatePlan,
         isCompleting,
+        isGenerating,
         loading,
         notes,
         plan,
@@ -46,7 +52,22 @@ export default function WeeklyPlan() {
                     {loading ? (
                         <LoadingSpinner label="Cargando plan semanal..." />
                     ) : plan.length === 0 ? (
-                        <EmptyState message="No hay plan disponible para esta semana." />
+                        hasObjective ? (
+                            <EmptyState
+                                title="Aún no tienes plan este mes"
+                                message="Puedes generar uno ahora con tus objetivos actuales."
+                                actionLabel="Generar plan semanal"
+                                onAction={() => void generatePlan()}
+                                actionLoading={isGenerating}
+                            />
+                        ) : (
+                            <EmptyState
+                                title="Define tu objetivo primero"
+                                message="Sin objetivo no podemos crear un plan personalizado."
+                                actionLabel="Configurar objetivo"
+                                actionHref={route('objective.form')}
+                            />
+                        )
                     ) : (
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-5">
                             {daysOfWeek.map((day) => {

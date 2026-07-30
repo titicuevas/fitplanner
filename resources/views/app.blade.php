@@ -32,7 +32,7 @@
                 ? "resources/js/Pages/{$pageComponent}.tsx"
                 : "resources/js/Pages/{$pageComponent}.jsx";
         @endphp
-        @vite(['resources/js/app.jsx', $pageEntry])
+        @vite(['resources/js/app.tsx', $pageEntry])
         @inertiaHead
     </head>
     <body class="font-sans antialiased bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100">

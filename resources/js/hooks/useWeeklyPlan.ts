@@ -5,6 +5,11 @@ import type { WeeklyPlanItem, WorkoutLog } from '@/types/workout';
 
 const DAYS_OF_WEEK = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
 
+type GeneratePlanResponse = {
+    message: string;
+    generated: boolean;
+};
+
 export function useWeeklyPlan() {
     const [plan, setPlan] = useState<WeeklyPlanItem[]>([]);
     const [loading, setLoading] = useState(true);
@@ -13,6 +18,7 @@ export function useWeeklyPlan() {
     const [notes, setNotes] = useState('');
     const [completedWorkouts, setCompletedWorkouts] = useState<WorkoutLog[]>([]);
     const [isCompleting, setIsCompleting] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false);
 
     useEffect(() => {
         void fetchData();
@@ -32,6 +38,26 @@ export function useWeeklyPlan() {
             showErrorMessage(getErrorMessage(error, 'Error al cargar los datos del plan semanal.'));
         } finally {
             setLoading(false);
+        }
+    };
+
+    const generatePlan = async () => {
+        if (isGenerating) return;
+
+        setIsGenerating(true);
+        try {
+            const { data } = await api.post<GeneratePlanResponse>('/api/weekly-plan/generate');
+            if (data.generated) {
+                await showSuccessMessage(data.message);
+                await fetchData();
+            } else {
+                showErrorMessage(data.message);
+            }
+        } catch (error) {
+            console.error('Error al generar el plan:', error);
+            showErrorMessage(getErrorMessage(error, 'No se pudo generar el plan semanal.'));
+        } finally {
+            setIsGenerating(false);
         }
     };
 
@@ -101,7 +127,9 @@ export function useWeeklyPlan() {
         daysOfWeek: DAYS_OF_WEEK,
         handleWodSelection,
         completeSelectedWod,
+        generatePlan,
         isCompleting,
+        isGenerating,
         loading,
         notes,
         plan,

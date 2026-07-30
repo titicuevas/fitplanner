@@ -106,7 +106,10 @@ export default function WorkoutHistory() {
                                 <LoadingSpinner label="Cargando historial..." />
                             ) : history.length === 0 ? (
                                 <EmptyState
-                                    message="No has completado ningún WOD este mes. ¡Empieza a entrenar! 🏋️‍♂️"
+                                    title="Sin WODs este mes"
+                                    message="No has completado ningún WOD en este periodo. ¡Empieza a entrenar!"
+                                    actionLabel="Ver plan semanal"
+                                    actionHref={route('weekly.plan')}
                                     className="shadow-none"
                                 />
                             ) : (

@@ -1,7 +1,8 @@
-import { Head, usePage } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { ReactNode } from 'react';
 import WorkoutList from './WorkoutList';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import type { AuthUser } from '@/types/auth';
 
 type FeatureCard = {
     title: string;
@@ -42,8 +43,9 @@ const FEATURE_CARDS: FeatureCard[] = [
 ];
 
 export default function Dashboard() {
-    const { auth } = usePage<{ auth: { user: { name: string } } }>().props;
+    const { auth } = usePage<{ auth: { user: AuthUser } }>().props;
     const firstName = auth.user.name.trim().split(/\s+/)[0] || auth.user.name;
+    const needsObjective = !auth.user.objective;
 
     return (
         <AuthenticatedLayout>
@@ -61,6 +63,23 @@ export default function Dashboard() {
                                     Gestiona tus entrenamientos y sigue tu progreso desde aquí.
                                 </p>
                             </div>
+
+                            {needsObjective ? (
+                                <div className="mb-10 rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-left dark:border-red-900 dark:bg-red-950/40">
+                                    <p className="font-semibold text-red-800 dark:text-red-200">
+                                        Todavía no has definido tu objetivo
+                                    </p>
+                                    <p className="mt-1 text-sm text-red-700 dark:text-red-300">
+                                        Configúralo para generar un plan semanal adaptado a ti.
+                                    </p>
+                                    <Link
+                                        href={route('objective.form')}
+                                        className="mt-3 inline-flex rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-500"
+                                    >
+                                        Configurar objetivo
+                                    </Link>
+                                </div>
+                            ) : null}
 
                             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
                                 {FEATURE_CARDS.map((card) => (

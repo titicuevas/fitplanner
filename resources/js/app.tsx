@@ -7,7 +7,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import Progress from './Components/Progress';
 import ErrorBoundary from './Components/ErrorBoundary';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = import.meta.env.VITE_APP_NAME || 'FitPlanner';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -31,8 +31,8 @@ createInertiaApp({
             <ErrorBoundary>
                 <Progress />
                 <App {...props} />
-            </ErrorBoundary>
+            </ErrorBoundary>,
         );
     },
-    progress: false
+    progress: false,
 });
