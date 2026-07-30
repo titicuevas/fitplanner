@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class WeeklyPlan extends Model
 {
@@ -19,16 +20,20 @@ class WeeklyPlan extends Model
         'notes',
     ];
 
-    // Relación con el modelo User
-    public function user()
+    protected $casts = [
+        'user_id' => 'integer',
+        'workout_id' => 'integer',
+        'completed' => 'boolean',
+        'score' => 'integer',
+    ];
+
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    // Relación con el modelo Workout
-    public function workout()
+    public function workout(): BelongsTo
     {
         return $this->belongsTo(Workout::class);
     }
-    
 }

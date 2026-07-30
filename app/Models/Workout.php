@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Workout extends Model
 {
@@ -15,35 +18,35 @@ class Workout extends Model
         'movements',
         'wod',
         'duration',
-        'category_id'
+        'category_id',
     ];
 
-    // Relación: cada workout pertenece a una categoría.
-    public function category()
+    protected $casts = [
+        'duration' => 'integer',
+        'category_id' => 'integer',
+    ];
+
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    // Relación: un workout tiene muchos logs y comentarios.
-    public function logs()
+    public function logs(): HasMany
     {
         return $this->hasMany(WorkoutLog::class);
     }
 
-    public function comments()
+    public function comments(): HasMany
     {
         return $this->hasMany(Comment::class);
     }
 
-    public function weeklyPlans()
+    public function weeklyPlans(): HasMany
     {
         return $this->hasMany(WeeklyPlan::class);
     }
-    public function workout()
-    {
-        return $this->belongsTo(Workout::class);
-    }
-    public function users()
+
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'user_workout')
             ->withPivot('completed_at', 'score', 'notes')

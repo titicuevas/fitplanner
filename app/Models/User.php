@@ -1,21 +1,19 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Storage;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
@@ -30,31 +28,24 @@ class User extends Authenticatable
         'profile_photo_path',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'birth_date' => 'date',
+        'height' => 'float',
+        'weight' => 'float',
     ];
 
     protected $appends = [
         'profile_photo_url',
     ];
 
-    public function getProfilePhotoUrlAttribute()
+    public function getProfilePhotoUrlAttribute(): ?string
     {
         if ($this->profile_photo_path) {
             return Storage::disk('public')->url($this->profile_photo_path);
@@ -63,21 +54,24 @@ class User extends Authenticatable
         return null;
     }
 
-    public function weeklyPlans()
+    public function weeklyPlans(): HasMany
     {
         return $this->hasMany(WeeklyPlan::class);
     }
-    public function workouts()
+
+    public function workouts(): BelongsToMany
     {
         return $this->belongsToMany(Workout::class, 'user_workout', 'user_id', 'workout_id');
     }
-    public function completedWorkouts()
+
+    public function completedWorkouts(): BelongsToMany
     {
         return $this->belongsToMany(Workout::class, 'user_workout')
-            ->withPivot('completed_at', 'score', 'notes') // Incluye los campos adicionales de la tabla intermedia
+            ->withPivot('completed_at', 'score', 'notes')
             ->withTimestamps();
     }
-    public function workoutLogs()
+
+    public function workoutLogs(): HasMany
     {
         return $this->hasMany(WorkoutLog::class);
     }

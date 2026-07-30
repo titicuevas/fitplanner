@@ -4,15 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = ['name'];
-    
-    // Relación: una categoría tiene muchos entrenamientos.
-    public function workouts()
+
+    public function workouts(): HasMany
     {
         return $this->hasMany(Workout::class);
     }
