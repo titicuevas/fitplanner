@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
 use App\Models\User;
 use App\Models\Workout;
-use App\Models\WeeklyPlan;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -12,43 +12,36 @@ class ObjectiveControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_user_can_set_objective_and_get_weekly_plan()
+    public function test_user_can_set_objective_and_generate_initial_weekly_plan(): void
     {
         $user = User::factory()->create();
-        $category = \App\Models\Category::factory()->create();
-        $workout = Workout::factory()->create(['category_id' => $category->id]);
+        $category = Category::factory()->create(['id' => 1, 'name' => 'Escalado']);
+        Workout::factory()->count(5)->create(['category_id' => $category->id]);
 
-        $response = $this->actingAs($user)
-            ->post(route('objective.store'), [
-                'objective' => 'Pérdida de peso',
-                'birth_date' => '1990-01-01',
-                'height' => 170,
-                'weight' => 70
-            ]);
-
-        $response->assertRedirect(route('dashboard'));
-        
-        // Verificar que se creó el plan semanal
-        $this->assertDatabaseHas('weekly_plans', [
-            'user_id' => $user->id
+        $response = $this->actingAs($user)->post(route('objective.store'), [
+            'objective' => 'Pérdida de peso',
+            'birth_date' => '1990-01-01',
+            'height' => 170,
+            'weight' => 70,
         ]);
 
-        // Verificar que el objetivo se actualizó
+        $response->assertRedirect(route('dashboard'));
+
+        $this->assertDatabaseCount('weekly_plans', 5);
         $this->assertEquals('Pérdida de peso', $user->fresh()->objective);
     }
 
-    public function test_validation_works_for_invalid_data()
+    public function test_validation_works_for_invalid_data(): void
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)
-            ->post(route('objective.store'), [
-                'objective' => '',
-                'birth_date' => 'invalid-date',
-                'height' => 50, // demasiado bajo
-                'weight' => 20 // demasiado bajo
-            ]);
+        $response = $this->actingAs($user)->post(route('objective.store'), [
+            'objective' => '',
+            'birth_date' => 'invalid-date',
+            'height' => 50,
+            'weight' => 20,
+        ]);
 
         $response->assertSessionHasErrors(['objective', 'birth_date', 'height', 'weight']);
     }
-} 
+}
