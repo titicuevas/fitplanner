@@ -63,6 +63,31 @@ class WeeklyPlanService
     }
 
     /**
+     * Genera planes del mes para todos los usuarios con objetivo (scheduler/admin).
+     *
+     * @return array{generated_plans: int, processed_users: int}
+     */
+    public function generatePlansForEligibleUsers(): array
+    {
+        $users = User::query()
+            ->whereNotNull('objective')
+            ->get();
+
+        $generatedPlans = 0;
+
+        foreach ($users as $user) {
+            if ($this->generatePlanForUser($user)) {
+                $generatedPlans++;
+            }
+        }
+
+        return [
+            'generated_plans' => $generatedPlans,
+            'processed_users' => $users->count(),
+        ];
+    }
+
+    /**
      * @return \Illuminate\Support\Collection<int, \App\Models\Workout>
      */
     private function resolveWorkoutsForObjective(?string $objective, int $limit): Collection

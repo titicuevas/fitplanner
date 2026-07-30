@@ -84,4 +84,20 @@ class WeeklyPlanServiceTest extends TestCase
                 ->exists()
         );
     }
+
+    public function test_generate_plans_for_eligible_users_processes_batch(): void
+    {
+        $category = Category::factory()->create(['id' => 1, 'name' => 'Escalado']);
+        Workout::factory()->count(5)->create(['category_id' => $category->id]);
+
+        User::factory()->create(['objective' => 'Pérdida de peso']);
+        User::factory()->create(['objective' => 'Pérdida de peso']);
+        User::factory()->create(['objective' => null]);
+
+        $result = $this->service->generatePlansForEligibleUsers();
+
+        $this->assertSame(2, $result['generated_plans']);
+        $this->assertSame(2, $result['processed_users']);
+        $this->assertDatabaseCount('weekly_plans', 10);
+    }
 }

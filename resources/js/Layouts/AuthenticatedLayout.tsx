@@ -8,8 +8,9 @@ type Props = PropsWithChildren<{
 
 const NAV_ITEMS = [
     { href: 'dashboard', label: 'Inicio', match: 'dashboard' },
+    { href: 'weekly.plan', label: 'Plan', match: 'weekly.plan' },
     { href: 'workout.history', label: 'Historial', match: 'workout.history' },
-    { href: 'weekly.plan', label: 'Planificación', match: 'weekly.plan' },
+    { href: 'objective.form', label: 'Objetivos', match: 'objective.form' },
 ] as const;
 
 function navLinkClass(active: boolean) {

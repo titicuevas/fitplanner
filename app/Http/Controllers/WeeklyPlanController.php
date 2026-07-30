@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\MonthlyPlanRequest;
 use App\Http\Requests\WorkoutsByMonthRequest;
-use App\Models\User;
 use App\Models\WeeklyPlan;
 use App\Services\WeeklyPlanService;
 use Illuminate\Support\Facades\Auth;
@@ -17,22 +16,22 @@ class WeeklyPlanController extends Controller
 
     public function generateWeeklyPlan()
     {
-        $users = User::query()
-            ->whereNotNull('objective')
-            ->get();
+        $user = Auth::user();
 
-        $generatedPlans = 0;
-
-        foreach ($users as $user) {
-            if ($this->weeklyPlanService->generatePlanForUser($user)) {
-                $generatedPlans++;
-            }
+        if (! $user || ! $user->objective) {
+            return response()->json([
+                'message' => 'Debes definir un objetivo antes de generar tu plan semanal.',
+                'generated' => false,
+            ], 422);
         }
 
+        $generated = $this->weeklyPlanService->generatePlanForUser($user);
+
         return response()->json([
-            'message' => 'Planificación semanal generada correctamente.',
-            'generated_plans' => $generatedPlans,
-            'processed_users' => $users->count(),
+            'message' => $generated
+                ? 'Plan semanal generado correctamente.'
+                : 'Ya tienes un plan semanal para este mes.',
+            'generated' => $generated,
         ]);
     }
 

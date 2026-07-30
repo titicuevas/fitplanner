@@ -86,7 +86,9 @@ class WeeklyPlanApiTest extends TestCase
 
         $response = $this->actingAs($user)->postJson('/api/weekly-plan/generate');
 
-        $response->assertOk()->assertJsonPath('generated_plans', 1);
+        $response->assertOk()
+            ->assertJsonPath('generated', true)
+            ->assertJsonPath('message', 'Plan semanal generado correctamente.');
         $this->assertDatabaseCount('weekly_plans', 5);
     }
 
@@ -108,7 +110,40 @@ class WeeklyPlanApiTest extends TestCase
 
         $response = $this->actingAs($user)->postJson('/api/weekly-plan/generate');
 
-        $response->assertOk()->assertJsonPath('generated_plans', 0);
+        $response->assertOk()
+            ->assertJsonPath('generated', false)
+            ->assertJsonPath('message', 'Ya tienes un plan semanal para este mes.');
         $this->assertDatabaseCount('weekly_plans', 1);
+    }
+
+    public function test_generate_weekly_plan_only_affects_authenticated_user(): void
+    {
+        $user = User::factory()->create([
+            'email_verified_at' => now(),
+            'objective' => 'Pérdida de peso',
+        ]);
+        $other = User::factory()->create([
+            'email_verified_at' => now(),
+            'objective' => 'Pérdida de peso',
+        ]);
+        Category::factory()->create(['id' => 1, 'name' => 'Escalado']);
+        Workout::factory()->count(3)->create(['category_id' => 1]);
+
+        $this->actingAs($user)->postJson('/api/weekly-plan/generate')->assertOk();
+
+        $this->assertSame(5, WeeklyPlan::where('user_id', $user->id)->count());
+        $this->assertSame(0, WeeklyPlan::where('user_id', $other->id)->count());
+    }
+
+    public function test_generate_weekly_plan_requires_objective(): void
+    {
+        $user = User::factory()->create([
+            'email_verified_at' => now(),
+            'objective' => null,
+        ]);
+
+        $response = $this->actingAs($user)->postJson('/api/weekly-plan/generate');
+
+        $response->assertStatus(422)->assertJsonPath('generated', false);
     }
 }

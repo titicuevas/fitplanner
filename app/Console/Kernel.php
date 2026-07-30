@@ -1,6 +1,7 @@
+<?php
+
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use App\Http\Controllers\WeeklyPlanController;
 
 class Kernel extends ConsoleKernel
 {
@@ -9,15 +10,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // Actualizar planes de entrenamiento cada lunes a las 00:00
         $schedule->call(function () {
-            $planController = new WeeklyPlanController();
-            $planController->generateWeeklyPlan();
+            app(\App\Services\WeeklyPlanService::class)->generatePlansForEligibleUsers();
         })->weekly()->mondays()->at('00:00');
     }
 
     /**
-     * Register the commands for the application.
+     * Register the application's commands.
      */
     protected function commands(): void
     {
@@ -25,4 +24,4 @@ class Kernel extends ConsoleKernel
 
         require base_path('routes/console.php');
     }
-} 
+}
