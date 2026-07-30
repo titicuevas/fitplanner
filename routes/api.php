@@ -5,7 +5,7 @@ use App\Http\Controllers\WorkoutController;
 use App\Http\Controllers\WorkoutLogController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // Rutas estáticas antes de /workouts/{id}
     Route::get('/workouts', [WorkoutController::class, 'index'])
         ->name('api.workouts.index');
@@ -18,9 +18,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/workouts/{id}', [WorkoutController::class, 'show'])
         ->whereNumber('id')
         ->name('api.workouts.show');
-});
 
-Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/weekly-plan', [WeeklyPlanController::class, 'getWeeklyPlan'])
         ->name('api.weekly-plan.show');
     Route::post('/weekly-plan/generate', [WeeklyPlanController::class, 'generateWeeklyPlan'])
