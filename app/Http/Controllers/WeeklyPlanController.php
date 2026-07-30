@@ -2,21 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\WeeklyPlan;
-use App\Models\Workout;
-use App\Models\User;
 use App\Http\Requests\MonthlyPlanRequest;
 use App\Http\Requests\WorkoutsByMonthRequest;
+use App\Models\User;
+use App\Models\WeeklyPlan;
+use App\Services\WeeklyPlanService;
 use Illuminate\Support\Facades\Auth;
 
 class WeeklyPlanController extends Controller
 {
-    private const OBJECTIVE_CATEGORY_MAP = [
-        'Pérdida de peso' => 1,
-        'Ganancia muscular' => 2,
-        'Mejorar resistencia' => 3,
-        'Mejorar flexibilidad' => 4,
-    ];
+    public function __construct(private readonly WeeklyPlanService $weeklyPlanService)
+    {
+    }
 
     public function generateWeeklyPlan()
     {
@@ -27,7 +24,7 @@ class WeeklyPlanController extends Controller
         $generatedPlans = 0;
 
         foreach ($users as $user) {
-            if ($this->generateWeeklyPlanForUser($user)) {
+            if ($this->weeklyPlanService->generatePlanForUser($user)) {
                 $generatedPlans++;
             }
         }
@@ -39,64 +36,13 @@ class WeeklyPlanController extends Controller
         ]);
     }
 
-    public function generateWeeklyPlanForUser($user)
-    {
-        $existingPlans = WeeklyPlan::where('user_id', $user->id)
-            ->where('month', now()->month)
-            ->exists();
-
-        if ($existingPlans) {
-            return false;
-        }
-
-        $categoryId = $this->resolveCategoryId($user->objective);
-
-        $workouts = Workout::where('category_id', $categoryId)
-            ->inRandomOrder()
-            ->limit(5)
-            ->get();
-
-        if ($workouts->isEmpty()) {
-            $workouts = Workout::query()
-                ->inRandomOrder()
-                ->limit(5)
-                ->get();
-        }
-
-        if ($workouts->isEmpty()) {
-            return false;
-        }
-
-        $daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
-        $currentMonth = now()->month;
-        $weeklyPlan = [];
-
-        foreach ($daysOfWeek as $index => $day) {
-            $workout = $workouts[$index % $workouts->count()];
-
-            $weeklyPlan[] = [
-                'user_id' => $user->id,
-                'workout_id' => $workout->id,
-                'assigned_day' => $day, 
-                'month' => $currentMonth,
-                'completed' => false,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-        }
-
-        WeeklyPlan::insert($weeklyPlan);
-        return true;
-    }
-
     public function getWeeklyPlan()
     {
-        $user = Auth::user();
-        $weeklyPlan = WeeklyPlan::where('user_id', $user->id)
+        $weeklyPlan = WeeklyPlan::where('user_id', Auth::id())
             ->with('workout.category')
             ->orderBy('month')
             ->get();
-    
+
         return response()->json($weeklyPlan);
     }
 
@@ -104,9 +50,7 @@ class WeeklyPlanController extends Controller
     {
         $validated = $request->validated();
 
-        $user = Auth::user();
-
-        $monthlyPlan = WeeklyPlan::where('user_id', $user->id)
+        $monthlyPlan = WeeklyPlan::where('user_id', Auth::id())
             ->where('month', $validated['month'])
             ->with('workout.category')
             ->get();
@@ -118,9 +62,7 @@ class WeeklyPlanController extends Controller
     {
         $validated = $request->validated();
 
-        $user = Auth::user();
-
-        $workoutCount = WeeklyPlan::where('user_id', $user->id)
+        $workoutCount = WeeklyPlan::where('user_id', Auth::id())
             ->where('month', $validated['month'])
             ->count();
 
@@ -129,19 +71,14 @@ class WeeklyPlanController extends Controller
 
     public function getWorkoutsByMonth(WorkoutsByMonthRequest $request)
     {
-        $user = Auth::user();
         $validated = $request->validated();
-        $workouts = WeeklyPlan::where('user_id', $user->id)
-            ->whereMonth('created_at', '=', $validated['month'])
-            ->whereYear('created_at', '=', $validated['year'])
+
+        $workouts = WeeklyPlan::where('user_id', Auth::id())
+            ->whereMonth('created_at', $validated['month'])
+            ->whereYear('created_at', $validated['year'])
             ->with('workout.category')
             ->get();
 
         return response()->json($workouts);
-    }
-
-    private function resolveCategoryId(?string $objective): int
-    {
-        return self::OBJECTIVE_CATEGORY_MAP[$objective] ?? self::OBJECTIVE_CATEGORY_MAP['Pérdida de peso'];
     }
 }
