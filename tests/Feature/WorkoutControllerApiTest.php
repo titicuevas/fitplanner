@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\Category;
 use App\Models\User;
 use App\Models\Workout;
+use App\Models\WorkoutLog;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -12,32 +12,25 @@ class WorkoutControllerApiTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_authenticated_user_can_create_workout(): void
+    public function test_guest_cannot_list_or_show_workouts(): void
     {
-        $user = User::factory()->create();
-        $category = Category::factory()->create();
+        $workout = Workout::factory()->create();
 
-        $response = $this->actingAs($user)->postJson('/api/workouts', [
-            'title' => 'Fran',
-            'warmup' => 'Run 400m',
-            'movements' => 'Thrusters, Pull-ups',
-            'wod' => '21-15-9',
-            'duration' => 25,
-            'category_id' => $category->id,
-        ]);
-
-        $response->assertCreated()->assertJsonPath('title', 'Fran');
-        $this->assertDatabaseHas('workouts', ['title' => 'Fran']);
+        $this->getJson('/api/workouts')->assertUnauthorized();
+        $this->getJson("/api/workouts/{$workout->id}")->assertUnauthorized();
     }
 
-    public function test_workout_creation_validates_required_fields(): void
+    public function test_authenticated_user_can_list_workouts(): void
     {
         $user = User::factory()->create();
+        Workout::factory()->count(2)->create();
 
-        $response = $this->actingAs($user)->postJson('/api/workouts', []);
+        $response = $this->actingAs($user)->getJson('/api/workouts');
 
-        $response->assertStatus(422)->assertJsonValidationErrors([
-            'title', 'warmup', 'movements', 'wod', 'duration', 'category_id',
+        $response->assertOk();
+        $this->assertCount(2, $response->json());
+        $response->assertJsonStructure([
+            '*' => ['id', 'title', 'category'],
         ]);
     }
 
@@ -48,31 +41,47 @@ class WorkoutControllerApiTest extends TestCase
 
         $response = $this->actingAs($user)->getJson("/api/workouts/{$workout->id}");
 
-        $response->assertOk()->assertJsonPath('id', $workout->id);
+        $response->assertOk()
+            ->assertJsonPath('id', $workout->id)
+            ->assertJsonMissingPath('logs')
+            ->assertJsonMissingPath('comments');
     }
 
-    public function test_authenticated_user_can_update_workout(): void
+    public function test_show_does_not_expose_other_users_logs(): void
     {
         $user = User::factory()->create();
-        $workout = Workout::factory()->create(['title' => 'Viejo']);
+        $other = User::factory()->create();
+        $workout = Workout::factory()->create();
 
-        $response = $this->actingAs($user)->putJson("/api/workouts/{$workout->id}", [
-            'title' => 'Nuevo',
-            'duration' => 40,
+        WorkoutLog::factory()->create([
+            'user_id' => $other->id,
+            'workout_id' => $workout->id,
+            'notes' => 'secreto-de-otro',
         ]);
 
-        $response->assertOk()->assertJsonPath('title', 'Nuevo');
-        $this->assertDatabaseHas('workouts', ['id' => $workout->id, 'title' => 'Nuevo', 'duration' => 40]);
+        $response = $this->actingAs($user)->getJson("/api/workouts/{$workout->id}");
+
+        $response->assertOk();
+        $this->assertStringNotContainsString('secreto-de-otro', $response->getContent());
+        $response->assertJsonMissingPath('logs');
     }
 
-    public function test_authenticated_user_can_delete_workout(): void
+    public function test_workout_mutations_are_not_available(): void
     {
         $user = User::factory()->create();
         $workout = Workout::factory()->create();
 
-        $response = $this->actingAs($user)->deleteJson("/api/workouts/{$workout->id}");
+        $this->actingAs($user)->postJson('/api/workouts', [
+            'title' => 'Fran',
+        ])->assertMethodNotAllowed();
 
-        $response->assertOk()->assertJsonPath('message', 'Workout eliminado correctamente.');
-        $this->assertDatabaseMissing('workouts', ['id' => $workout->id]);
+        $this->actingAs($user)->putJson("/api/workouts/{$workout->id}", [
+            'title' => 'Nuevo',
+        ])->assertMethodNotAllowed();
+
+        $this->actingAs($user)->deleteJson("/api/workouts/{$workout->id}")
+            ->assertMethodNotAllowed();
+
+        $this->assertDatabaseHas('workouts', ['id' => $workout->id]);
     }
 }
