@@ -1,6 +1,9 @@
-import { useState, PropsWithChildren, ReactNode, FormEvent } from 'react';
+import { useState, useEffect, PropsWithChildren, ReactNode, FormEvent } from 'react';
 import { Link, useForm, usePage } from '@inertiajs/react';
 import { useTheme } from '@/hooks/useTheme';
+import { avatarUrl } from '@/lib/avatar';
+import { showErrorToast, showSuccessToast } from '@/lib/notify';
+import type { AuthUser, FlashProps } from '@/types/auth';
 
 type Props = PropsWithChildren<{
     header?: ReactNode;
@@ -30,12 +33,22 @@ function mobileNavLinkClass(active: boolean) {
 }
 
 export default function AuthenticatedLayout({ children, header }: Props) {
-    const { auth } = usePage<{ auth: { user: { name: string; email: string } } }>().props;
-    const user = auth?.user || { name: 'Usuario', email: '' };
+    const { auth, flash } = usePage<{ auth: { user: AuthUser }; flash?: FlashProps }>().props;
+    const user = auth?.user || { id: 0, name: 'Usuario', email: '', profile_photo_url: null };
+    const userAvatar = avatarUrl(user);
     const [showingUserMenu, setShowingUserMenu] = useState(false);
     const [showingMobileNav, setShowingMobileNav] = useState(false);
     const { isDark, toggle } = useTheme();
     const { post } = useForm();
+
+    useEffect(() => {
+        if (flash?.message) {
+            void showSuccessToast('Listo', flash.message);
+        }
+        if (flash?.error) {
+            void showErrorToast(flash.error);
+        }
+    }, [flash?.message, flash?.error]);
 
     const handleLogout = (e: FormEvent) => {
         e.preventDefault();
@@ -109,8 +122,8 @@ export default function AuthenticatedLayout({ children, header }: Props) {
                                 >
                                     <span className="sr-only">Abrir menú de usuario</span>
                                     <img
-                                        className="h-8 w-8 rounded-full"
-                                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`}
+                                        className="h-8 w-8 rounded-full object-cover"
+                                        src={userAvatar}
                                         alt={`Avatar de ${user.name}`}
                                     />
                                 </button>
@@ -187,8 +200,8 @@ export default function AuthenticatedLayout({ children, header }: Props) {
                         <div className="mt-4 border-t border-gray-200 pt-4 dark:border-gray-700">
                             <div className="mb-3 flex items-center gap-3 px-3">
                                 <img
-                                    className="h-10 w-10 rounded-full"
-                                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`}
+                                    className="h-10 w-10 rounded-full object-cover"
+                                    src={userAvatar}
                                     alt=""
                                 />
                                 <div className="min-w-0">

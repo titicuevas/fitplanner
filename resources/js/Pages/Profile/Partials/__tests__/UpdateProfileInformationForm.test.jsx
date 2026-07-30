@@ -36,9 +36,10 @@ describe('UpdateProfileInformationForm', () => {
             props: {
                 auth: {
                     user: {
+                        id: 1,
                         name: 'Test User',
                         email: 'test@example.com',
-                        profile_photo_path: null,
+                        profile_photo_url: null,
                     }
                 },
                 flash: {}
@@ -67,9 +68,10 @@ describe('UpdateProfileInformationForm', () => {
             props: {
                 auth: {
                     user: {
+                        id: 1,
                         name: 'Test User',
                         email: 'test@example.com',
-                        profile_photo_path: null,
+                        profile_photo_url: null,
                     }
                 },
                 flash: { message: 'Perfil actualizado correctamente' }
@@ -85,9 +87,10 @@ describe('UpdateProfileInformationForm', () => {
             props: {
                 auth: {
                     user: {
+                        id: 1,
                         name: 'Test User',
                         email: 'test@example.com',
-                        profile_photo_path: null,
+                        profile_photo_url: null,
                     }
                 },
                 flash: { error: 'Error al actualizar el perfil' }

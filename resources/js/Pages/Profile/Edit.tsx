@@ -1,21 +1,21 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import DeleteUserForm from './Partials/DeleteUserForm';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm';
+import { avatarUrl } from '@/lib/avatar';
+import { usePage } from '@inertiajs/react';
+import type { AuthUser } from '@/types/auth';
 
 type EditProps = {
     mustVerifyEmail: boolean;
     status?: string;
-    auth: {
-        user: {
-            name: string;
-            email: string;
-        };
-    };
 };
 
-export default function Edit({ mustVerifyEmail, status, auth }: EditProps) {
+export default function Edit({ mustVerifyEmail, status }: EditProps) {
+    const { auth } = usePage<{ auth: { user: AuthUser } }>().props;
+    const user = auth.user;
+
     return (
         <AuthenticatedLayout
             header={
@@ -34,35 +34,28 @@ export default function Edit({ mustVerifyEmail, status, auth }: EditProps) {
             <div className="bg-gray-50 py-12 transition-colors dark:bg-gray-900">
                 <div className="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
                     <div className="relative overflow-hidden bg-white shadow-md sm:rounded-lg dark:bg-gray-800 dark:shadow-none">
-                        <div className="absolute top-0 h-24 w-full bg-gradient-to-r from-green-400 to-blue-500"></div>
+                        <div className="absolute top-0 h-24 w-full bg-gradient-to-r from-red-600 to-red-500"></div>
                         <div className="relative p-6 sm:p-8">
                             <div className="flex flex-col items-center space-y-4 sm:flex-row sm:items-start sm:space-x-6 sm:space-y-0">
-                                <Link href={route('dashboard')} className="group relative">
-                                    <div className="h-24 w-24 rounded-full bg-white p-1 shadow-lg transition-transform duration-200 transform group-hover:scale-105">
-                                        <div className="h-full w-full rounded-full bg-gray-200 flex items-center justify-center relative overflow-hidden group-hover:bg-gray-300 transition-colors duration-200">
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400 group-hover:text-gray-500 transition-colors duration-200" viewBox="0 0 24 24" fill="currentColor">
-                                                <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clipRule="evenodd" />
-                                            </svg>
-                                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-opacity duration-200 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100">
-                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="currentColor">
-                                                    <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm4.28 10.28a.75.75 0 000-1.06l-3-3a.75.75 0 10-1.06 1.06l1.72 1.72H8.25a.75.75 0 000 1.5h5.69l-1.72 1.72a.75.75 0 101.06 1.06l3-3z" clipRule="evenodd" />
-                                                </svg>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                        <span className="bg-gray-900 text-white text-xs px-2 py-1 rounded-md whitespace-nowrap">
-                                            Ir al Dashboard
-                                        </span>
-                                    </div>
-                                </Link>
-                                <div className="flex-1">
+                                <div className="h-24 w-24 rounded-full bg-white p-1 shadow-lg">
+                                    <img
+                                        src={avatarUrl(user)}
+                                        alt={`Avatar de ${user.name}`}
+                                        className="h-full w-full rounded-full object-cover"
+                                    />
+                                </div>
+                                <div className="flex-1 text-center sm:text-left">
                                     <h3 className="mb-1 text-2xl font-bold text-gray-900 dark:text-white">
-                                        {auth?.user?.name}
+                                        {user.name}
                                     </h3>
-                                    <p className="mb-4 text-gray-500 dark:text-gray-400">
-                                        {auth?.user?.email}
+                                    <p className="mb-2 text-gray-500 dark:text-gray-400">
+                                        {user.email}
                                     </p>
+                                    {user.objective ? (
+                                        <p className="text-sm font-medium text-red-600 dark:text-red-400">
+                                            Objetivo: {user.objective}
+                                        </p>
+                                    ) : null}
                                 </div>
                             </div>
                         </div>

@@ -16,33 +16,32 @@ export default function VerifyEmail({ status }: Props) {
     };
 
     return (
-        <GuestLayout>
+        <GuestLayout title="Verificar email">
             <Head title="Verificar Email" />
 
-            <div className="mb-4 text-sm text-gray-600">
-                ¡Gracias por registrarte! Antes de comenzar, verifica tu correo electrónico haciendo clic en el enlace que te acabamos de enviar.
-                Si no recibiste el correo, te enviaremos otro con gusto.
-            </div>
+            <p className="mb-4 text-sm text-gray-300">
+                Gracias por registrarte. Antes de continuar, verifica tu correo con el enlace que te enviamos.
+            </p>
 
             {status === 'verification-link-sent' && (
-                <div className="mb-4 text-sm font-medium text-green-600">
-                    Se ha enviado un nuevo enlace de verificación a tu correo electrónico.
+                <div className="mb-4 rounded-md bg-green-500/20 p-3 text-sm font-medium text-green-400">
+                    Se ha enviado un nuevo enlace de verificación a tu correo.
                 </div>
             )}
 
             <form onSubmit={submit}>
-                <div className="mt-4 flex items-center justify-between">
+                <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <PrimaryButton disabled={processing}>
-                        Reenviar correo de verificación
+                        Reenviar correo
                     </PrimaryButton>
 
                     <Link
                         href={route('logout')}
                         method="post"
                         as="button"
-                        className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        className="rounded-md text-sm text-gray-300 underline hover:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
                     >
-                        Cerrar Sesión
+                        Cerrar sesión
                     </Link>
                 </div>
             </form>

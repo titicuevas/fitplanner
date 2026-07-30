@@ -1,5 +1,4 @@
 import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
@@ -26,33 +25,35 @@ export default function ResetPassword({ token, email }: Props) {
         });
     };
 
+    const fieldClass = 'mt-1 block w-full border-gray-600 bg-gray-800 text-gray-100';
+
     return (
-        <GuestLayout>
+        <GuestLayout title="Restablecer contraseña">
             <Head title="Restablecer Contraseña" />
 
-            <form onSubmit={submit}>
+            <form onSubmit={submit} className="space-y-4">
                 <div>
-                    <InputLabel htmlFor="email" value="Email" />
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-100">Email</label>
                     <TextInput
                         id="email"
                         type="email"
                         name="email"
                         value={data.email}
-                        className="mt-1 block w-full"
+                        className={fieldClass}
                         autoComplete="username"
                         onChange={(e) => setData('email', e.target.value)}
                     />
                     <InputError message={errors.email} className="mt-2" />
                 </div>
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Nueva Contraseña" />
+                <div>
+                    <label htmlFor="password" className="block text-sm font-medium text-gray-100">Nueva contraseña</label>
                     <TextInput
                         id="password"
                         type="password"
                         name="password"
                         value={data.password}
-                        className="mt-1 block w-full"
+                        className={fieldClass}
                         autoComplete="new-password"
                         isFocused
                         onChange={(e) => setData('password', e.target.value)}
@@ -60,23 +61,23 @@ export default function ResetPassword({ token, email }: Props) {
                     <InputError message={errors.password} className="mt-2" />
                 </div>
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="password_confirmation" value="Confirmar Contraseña" />
+                <div>
+                    <label htmlFor="password_confirmation" className="block text-sm font-medium text-gray-100">Confirmar contraseña</label>
                     <TextInput
                         type="password"
                         id="password_confirmation"
                         name="password_confirmation"
                         value={data.password_confirmation}
-                        className="mt-1 block w-full"
+                        className={fieldClass}
                         autoComplete="new-password"
                         onChange={(e) => setData('password_confirmation', e.target.value)}
                     />
                     <InputError message={errors.password_confirmation} className="mt-2" />
                 </div>
 
-                <div className="mt-4 flex items-center justify-end">
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Restablecer Contraseña
+                <div className="flex justify-end pt-2">
+                    <PrimaryButton disabled={processing}>
+                        Restablecer
                     </PrimaryButton>
                 </div>
             </form>

@@ -39,7 +39,7 @@ class HandleInertiaRequests extends Middleware
                     'email' => $user->email,
                     'objective' => $user->objective,
                     'profile_photo_url' => $user->profile_photo_url,
-                    'email_verified_at' => $user->email_verified_at,
+                    'email_verified_at' => optional($user->email_verified_at)?->toIso8601String(),
                 ] : null,
             ],
             'flash' => [
